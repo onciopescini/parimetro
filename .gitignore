@@ -1,0 +1,14 @@
+# La stringa di connessione contiene la password del database: mai versionarla.
+# Il modello da copiare è etl/.env.example.
+.env
+etl/.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# I CSV scaricati da ISTAT, SIOPE e OpenBDAP: si riscaricano con
+# scarica_siope.py e dai link nel README, e pesano diversi GB.
+*.csv
+*.zip

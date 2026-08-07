@@ -1,0 +1,232 @@
+#!/usr/bin/env python3
+# ============================================================
+# ETL 04 · SIOPE → budget_records
+#
+# Alternativa allo script 03 quando i rendiconti di COMPETENZA non
+# sono disponibili: i dati di competenza per singolo comune non sono
+# scaricabili in blocco da nessuna fonte pubblica (il catalogo BDAP si
+# ferma al 2015, OpenBDAP espone solo aggregati regionali, il MinInterno
+# solo un ente alla volta). SIOPE invece copre 2014-2026, comune per
+# comune, ed è scaricabile con scarica_siope.py.
+#
+# ⚠ DIFFERENZA CONTABILE DA DICHIARARE SEMPRE ALL'UTENTE FINALE:
+#   SIOPE è CASSA (incassi e pagamenti), non COMPETENZA (accertamenti
+#   e impegni). Di conseguenza:
+#     - revenue_total    = incassi (non accertamenti)
+#     - expenditure_total= pagamenti (non impegni)
+#     - surplus_deficit  = saldo di CASSA (incassi - pagamenti),
+#                          non il risultato di competenza
+#     - commitments      = NULL: SIOPE non conosce gli impegni, quindi
+#                          il termine "velocità di spesa" dell'FHI resta
+#                          neutro invece di essere falsato duplicando i
+#                          pagamenti
+#     - debt_total       = NULL (come nello script 03)
+#
+# ⚠ GLI IMPORTI SONO CUMULATI PROGRESSIVI da gennaio: il totale annuo è
+#   la riga del mese PIÙ ALTO disponibile per quel comune, non la somma
+#   dei dodici mesi. Sommare i mesi gonfierebbe i valori di ~6 volte.
+#
+# Uso:
+#   python 04_import_siope.py --dir ..\..\etl-data\siope_2024 --year 2024
+#   python 04_import_siope.py --inspect entrate_Molise.csv
+# ============================================================
+import argparse
+import glob
+import os
+import sys
+from collections import defaultdict
+
+import pandas as pd
+import psycopg
+from dotenv import load_dotenv
+
+from config import (
+    SIOPE,
+    TITOLI_CAPITALE,
+    TITOLI_CORRENTI,
+    TITOLI_ENTRATE_ESCLUSE,
+    TITOLI_PROPRIE,
+    TITOLI_SPESE_ESCLUSE,
+    TITOLO_DA_REGOLARIZZARE,
+    inspect_csv,
+)
+
+# Fuori dai totali: anticipazioni/partite di giro (come nello script 03) più i
+# sospesi da regolarizzare, che SIOPE marca con il titolo 0.
+ENTRATE_FUORI = TITOLI_ENTRATE_ESCLUSE | {TITOLO_DA_REGOLARIZZARE}
+SPESE_FUORI = TITOLI_SPESE_ESCLUSE | {TITOLO_DA_REGOLARIZZARE}
+
+CHUNK = 300_000
+
+
+def leggi(path: str):
+    """Genera i chunk di un CSV SIOPE con le sole colonne che servono."""
+    c = SIOPE
+    need = [c["col_prov"], c["col_com"], c["col_tipo"],
+            c["col_periodo"], c["col_titolo"], c["col_importo"]]
+    testa = pd.read_csv(path, sep=c["sep"], encoding=c["encoding"], nrows=0)
+    mancanti = [x for x in need if x not in testa.columns]
+    if mancanti:
+        sys.exit(
+            f"{os.path.basename(path)}: colonne non trovate {mancanti}\n"
+            "Lancia --inspect sul file e correggi SIOPE in config.py."
+        )
+    return pd.read_csv(path, sep=c["sep"], encoding=c["encoding"], dtype=str,
+                       usecols=need, chunksize=CHUNK)
+
+
+def aggrega(paths: list[str]) -> dict:
+    """(istat, mese, titolo) -> importo cumulato. Tiene solo i Comuni."""
+    c = SIOPE
+    acc: dict = defaultdict(float)
+    for path in paths:
+        righe = 0
+        for ch in leggi(path):
+            ch = ch[ch[c["col_tipo"]].astype(str).str.strip() == c["tipo_comuni"]]
+            if ch.empty:
+                continue
+            ist = (ch[c["col_prov"]].astype(str).str.strip().str.zfill(3)
+                   + ch[c["col_com"]].astype(str).str.strip().str.zfill(3))
+            # "2024/07" -> 7
+            mese = pd.to_numeric(
+                ch[c["col_periodo"]].astype(str).str.split("/").str[-1], errors="coerce"
+            )
+            # "E1000000000" / "S1000000000" -> "1"
+            tit = ch[c["col_titolo"]].astype(str).str.extract(r"[A-Za-z](\d)", expand=False)
+            val = pd.to_numeric(ch[c["col_importo"]], errors="coerce").fillna(0.0)
+
+            df = pd.DataFrame({"i": ist, "m": mese, "t": tit, "v": val}).dropna(
+                subset=["m", "t"]
+            )
+            for (i, m, t), v in df.groupby(["i", "m", "t"])["v"].sum().items():
+                acc[(i, int(m), t)] += float(v)
+            righe += len(ch)
+        print(f"   {os.path.basename(path):46s} {righe:>9,} righe comuni".replace(",", "."))
+    return acc
+
+
+def ultimo_mese(acc: dict) -> dict:
+    """Per ogni comune tiene solo il mese più alto: gli importi sono cumulati."""
+    massimo: dict = {}
+    for (i, m, _t) in acc:
+        if m > massimo.get(i, 0):
+            massimo[i] = m
+    out: dict = defaultdict(lambda: defaultdict(float))
+    for (i, m, t), v in acc.items():
+        if m == massimo[i]:
+            out[i][t] += v
+    return out
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description="Import SIOPE (cassa) in budget_records")
+    ap.add_argument("--dir", help="Cartella con entrate_*.csv e spese_*.csv")
+    ap.add_argument("--year", type=int, help="Esercizio di riferimento")
+    ap.add_argument("--inspect", metavar="CSV", help="Stampa header e prime righe")
+    a = ap.parse_args()
+
+    if a.inspect:
+        inspect_csv(a.inspect)
+        return
+    if not (a.dir and a.year):
+        ap.error("servono --dir e --year (oppure --inspect FILE)")
+
+    f_ent = sorted(glob.glob(os.path.join(a.dir, "entrate_*.csv")))
+    f_spe = sorted(glob.glob(os.path.join(a.dir, "spese_*.csv")))
+    if not f_ent or not f_spe:
+        sys.exit(f"In {a.dir} servono sia entrate_*.csv sia spese_*.csv.")
+
+    print(f"→ entrate: {len(f_ent)} file")
+    ent = ultimo_mese(aggrega(f_ent))
+    print(f"→ spese: {len(f_spe)} file")
+    spe = ultimo_mese(aggrega(f_spe))
+    print(f"  {len(ent)} comuni con entrate · {len(spe)} con spese")
+
+    load_dotenv()
+    url = os.getenv("DATABASE_URL")
+    if not url:
+        sys.exit("DATABASE_URL mancante: copia .env.example in .env e compilalo.")
+
+    with psycopg.connect(url) as conn, conn.cursor() as cur:
+        cur.execute("select istat_code, id, population from municipalities")
+        muni = {r[0]: (r[1], r[2]) for r in cur.fetchall()}
+
+        pop_y: dict = {}
+        cur.execute("select to_regclass('population_years')")
+        if cur.fetchone()[0]:
+            cur.execute(
+                "select istat_code, population from population_years where year = %s",
+                (a.year,),
+            )
+            pop_y = dict(cur.fetchall())
+
+        righe, non_abbinati, senza_pop = [], [], 0
+        for ist, titoli in ent.items():
+            if ist not in muni:
+                non_abbinati.append(ist)
+                continue
+            mid, pop_fallback = muni[ist]
+            pop = pop_y.get(ist) or pop_fallback or 0
+            if not pop:
+                senza_pop += 1
+
+            incassi = sum(v for t, v in titoli.items() if t not in ENTRATE_FUORI)
+            correnti = sum(v for t, v in titoli.items() if t in TITOLI_CORRENTI)
+            capitale = sum(v for t, v in titoli.items() if t in TITOLI_CAPITALE)
+            proprie = sum(v for t, v in titoli.items() if t in TITOLI_PROPRIE)
+
+            st = spe.get(ist, {})
+            pagamenti = sum(v for t, v in st.items() if t not in SPESE_FUORI)
+
+            righe.append((
+                mid, a.year, pop,
+                round(incassi, 2),               # revenue_total (incassi)
+                round(pagamenti, 2),             # expenditure_total (pagamenti)
+                round(correnti, 2),
+                round(capitale, 2),
+                round(proprie, 2),
+                None,                            # debt_total → FHI neutro
+                round(incassi - pagamenti, 2),   # surplus_deficit = saldo di CASSA
+                round(pagamenti, 2),             # payments_made
+                None,                            # commitments: SIOPE non li ha
+            ))
+
+        cur.executemany(
+            """
+            insert into budget_records
+                (municipality_id, year, population, revenue_total, expenditure_total,
+                 revenue_current, revenue_capital, own_revenue, debt_total,
+                 surplus_deficit, payments_made, commitments)
+            values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            on conflict on constraint unique_muni_year do update set
+                population        = excluded.population,
+                revenue_total     = excluded.revenue_total,
+                expenditure_total = excluded.expenditure_total,
+                revenue_current   = excluded.revenue_current,
+                revenue_capital   = excluded.revenue_capital,
+                own_revenue       = excluded.own_revenue,
+                surplus_deficit   = excluded.surplus_deficit,
+                payments_made     = excluded.payments_made,
+                commitments       = excluded.commitments
+            """,
+            righe,
+        )
+        conn.commit()
+
+        # L'indice è il percentile nella fascia demografica, quindi si calcola
+        # per coorte e non riga per riga: niente trigger, va lanciato qui.
+        cur.execute("select refresh_fhi(%s)", (a.year,))
+        print(f"→ indice ricalcolato su {cur.fetchone()[0]} righe")
+        conn.commit()
+
+    print(f"✔ {len(righe)} comuni caricati per il {a.year}.")
+    if non_abbinati:
+        print(f"⚠ {len(non_abbinati)} codici non abbinati. Primi 10: {non_abbinati[:10]}")
+    if senza_pop:
+        print(f"⚠ {senza_pop} comuni senza popolazione: i pro capite restano null.")
+    print("⚠ Ricorda: questi sono dati di CASSA. surplus_deficit è il saldo di cassa,")
+    print("  non il risultato di competenza. Va dichiarato nell'interfaccia.")
+
+
+if __name__ == "__main__":
+    main()
