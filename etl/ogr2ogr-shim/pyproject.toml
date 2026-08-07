@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ogr2ogr-docker-shim"
+version = "1.0.0"
+description = "Shim che espone ogr2ogr come eseguibile inoltrando all'immagine GDAL in Docker"
+requires-python = ">=3.10"
+
+[project.scripts]
+ogr2ogr = "ogr2ogr_docker:main"
+
+[tool.setuptools]
+py-modules = ["ogr2ogr_docker"]
