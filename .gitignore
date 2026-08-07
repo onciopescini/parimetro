@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# dati sorgente scaricati da build-demo-data.mjs
+.cache/
+
+# dati demo generati (rigenerabili: node scripts/build-demo-data.mjs)
+/data/
