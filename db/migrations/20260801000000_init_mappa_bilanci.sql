@@ -239,10 +239,22 @@ drop policy if exists "lettura pubblica bilanci" on budget_records;
 create policy "lettura pubblica comuni"  on municipalities for select using (true);
 create policy "lettura pubblica bilanci" on budget_records for select using (true);
 
-grant execute on function get_geo_budget(int, numeric)      to anon, authenticated;
-grant execute on function get_province_aggregates(int)      to anon, authenticated;
-grant execute on function get_national_averages(int)        to anon, authenticated;
-grant execute on function get_municipality_history(varchar) to anon, authenticated;
+-- I ruoli anon/authenticated erano di Supabase e su un Postgres normale non
+-- esistono: questi grant facevano fallire l'intera migrazione al primo avvio.
+-- Il lettore ora e' mappa_ro, creato da selfhost/init/01-ruoli.sh. Il blocco
+-- condizionale serve a poter applicare le migrazioni anche su un database di
+-- prova dove quel ruolo non c'e'.
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'mappa_ro') then
+    grant execute on function get_geo_budget(int, numeric)      to mappa_ro;
+    grant execute on function get_province_aggregates(int)      to mappa_ro;
+    grant execute on function get_national_averages(int)        to mappa_ro;
+    grant execute on function get_municipality_history(varchar) to mappa_ro;
+  else
+    raise notice 'ruolo mappa_ro assente: grant saltati (normale fuori dal compose)';
+  end if;
+end $$;
 
 -- ------------------------------------------------------------
 -- 10 · SEED DEMO (facoltativo ma consigliato)
