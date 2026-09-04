@@ -2,19 +2,15 @@
 
 // ============================================================
 // app/page.tsx
-// Collega Map3D (Modulo 2) e BudgetDrawer (Modulo 3), come da
-// README del progetto. In più: se .env.local non ha le chiavi
-// Supabase, la pagina ripiega sulla route locale /api/geo-budget
-// (geografia ISTAT reale + bilanci demo) così l'anteprima è
-// navigabile subito. Appena le chiavi ci sono, passa da sola
-// alla Edge Function e alle RPC vere.
+// Collega Map3D (Modulo 2) e BudgetDrawer (Modulo 3).
+// I dati arrivano tutti da /api/geo-budget, che interroga il nostro
+// Postgres: niente piu' Supabase e niente piu' sorgente demo.
 //
 // Lo stato della vista vive nella query string, così ogni schermata
 // è un link condivisibile.
 // ============================================================
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Search, Trophy, X } from "lucide-react";
 import Map3D, {
   METRIC_LABELS,
@@ -32,15 +28,20 @@ import RankingPanel, {
   type RankingRow,
 } from "@/components/ranking/RankingPanel";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-/** Supabase è configurato? Se no, resta solo la sorgente demo locale. */
-const HAS_SUPABASE = Boolean(SUPABASE_URL && SUPABASE_KEY);
+/** Unico punto di accesso ai dati: le RPC sono funzioni del nostro Postgres. */
+const API = "/api/geo-budget";
 
-const supabase = HAS_SUPABASE ? createClient(SUPABASE_URL!, SUPABASE_KEY!) : null;
-const DEMO_URL = "/api/geo-budget";
+/** Chiama la route e non lascia passare gli errori come risposte vuote. */
+async function api<T>(query: string): Promise<T> {
+  const r = await fetch(`${API}?${query}`);
+  if (!r.ok) throw new Error(`${query}: HTTP ${r.status}`);
+  return r.json();
+}
 
-const METRICS: MetricKey[] = ["expenditure", "revenue", "debt", "surplus", "fhi"];
+// "debt" resta fuori: i dati SIOPE sono di cassa e non conoscono lo stock di
+// indebitamento, quindi la metrica darebbe una mappa piatta. Torna qui il
+// giorno in cui entrano i rendiconti di competenza.
+const METRICS: MetricKey[] = ["expenditure", "revenue", "surplus", "fhi"];
 
 /** Riga della ricerca: i dati del comune più il punto su cui volare. */
 interface Risultato extends MunicipalityProps {
@@ -55,10 +56,6 @@ export default function Home() {
   const [perCapita, setPerCapita] = useState(false);
   // true = i ~7.900 comuni estrusi già dalla vista nazionale
   const [comuniOvunque, setComuniOvunque] = useState(true);
-  // Sorgente dati: Supabase (confini ISTAT + importi SIOPE di cassa) oppure la
-  // route demo locale (stessi confini, importi sintetici). Resta commutabile per
-  // poter confrontare i due mondi a colpo d'occhio.
-  const [live, setLive] = useState(HAS_SUPABASE);
 
   const [detail, setDetail] = useState<MunicipalityDetail | null>(null);
   const [avg, setAvg] = useState<NationalAverages | null>(null);
@@ -82,7 +79,6 @@ export default function Home() {
     if (col && METRICS.includes(col)) setColorMetric(col);
     if (p.get("pc")) setPerCapita(p.get("pc") === "1");
     if (p.get("lod")) setComuniOvunque(p.get("lod") !== "province");
-    if (HAS_SUPABASE && p.get("fonte")) setLive(p.get("fonte") !== "demo");
     comuneDaAprire.current = p.get("comune");
     setPronto(true);
   }, []);
@@ -90,28 +86,22 @@ export default function Home() {
   // ---- Esercizi disponibili, dichiarati dalla sorgente ------------------ //
   // L'elenco è legato alla sorgente da cui proviene: appena si cambia sorgente
   // torna vuoto, così non si usa mai la lista dell'altra per validare un anno.
-  const [yearsInfo, setYearsInfo] = useState<{ live: boolean; anni: number[] }>({
-    live,
-    anni: [],
-  });
-  const years = yearsInfo.live === live ? yearsInfo.anni : [];
+  const [years, setYears] = useState<number[]>([]);
 
   useEffect(() => {
     if (!pronto) return;
     let annullato = false;
     (async () => {
-      const anni: number[] = live
-        ? ((await supabase!.rpc("get_available_years")).data ?? [])
-        : await fetch(`${DEMO_URL}?lod=years`).then((r) => r.json());
+      const anni = await api<number[]>("lod=years");
       if (annullato || !anni.length) return;
-      setYearsInfo({ live, anni });
+      setYears(anni);
       // Se l'anno scelto non esiste in questa sorgente, scivola sull'ultimo utile
       setYear((y) => (anni.includes(y) ? y : anni[anni.length - 1]));
     })();
     return () => {
       annullato = true;
     };
-  }, [live, pronto]);
+  }, [pronto]);
 
   // Anno passato alla mappa: avanza solo quando è confermato dalla sorgente
   // corrente. Resta null finché non lo sappiamo, così la mappa non parte con
@@ -121,40 +111,15 @@ export default function Home() {
     if (years.includes(year)) setAnnoMappa(year);
   }, [year, years]);
 
-  // SIOPE è contabilità di cassa: debt_total è NULL su tutti i comuni, quindi
-  // "Debito" darebbe una mappa piatta e un grafico vuoto. La demo locale un
-  // debito sintetico invece ce l'ha, quindi lì la metrica resta.
-  const metriche = useMemo(
-    () => (live ? METRICS.filter((m) => m !== "debt") : METRICS),
-    [live],
-  );
-
-  useEffect(() => {
-    if (!metriche.includes(heightMetric)) setHeightMetric("expenditure");
-    if (!metriche.includes(colorMetric)) setColorMetric("expenditure");
-  }, [metriche, heightMetric, colorMetric]);
-
   // ---- Selezione di un comune (dalla mappa o dalla ricerca) ------------- //
   const handleSelect = useCallback(
     async (p: MunicipalityProps) => {
       const anno = annoMappa ?? year;
-      const [history, nat, pari] = live
-        ? await Promise.all([
-            supabase!
-              .rpc("get_municipality_history", { p_istat: p.istat })
-              .then((r) => r.data),
-            supabase!.rpc("get_national_averages", { p_year: anno }).then((r) => r.data),
-            supabase!
-              .rpc("get_peer_comparison", { p_istat: p.istat, p_year: anno })
-              .then((r) => r.data),
-          ])
-        : await Promise.all([
-            fetch(`${DEMO_URL}?lod=history&istat=${p.istat}`).then((r) => r.json()),
-            fetch(`${DEMO_URL}?lod=national&year=${anno}`).then((r) => r.json()),
-            fetch(`${DEMO_URL}?lod=peers&istat=${p.istat}&year=${anno}`).then((r) =>
-              r.ok ? r.json() : null,
-            ),
-          ]);
+      const [history, nat, pari] = await Promise.all([
+        api<MunicipalityDetail["history"]>(`lod=history&istat=${p.istat}`),
+        api<NationalAverages>(`lod=national&year=${anno}`),
+        api<PeerComparison>(`lod=peers&istat=${p.istat}&year=${anno}`),
+      ]);
 
       setDetail({
         istat: p.istat,
@@ -168,28 +133,19 @@ export default function Home() {
       setPeers(pari ?? null);
       setOpen(true);
     },
-    [year, annoMappa, live],
+    [year, annoMappa],
   );
 
   // ---- Ricerca --------------------------------------------------------- //
   const [query, setQuery] = useState("");
   const [risultati, setRisultati] = useState<Risultato[]>([]);
 
+  // api() solleva sugli errori invece di restituire lista vuota: confondere
+  // "fallito" con "nessun risultato" ci era gia' costato un ripristino da
+  // deep link che spariva in silenzio.
   const cerca = useCallback(
-    async (q: string): Promise<Risultato[]> => {
-      if (!live) {
-        const r = await fetch(`${DEMO_URL}?lod=search&q=${encodeURIComponent(q)}`);
-        if (!r.ok) throw new Error(`ricerca demo: HTTP ${r.status}`);
-        return r.json();
-      }
-      const { data, error } = await supabase!.rpc("search_municipalities", { p_query: q });
-      // Un errore NON è "nessun risultato": confonderli nascondeva i timeout
-      // (il ruolo anon ha statement_timeout=3s) facendo fallire in silenzio
-      // il ripristino da deep link.
-      if (error) throw new Error(`ricerca: ${error.message}`);
-      return data ?? [];
-    },
-    [live],
+    (q: string) => api<Risultato[]>(`lod=search&q=${encodeURIComponent(q)}`),
+    [],
   );
 
   useEffect(() => {
@@ -213,31 +169,21 @@ export default function Home() {
   }, [query, cerca]);
 
   // ---- Classifiche ------------------------------------------------------ //
-  // Solo su Supabase: la sorgente demo non ha le RPC, e comunque in produzione
-  // sparisce. Meglio nascondere l'ingresso che offrire un pannello che rompe.
   const [classifiche, setClassifiche] = useState(false);
 
-  const caricaFiltri = useCallback(async (): Promise<RankingFilters> => {
-    const { data, error } = await supabase!.rpc("get_ranking_filters", {
-      p_year: annoMappa ?? year,
-    });
-    if (error) throw new Error(error.message);
-    return data;
-  }, [annoMappa, year]);
+  const caricaFiltri = useCallback(
+    () => api<RankingFilters>(`lod=ranking-filters&year=${annoMappa ?? year}`),
+    [annoMappa, year],
+  );
 
   const caricaClassifica = useCallback(
-    async (q: RankingQuery): Promise<RankingRow[]> => {
-      const { data, error } = await supabase!.rpc("get_ranking", {
-        p_year: annoMappa ?? year,
-        p_metric: q.metric,
-        p_fascia: q.fascia,
-        p_region: q.region,
-        p_desc: q.desc,
-        p_limit: 15,
-      });
-      if (error) throw new Error(error.message);
-      return data ?? [];
-    },
+    (q: RankingQuery) =>
+      api<RankingRow[]>(
+        `lod=ranking&year=${annoMappa ?? year}&metric=${q.metric}` +
+          `&fascia=${encodeURIComponent(q.fascia ?? "")}` +
+          `&region=${encodeURIComponent(q.region ?? "")}` +
+          `&desc=${q.desc}&limit=15`,
+      ),
     [annoMappa, year],
   );
 
@@ -297,7 +243,6 @@ export default function Home() {
     p.set("col", colorMetric);
     p.set("pc", perCapita ? "1" : "0");
     p.set("lod", comuniOvunque ? "comuni" : "province");
-    if (HAS_SUPABASE) p.set("fonte", live ? "supabase" : "demo");
     if (open && detail) p.set("comune", detail.istat);
     // replaceState e non push: la vista cambia in continuazione mentre si
     // regolano i controlli, e riempire la cronologia renderebbe il tasto
@@ -310,7 +255,6 @@ export default function Home() {
     colorMetric,
     perCapita,
     comuniOvunque,
-    live,
     open,
     detail,
   ]);
@@ -324,7 +268,7 @@ export default function Home() {
           colorMetric={colorMetric}
           perCapita={perCapita}
           onSelect={handleSelect}
-          dataUrl={live ? undefined : DEMO_URL}
+          dataUrl={API}
           lodThreshold={comuniOvunque ? 0 : undefined}
           scale={perCapita ? "robust" : "log"}
           palette={colorMetric === "fhi" ? "health" : "cost"}
@@ -363,19 +307,15 @@ export default function Home() {
         </div>
 
         <p className="mt-1 text-[11px] leading-snug text-slate-400">
-          {live
-            ? "Confini e popolazione ISTAT · importi SIOPE."
-            : "Confini e popolazione ISTAT reali · importi dimostrativi."}
+          Confini e popolazione ISTAT · importi SIOPE.
         </p>
 
         {/* I dati SIOPE sono di cassa, non di competenza: dirlo è doveroso,
             perché "avanzo" qui significa saldo di cassa e non risultato
             di amministrazione. */}
-        {live && (
-          <p className="mt-1 text-[11px] leading-snug text-amber-300/80">
-            Contabilità di cassa: incassi e pagamenti, non accertamenti e impegni.
-          </p>
-        )}
+        <p className="mt-1 text-[11px] leading-snug text-amber-300/80">
+          Contabilità di cassa: incassi e pagamenti, non accertamenti e impegni.
+        </p>
 
         <div className="relative mt-3">
           <Search
@@ -419,29 +359,6 @@ export default function Home() {
           )}
         </div>
 
-        {HAS_SUPABASE && (
-          <div className="mt-2 flex gap-1">
-            {(
-              [
-                [true, "Supabase"],
-                [false, "Demo locale"],
-              ] as [boolean, string][]
-            ).map(([v, label]) => (
-              <button
-                key={label}
-                onClick={() => setLive(v)}
-                className={`flex-1 rounded-md px-2 py-1 text-[11px] transition-colors ${
-                  live === v
-                    ? "bg-white/15 text-white"
-                    : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
-
         <label className="mt-3 block text-[10px] uppercase tracking-wider text-slate-400">
           Esercizio
         </label>
@@ -473,7 +390,7 @@ export default function Home() {
           onChange={(e) => setHeightMetric(e.target.value as MetricKey)}
           className="mt-1 w-full rounded-md border border-white/10 bg-slate-800/80 px-2 py-1 text-[11px] text-slate-200"
         >
-          {metriche.map((m) => (
+          {METRICS.map((m) => (
             <option key={m} value={m}>
               {METRIC_LABELS[m]}
             </option>
@@ -492,7 +409,7 @@ export default function Home() {
           onChange={(e) => setColorMetric(e.target.value as MetricKey)}
           className="mt-1 w-full rounded-md border border-white/10 bg-slate-800/80 px-2 py-1 text-[11px] text-slate-200"
         >
-          {metriche.map((m) => (
+          {METRICS.map((m) => (
             <option key={m} value={m}>
               {METRIC_LABELS[m]}
             </option>
@@ -518,19 +435,17 @@ export default function Home() {
               : "border-white/10 bg-white/5 text-slate-300 hover:bg-white/10"
           }`}
         >
-          {/* Niente conteggio cablato: cambia con la sorgente (SIOPE ne copre
-              7.895, la demo locale 7.899) e diventerebbe subito falso. */}
+          {/* Niente conteggio cablato: cambia a ogni import dell'ETL
+              (fusioni e soppressioni di comuni) e diventerebbe falso. */}
           {comuniOvunque ? "Tutti i comuni" : "107 province"}
         </button>
 
-        {live && (
-          <button
-            onClick={() => setClassifiche(true)}
-            className="mt-1.5 flex w-full items-center justify-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] text-slate-300 transition-colors hover:bg-white/10"
-          >
-            <Trophy size={12} /> Classifiche
-          </button>
-        )}
+        <button
+          onClick={() => setClassifiche(true)}
+          className="mt-1.5 flex w-full items-center justify-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] text-slate-300 transition-colors hover:bg-white/10"
+        >
+          <Trophy size={12} /> Classifiche
+        </button>
 
         <p className="mt-3 text-[10px] leading-snug text-slate-500">
           Trascina per ruotare · rotella per lo zoom · clicca un comune per il

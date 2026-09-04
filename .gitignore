@@ -40,8 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# dati sorgente scaricati da build-demo-data.mjs
+# dump del database e scarichi temporanei
+/backup/
 .cache/
-
-# dati demo generati (rigenerabili: node scripts/build-demo-data.mjs)
-/data/

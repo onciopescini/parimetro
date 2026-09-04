@@ -1,0 +1,86 @@
+# ============================================================
+# mappa-bilanci · stack di autohosting
+#
+# Tre servizi soltanto. Non serve replicare Supabase: di quel
+# prodotto usavamo solo PostgREST, e l'app puo' parlare a Postgres
+# direttamente dalle proprie API routes.
+#
+#   db          Postgres + PostGIS: i dati, senza limiti di piano
+#   web         l'applicazione Next.js
+#   cloudflared il tunnel: niente porte aperte sul router, funziona
+#               anche dietro CGNAT e non espone l'IP di casa
+#
+# Postgres e' pubblicato SOLO su 127.0.0.1: ci arriva l'ETL dalla
+# stessa macchina, mai da internet.
+# ============================================================
+name: mappabilanci
+
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    restart: unless-stopped
+    shm_size: 256mb
+    environment:
+      POSTGRES_DB: mappabilanci
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?serve POSTGRES_PASSWORD nel file .env}
+      # Sottocartella dedicata: il volume puo' cosi' ospitare anche altro
+      # senza che l'entrypoint la scambi per un data directory sporco
+      PGDATA: /var/lib/postgresql/data/pgdata
+      # Serve a init/01-ruoli.sh, che crea il ruolo di sola lettura
+      READONLY_PASSWORD: ${READONLY_PASSWORD:?serve READONLY_PASSWORD nel file .env}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:5432:5432"
+    command:
+      # Tarature per un portatile con 16 GB. Con 8 GB dimezza i primi due.
+      - postgres
+      - -c
+      - shared_buffers=2GB
+      - -c
+      - effective_cache_size=6GB
+      - -c
+      - work_mem=48MB
+      - -c
+      - maintenance_work_mem=512MB
+      # Su SSD NVMe una lettura casuale costa quasi come una sequenziale:
+      # il default 4.0 e' tarato sui dischi meccanici e fa scegliere al
+      # planner scansioni sequenziali dove un indice sarebbe piu' veloce.
+      - -c
+      - random_page_cost=1.1
+      - -c
+      - effective_io_concurrency=200
+      - -c
+      - max_parallel_workers_per_gather=4
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mappabilanci"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: ..
+      dockerfile: selfhost/Dockerfile
+    restart: unless-stopped
+    environment:
+      # Ruolo di sola lettura: l'app non deve poter scrivere nulla
+      DATABASE_URL: postgres://mappa_ro:${READONLY_PASSWORD:?serve READONLY_PASSWORD}@db:5432/mappabilanci
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "3000"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN:?serve TUNNEL_TOKEN}
+    depends_on:
+      - web
+
+volumes:
+  dbdata:
