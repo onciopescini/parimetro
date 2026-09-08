@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Server minimo con le sole dipendenze usate davvero: serve al
-  // Dockerfile di selfhost/ e tiene l'immagine sotto i 200 MB
-  output: "standalone",
+  // Sito interamente statico: `next build` produce la cartella out/ che
+  // Cloudflare Pages serve cosi' com'e'. I dati sono JSON in public/dati,
+  // generati dall'ETL: online non gira nessun server.
+  output: "export",
+  images: { unoptimized: true },
 };
 
 export default nextConfig;

@@ -3,8 +3,8 @@
 // ============================================================
 // app/page.tsx
 // Collega Map3D (Modulo 2) e BudgetDrawer (Modulo 3).
-// I dati arrivano tutti da /api/geo-budget, che interroga il nostro
-// Postgres: niente piu' Supabase e niente piu' sorgente demo.
+// Online non c'e' nessun database: i dati sono file JSON in /dati,
+// generati dall'ETL (05_esporta_statico.py). Vedi lib/dati.ts.
 //
 // Lo stato della vista vive nella query string, così ogni schermata
 // è un link condivisibile.
@@ -27,27 +27,19 @@ import RankingPanel, {
   type RankingQuery,
   type RankingRow,
 } from "@/components/ranking/RankingPanel";
+import { URL_DATI, cerca as cercaIndice, leggi, percorsoClassifica } from "@/lib/dati";
 
-/** Unico punto di accesso ai dati: le RPC sono funzioni del nostro Postgres. */
-const API = "/api/geo-budget";
-
-/** Chiama la route e non lascia passare gli errori come risposte vuote. */
-async function api<T>(query: string): Promise<T> {
-  const r = await fetch(`${API}?${query}`);
-  if (!r.ok) throw new Error(`${query}: HTTP ${r.status}`);
-  return r.json();
-}
 
 // "debt" resta fuori: i dati SIOPE sono di cassa e non conoscono lo stock di
 // indebitamento, quindi la metrica darebbe una mappa piatta. Torna qui il
 // giorno in cui entrano i rendiconti di competenza.
 const METRICS: MetricKey[] = ["expenditure", "revenue", "surplus", "fhi"];
 
-/** Riga della ricerca: i dati del comune più il punto su cui volare. */
-interface Risultato extends MunicipalityProps {
-  lon: number;
-  lat: number;
-}
+/** Cio' che serve per aprire il drawer: anagrafica, non i bilanci. */
+type Anagrafica = Pick<MunicipalityProps, "istat" | "name" | "region" | "province" | "population">;
+
+/** Riga della ricerca: anagrafica piu' il punto su cui volare. */
+type Risultato = Anagrafica & { lon: number; lat: number };
 
 export default function Home() {
   const [year, setYear] = useState(2024);
@@ -92,12 +84,19 @@ export default function Home() {
     if (!pronto) return;
     let annullato = false;
     (async () => {
-      const anni = await api<number[]>("lod=years");
+      const anni = await leggi<number[]>(`${URL_DATI}/anni.json`);
       if (annullato || !anni.length) return;
       setYears(anni);
       // Se l'anno scelto non esiste in questa sorgente, scivola sull'ultimo utile
       setYear((y) => (anni.includes(y) ? y : anni[anni.length - 1]));
-    })();
+    })().catch((e) => {
+      // Senza anni.json il sito e' vuoto per costruzione: dirlo chiaramente
+      // vale piu' di una promise rifiutata anonima nella console.
+      console.error(
+        "Dati statici assenti in public/dati: genera i file con l'ETL (05_esporta_statico.py).",
+        e,
+      );
+    });
     return () => {
       annullato = true;
     };
@@ -113,13 +112,20 @@ export default function Home() {
 
   // ---- Selezione di un comune (dalla mappa o dalla ricerca) ------------- //
   const handleSelect = useCallback(
-    async (p: MunicipalityProps) => {
+    async (p: Anagrafica) => {
       const anno = annoMappa ?? year;
-      const [history, nat, pari] = await Promise.all([
-        api<MunicipalityDetail["history"]>(`lod=history&istat=${p.istat}`),
-        api<NationalAverages>(`lod=national&year=${anno}`),
-        api<PeerComparison>(`lod=peers&istat=${p.istat}&year=${anno}`),
+      // Un file per comune (storico + confronto per ogni anno) e uno per le
+      // medie nazionali di tutti gli anni: due richieste invece di tre.
+      const [scheda, nazionale] = await Promise.all([
+        leggi<{
+          history: MunicipalityDetail["history"];
+          peers: Record<string, PeerComparison | null>;
+        }>(`${URL_DATI}/comune/${p.istat}.json`),
+        leggi<Record<string, NationalAverages>>(`${URL_DATI}/nazionale.json`),
       ]);
+      const history = scheda.history;
+      const nat = nazionale[String(anno)] ?? null;
+      const pari = scheda.peers[String(anno)] ?? null;
 
       setDetail({
         istat: p.istat,
@@ -140,13 +146,11 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [risultati, setRisultati] = useState<Risultato[]>([]);
 
-  // api() solleva sugli errori invece di restituire lista vuota: confondere
-  // "fallito" con "nessun risultato" ci era gia' costato un ripristino da
-  // deep link che spariva in silenzio.
-  const cerca = useCallback(
-    (q: string) => api<Risultato[]>(`lod=search&q=${encodeURIComponent(q)}`),
-    [],
-  );
+  // La ricerca gira in browser su un indice di ~7.900 righe scaricato una
+  // volta sola: niente server. leggi() solleva sugli errori invece di
+  // restituire lista vuota, cosi' un download fallito non sembra un comune
+  // che non esiste.
+  const cerca = useCallback((q: string): Promise<Risultato[]> => cercaIndice(q), []);
 
   useEffect(() => {
     const q = query.trim();
@@ -171,18 +175,16 @@ export default function Home() {
   // ---- Classifiche ------------------------------------------------------ //
   const [classifiche, setClassifiche] = useState(false);
 
+  // Ogni combinazione di filtri e' un file pre-generato dall'ETL
   const caricaFiltri = useCallback(
-    () => api<RankingFilters>(`lod=ranking-filters&year=${annoMappa ?? year}`),
+    () => leggi<RankingFilters>(`${URL_DATI}/classifiche/filtri-${annoMappa ?? year}.json`),
     [annoMappa, year],
   );
 
   const caricaClassifica = useCallback(
     (q: RankingQuery) =>
-      api<RankingRow[]>(
-        `lod=ranking&year=${annoMappa ?? year}&metric=${q.metric}` +
-          `&fascia=${encodeURIComponent(q.fascia ?? "")}` +
-          `&region=${encodeURIComponent(q.region ?? "")}` +
-          `&desc=${q.desc}&limit=15`,
+      leggi<RankingRow[]>(
+        percorsoClassifica(annoMappa ?? year, q.metric, q.desc, q.fascia, q.region),
       ),
     [annoMappa, year],
   );
@@ -268,7 +270,7 @@ export default function Home() {
           colorMetric={colorMetric}
           perCapita={perCapita}
           onSelect={handleSelect}
-          dataUrl={API}
+          dataUrl={URL_DATI}
           lodThreshold={comuniOvunque ? 0 : undefined}
           scale={perCapita ? "robust" : "log"}
           palette={colorMetric === "fhi" ? "health" : "cost"}

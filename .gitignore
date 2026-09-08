@@ -43,3 +43,7 @@ next-env.d.ts
 # dump del database e scarichi temporanei
 /backup/
 .cache/
+
+# generati dall'ETL (05_esporta_statico.py) e dalla build statica
+/public/dati/
+/out/

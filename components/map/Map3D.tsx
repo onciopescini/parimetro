@@ -79,7 +79,7 @@ interface Map3DProps {
   colorMetric?: MetricKey;
   perCapita?: boolean;
   onSelect?: (m: MunicipalityProps) => void;
-  /** Base URL della Edge Function geo-budget */
+  /** Cartella dei file statici (comuni-<anno>.json, province-<anno>.json) */
   dataUrl?: string;
   /**
    * Zoom oltre il quale le colonne provinciali lasciano il posto ai
@@ -249,7 +249,7 @@ export default function Map3D({
   colorMetric = "fhi",
   perCapita = true,
   onSelect,
-  dataUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""}/functions/v1/geo-budget`,
+  dataUrl = "/dati",
   lodThreshold = LOD_THRESHOLD,
   scale = "robust",
   palette = "health",
@@ -276,13 +276,13 @@ export default function Map3D({
     }));
   }, [flyTo]);
 
-  // ---- Fetch dei due livelli LOD (payload gzip serviti dalla Edge Function) ----
+  // ---- Fetch dei due livelli LOD: file statici generati dall'ETL ----
   useEffect(() => {
     let alive = true;
     setLoading(true);
     Promise.all([
-      fetch(`${dataUrl}?lod=municipalities&year=${year}`).then((r) => r.json()),
-      fetch(`${dataUrl}?lod=provinces&year=${year}`).then((r) => r.json()),
+      fetch(`${dataUrl}/comuni-${year}.json`).then((r) => r.json()),
+      fetch(`${dataUrl}/province-${year}.json`).then((r) => r.json()),
     ])
       .then(([fc, prov]) => {
         if (!alive) return;

@@ -1,152 +1,93 @@
-# mappa-bilanci in casa
+# mappa-bilanci · officina dati
 
-Stack di autohosting su un portatile. Tre container: Postgres+PostGIS,
-l'applicazione Next.js, e il tunnel Cloudflare.
+Il **sito e' statico** su Cloudflare Pages: online non gira nessun database ne'
+nessun server. Questa cartella serve solo alla macchina che prepara i dati —
+un portatile vecchio va benissimo, e puo' restare spento quando non lavora.
 
-Un portatile e' un buon server: consuma ~10 W (contro i ~60 W di un desktop,
-cioe' 22 €/anno invece di 130), ha un SSD NVMe che per PostGIS conta piu'
-della CPU, ed **ha gia' un gruppo di continuita' dentro** — la batteria.
-Un blackout durante una scrittura puo' corrompere Postgres, ed e' il motivo
-per cui chi mette server in casa compra un UPS da 100 €.
+Flusso: `docker compose up -d` → ETL → `pubblica.sh` → sito aggiornato.
 
 ---
 
 ## 1 · Debian, senza interfaccia grafica
 
-Installa **Debian stable** e nella scelta dei pacchetti **togli** l'ambiente
-desktop, lasciando solo "utilita' di sistema standard" e il server SSH.
-Un server con un desktop acceso consuma il doppio per non mostrare niente
-a nessuno.
-
-Da qui in poi lavori via SSH da questo PC:
+Installa Debian stable togliendo l'ambiente desktop e lasciando "utilita' di
+sistema standard" e il server SSH. Poi via SSH:
 
 ```bash
 ssh utente@ip-del-portatile
 ```
 
-## 2 · Le tre insidie del portatile-server
+## 2 · Due impostazioni del portatile
 
-Sono la parte che si dimentica, e ognuna si manifesta giorni dopo.
-
-**Il coperchio chiuso sospende la macchina.** In `/etc/systemd/logind.conf`:
+Non deve essere acceso 24/7, ma quando lavora non deve addormentarsi:
 
 ```
+# /etc/systemd/logind.conf
 HandleLidSwitch=ignore
 HandleLidSwitchExternalPower=ignore
-HandleLidSwitchDocked=ignore
 ```
 
-poi `sudo systemctl restart systemd-logind`.
-
-**Sospensione e ibernazione vanno spente del tutto**, non basta il coperchio:
-
 ```bash
+sudo systemctl restart systemd-logind
 sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 ```
 
-**La batteria sempre al 100% si rovina in un anno.** Sui Galaxy Book c'e' il
-limite di carica all'85%: attivalo nel BIOS se c'e' la voce, altrimenti da
-Linux quando il driver lo espone:
-
-```bash
-cat /sys/class/power_supply/BAT*/charge_control_end_threshold   # esiste?
-echo 85 | sudo tee /sys/class/power_supply/BAT0/charge_control_end_threshold
-```
-
-Se il valore non sopravvive al riavvio, mettilo in un servizio systemd o in
-`/etc/rc.local`. Con la carica limitata la batteria resta un UPS utile per
-anni invece che per mesi.
-
-**Nota sui blackout lunghi.** La batteria copre un'interruzione breve. Se si
-scarica del tutto, molti portatili **non si riaccendono da soli** al ritorno
-della corrente: controlla nel BIOS se c'e' "restore on AC power loss".
+Se resta spesso in carica, attiva il limite di carica all'85% (BIOS o
+`/sys/class/power_supply/BAT0/charge_control_end_threshold`): la batteria
+dura anni invece di uno.
 
 ## 3 · Docker
 
 ```bash
-sudo apt update && sudo apt install -y ca-certificates curl git
+sudo apt update && sudo apt install -y ca-certificates curl git python3-venv
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
 https://download.docker.com/linux/debian $(. /etc/os-release && echo $VERSION_CODENAME) stable" \
   | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io \
-  docker-buildx-plugin docker-compose-plugin
+sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 sudo usermod -aG docker $USER   # poi esci e rientra
 ```
 
-## 4 · Il progetto
+## 4 · Database
 
 ```bash
-sudo mkdir -p /opt && sudo chown $USER /opt
-git clone <url-del-repo> /opt/mappabilanci
-cd /opt/mappabilanci/selfhost
-cp .env.example .env
-openssl rand -base64 32   # una per POSTGRES_PASSWORD, una per READONLY_PASSWORD
-nano .env
+git clone <repo-app> ~/mappa-bilanci
+git clone <repo-etl> ~/mappa-3d-bilanci
+cd ~/mappa-bilanci/selfhost
+cp .env.example .env && openssl rand -base64 24   # incolla in .env
+docker compose up -d
+docker compose ps             # db "healthy"
+./applica-migrazioni.sh       # schema, RPC, indici
 ```
 
-## 5 · Il tunnel Cloudflare
-
-Serve un dominio su Cloudflare (anche uno da 5 €/anno). Su
-**dash.cloudflare.com → Zero Trust → Networks → Tunnels → Create a tunnel**:
-scegli *Cloudflared*, dai un nome, copia il **token** in `.env`.
-
-Poi, nella scheda **Public Hostname** del tunnel, aggiungi:
-
-| Campo | Valore |
-|---|---|
-| Subdomain | `bilanci` (o quello che vuoi) |
-| Domain | il tuo dominio |
-| Service | `http://web:3000` |
-
-Il tunnel esce dalla tua rete verso Cloudflare: **nessuna porta aperta sul
-router**, funziona anche dietro CGNAT, e l'IP di casa non viene mai esposto.
-
-## 6 · Accensione
+## 5 · Dati
 
 ```bash
-docker compose up -d --build
-docker compose ps            # tutti "running", db "healthy"
-./applica-migrazioni.sh      # ricrea schema, RPC e indici
+cd ~/mappa-3d-bilanci/etl
+python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+cp .env.example .env          # DATABASE_URL con la password di sopra
 ```
 
-Il database e' pubblicato solo su `127.0.0.1:5432`: ci arriva l'ETL dalla
-stessa macchina, mai internet.
+Poi confini → popolazione → bilanci, come nel README dell'ETL.
 
-## 7 · I dati
+## 6 · Pubblicare
 
-L'ETL sta nell'altro repository. Il suo `.env` ora punta in locale:
+Una volta sola: `npm install -g wrangler && wrangler login`, poi
+`wrangler pages project create mappa-bilanci`.
 
-```
-DATABASE_URL=postgres://postgres:LA-PASSWORD@localhost:5432/mappabilanci
-```
-
-Ordine: confini → popolazione → bilanci. Vedi il README dell'ETL.
-
-## 8 · Backup, prima di dimenticarsene
+Da li' in avanti, dopo ogni import:
 
 ```bash
-crontab -e
-# 30 3 * * * /opt/mappabilanci/selfhost/backup.sh >> /var/log/mappabilanci-backup.log 2>&1
+~/mappa-bilanci/selfhost/pubblica.sh
 ```
 
-Lo script verifica che il dump sia rileggibile **prima** di cancellare i
-vecchi, e non sovrascrive mai un backup valido con uno troncato.
+Il sito e' su `mappa-bilanci.pages.dev`. Un dominio proprio si aggiunge dal
+pannello Pages in un minuto, quando vorrai.
 
-Tieni una copia **fuori casa**: un backup che sta nella stessa stanza del
-server non protegge da furto, incendio o allagamento. Cloudflare R2 ha 10 GB
-gratuiti e nessun costo di egress; un dump ci sta comodamente.
+## Backup?
 
-## Manutenzione
-
-```bash
-docker compose logs -f web            # cosa dice l'applicazione
-docker compose exec db psql -U postgres -d mappabilanci
-docker compose pull && docker compose up -d   # aggiornamenti
-docker system prune -af --volumes             # ATTENZIONE: --volumes cancella il DB
-```
-
-L'ultimo comando e' utile ma pericoloso: senza `--volumes` libera spazio in
-sicurezza, con `--volumes` cancella anche il database.
+Non serve: i dati si rigenerano dall'ETL e i JSON pubblicati restano sulla
+CDN anche se il portatile muore. Se vuoi evitare le ore di re-import,
+`docker compose exec db pg_dump -U postgres -Fc mappabilanci > dump.bak`.
