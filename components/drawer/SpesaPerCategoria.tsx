@@ -80,8 +80,9 @@ export default function SpesaPerCategoria({
                     {delta != null && Math.abs(delta) >= 1 && (
                       <>
                         {" "}
-                        · {delta > 0 ? "+" : "−"}
-                        {Math.abs(delta).toFixed(0)}%
+                        {Math.abs(delta) >= 1000
+                          ? `${(a.pc / a.mediana_pc).toFixed(0)} volte`
+                          : `${delta > 0 ? "+" : "−"}${Math.abs(delta).toFixed(0)}%`}
                       </>
                     )}
                     {" "}· spende più del {a.rango}% dei {a.n_simili - 1} altri
