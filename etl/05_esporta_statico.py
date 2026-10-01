@@ -139,6 +139,8 @@ def main() -> None:
             scrivi(f"{dest}/comune/{istat}.json", {
                 "history": scalare(k, "get_municipality_history", istat),
                 "peers": {str(y): scalare(k, "get_peer_comparison", istat, y) for y in anni},
+                # Spesa per area/natura/voce; null per gli anni senza dettaglio
+                "categorie": {str(y): scalare(k, "get_categorie_comune", istat, y) for y in anni},
             })
 
     codici = [v["istat"] for v in indice]
