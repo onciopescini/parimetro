@@ -13,6 +13,7 @@
 # ============================================================
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -44,16 +45,45 @@ def ogr_conn(url: str) -> str:
     )
 
 
+def percorso_wsl(p: str) -> str:
+    r"""Percorso di Windows -> percorso visto dalla WSL: C:\dev\x.shp -> /mnt/c/dev/x.shp"""
+    if p.startswith("/"):
+        # Gia' un percorso della WSL: abspath su Windows lo trasformerebbe in
+        # C:\mnt\c\..., che verrebbe poi tradotto una seconda volta
+        return p
+    m = re.match(r"^([A-Za-z]):[\\/](.*)$", os.path.abspath(p))
+    if not m:
+        return p
+    return f"/mnt/{m.group(1).lower()}/" + m.group(2).replace("\\", "/")
+
+
+def comando_ogr2ogr(shp: str) -> tuple[list[str], str]:
+    """(prefisso del comando, percorso dello shapefile da passargli).
+
+    Con OGR2OGR_BACKEND=wsl si usa ogr2ogr installato nella WSL (`apt install
+    gdal-bin`), chiamato tramite wsl.exe. Su Windows e' la strada piu' semplice:
+    wsl.exe e' firmato da Microsoft, mentre un launcher generato da pip
+    (ogr2ogr-shim) e' un .exe nuovo e non firmato, che un criterio di controllo
+    delle applicazioni puo' bloccare (WinError 4551). Nella WSL "localhost" e' la
+    WSL stessa: va bene se il database sta li'.
+    """
+    if os.environ.get("OGR2OGR_BACKEND", "").lower() == "wsl":
+        distro = os.environ.get("OGR2OGR_WSL_DISTRO", "Ubuntu")
+        return ["wsl", "-d", distro, "--", "ogr2ogr"], percorso_wsl(shp)
+    return ["ogr2ogr"], shp
+
+
 def run_ogr2ogr(shp: str, url: str) -> None:
-    if not shutil.which("ogr2ogr"):
+    prefisso, shp_cmd = comando_ogr2ogr(shp)
+    if prefisso == ["ogr2ogr"] and not shutil.which("ogr2ogr"):
         sys.exit(
             "ogr2ogr non trovato: installa GDAL.\n"
             "  macOS:   brew install gdal\n"
             "  Ubuntu:  sudo apt install gdal-bin\n"
-            "  Windows: installer OSGeo4W (osgeo.org)"
+            "  Windows: GDAL nella WSL (OGR2OGR_BACKEND=wsl), OSGeo4W o il shim Docker"
         )
-    cmd = [
-        "ogr2ogr", "-f", "PostgreSQL", ogr_conn(url), shp,
+    cmd = prefisso + [
+        "-f", "PostgreSQL", ogr_conn(url), shp_cmd,
         "-nln", STAGING, "-overwrite",
         "-t_srs", "EPSG:4326",
         "-nlt", "PROMOTE_TO_MULTI",

@@ -12,3 +12,7 @@ __pycache__/
 # scarica_siope.py e dai link nel README, e pesano diversi GB.
 *.csv
 *.zip
+
+# artefatti di `pip install ./ogr2ogr-shim`
+build/
+*.egg-info/

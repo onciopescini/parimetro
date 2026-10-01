@@ -8,9 +8,19 @@ tutto come JSON statici. Panoramica e motivi delle scelte: `../README.md`.
 - Python 3.10+ e GDAL (`ogr2ogr`): macOS `brew install gdal` · Ubuntu `sudo apt install gdal-bin`.
   Su Windows senza OSGeo4W: `ogr2ogr-shim/` espone `ogr2ogr` come eseguibile che inoltra a
   Docker (`pip install ./ogr2ogr-shim`).
+  Con `OGR2OGR_BACKEND=wsl` lo script chiama invece l'`ogr2ogr` installato nella WSL
+  (`sudo apt install gdal-bin`) tramite `wsl.exe`: più semplice, e non passa da un `.exe`
+  generato da pip, che un criterio di controllo delle applicazioni può bloccare
+  (WinError 4551).
 - `pip install -r requirements.txt` (e `requirements-dev.txt` per i test)
-- Un Postgres con PostGIS e le migrazioni applicate (`mappa-bilanci/db/migrations`, vedi
-  `mappa-bilanci/selfhost/`). Poi `cp .env.example .env` e compila `DATABASE_URL`.
+- Un Postgres con PostGIS: Docker (`mappa-bilanci/selfhost/`) oppure un cluster nella WSL
+  (attenzione alle porte: su una macchina Windows con un PostgreSQL già installato la 5432
+  è occupata, ne serve un'altra). Poi `cp .env.example .env`, compila `DATABASE_URL` e applica
+  lo schema, senza bisogno di `psql`:
+
+  ```bash
+  python applica_migrazioni.py
+  ```
 
 ## Le fonti
 
