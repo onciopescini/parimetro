@@ -158,6 +158,14 @@ class TestTotaliComune:
         # restano dentro incassi e pagamenti: sono movimenti di cassa veri
         assert (t["incassi"], t["pagamenti"]) == (140, 95)
 
+    def test_spese_senza_alcun_incasso_sono_entrate_mancanti(self, siope):
+        assert siope.totali_comune({}, {"1": 70})["entrate_mancanti"] is True
+        assert siope.totali_comune({"0": 50}, {"1": 70})["entrate_mancanti"] is True  # solo sospesi
+
+    def test_con_incassi_o_senza_spese_non_sono_mancanti(self, siope):
+        assert siope.totali_comune({"1": 10}, {"1": 70})["entrate_mancanti"] is False
+        assert siope.totali_comune({}, {})["entrate_mancanti"] is False
+
     def test_senza_prestiti_sono_zero(self, siope):
         t = siope.totali_comune({"1": 100}, {"1": 70})
         assert (t["prestiti_in"], t["prestiti_out"]) == (0, 0)

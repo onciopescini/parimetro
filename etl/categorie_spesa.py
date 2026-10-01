@@ -39,6 +39,7 @@ AREE: dict[str, str] = {
     "trasferimenti_imposte": "Trasferimenti, contributi e imposte",
     "funzionamento": "Funzionamento dell'ente",
     "patrimonio": "Immobili e patrimonio",
+    "operazioni_finanziarie": "Operazioni finanziarie",
     "non_attribuibile": "Non attribuibile",
 }
 
@@ -162,7 +163,7 @@ _AREA_PER_PREFISSO: dict[str, str] = {
     "U205": "trasferimenti_imposte",           # rimborsi in conto capitale
     "U2059999999": "non_attribuibile",
     # --- operazioni finanziarie -------------------------------------------
-    "U3": "non_attribuibile",                  # partecipazioni, depositi
+    "U3": "operazioni_finanziarie",            # depositi bancari, partecipazioni: non e' un servizio
     "U4": "debito",                            # rimborso di prestiti
 }
 

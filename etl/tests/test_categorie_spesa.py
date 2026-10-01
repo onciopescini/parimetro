@@ -103,6 +103,12 @@ class TestAree:
         # non appartiene a nessuna area, e dirlo vale piu' di forzarlo in una
         assert cs.area(codice) == "non_attribuibile"
 
+    def test_depositi_e_partecipazioni_non_sono_un_servizio(self):
+        # 739 milioni nel 2024 di "versamenti a depositi bancari": mettere questo
+        # in "non attribuibile" faceva sembrare opaca una spesa che e' solo finanziaria
+        assert cs.area("U3040701001") == "operazioni_finanziarie"
+        assert cs.area("U3010103001") == "operazioni_finanziarie"
+
     def test_un_codice_sconosciuto_finisce_in_non_attribuibile(self):
         assert cs.area("U9999999999") == "non_attribuibile"
 

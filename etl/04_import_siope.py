@@ -42,6 +42,7 @@ import psycopg
 from dotenv import load_dotenv
 
 from categorie_spesa import AREE, classifica
+from fusioni import fondi, popolazione_fusa
 from config import (
     SIOPE,
     TITOLI_CAPITALE,
@@ -226,6 +227,10 @@ def totali_comune(entrate: dict, spese: dict) -> dict:
         "capitale": sum(v for t, v in entrate.items() if t in TITOLI_CAPITALE),
         "proprie": sum(v for t, v in entrate.items() if t in TITOLI_PROPRIE),
         "saldo": incassi - pagamenti,
+        # Spese ma nessun incasso: il comune non e' a zero entrate, e' il tesoriere
+        # che non ha trasmesso le riscossioni. Scrivere 0 darebbe un disavanzo pari
+        # a tutta la spesa e un rango in fondo alla fascia: meglio dire "non so".
+        "entrate_mancanti": incassi <= 0 and pagamenti > 0,
         # Movimenti finanziari, non di gestione: tenuti a parte per il saldo del rango
         "prestiti_in": entrate.get("6", 0.0),    # accensione di prestiti
         "prestiti_out": spese.get("4", 0.0),     # rimborso di prestiti
@@ -239,7 +244,7 @@ def solo_prestiti(f_ent: list, anno: int) -> None:
     riscaricare le spese (2,8 GB l'anno): il rimborso e' la somma delle voci del
     titolo 4, che il dettaglio ha gia' per intero.
     """
-    ent = ultimo_mese(aggrega(f_ent))
+    ent = fondi(ultimo_mese(aggrega(f_ent)))
     load_dotenv()
     url = os.getenv("DATABASE_URL")
     if not url:
@@ -292,9 +297,9 @@ def main() -> None:
         sys.exit(f"In {a.dir} servono sia entrate_*.csv sia spese_*.csv.")
 
     print(f"→ entrate: {len(f_ent)} file")
-    ent = ultimo_mese(aggrega(f_ent))
+    ent = fondi(ultimo_mese(aggrega(f_ent)))
     print(f"→ spese: {len(f_spe)} file")
-    spe = ultimo_mese(aggrega(f_spe))
+    spe = fondi(ultimo_mese(aggrega(f_spe)))
     print(f"  {len(ent)} comuni con entrate · {len(spe)} con spese")
 
     load_dotenv()
@@ -321,7 +326,7 @@ def main() -> None:
                 non_abbinati.append(ist)
                 continue
             mid, pop_fallback = muni[ist]
-            pop = pop_y.get(ist) or pop_fallback or 0
+            pop = popolazione_fusa(ist, a.year, pop_y) or pop_y.get(ist) or pop_fallback or 0
             if not pop:
                 senza_pop += 1
 
@@ -329,18 +334,19 @@ def main() -> None:
             incassi, pagamenti = tot["incassi"], tot["pagamenti"]
             correnti, capitale, proprie = tot["correnti"], tot["capitale"], tot["proprie"]
 
+            nd = tot["entrate_mancanti"]         # None = dato non disponibile
             righe.append((
                 mid, a.year, pop,
-                round(incassi, 2),               # revenue_total (incassi)
-                round(pagamenti, 2),             # expenditure_total (pagamenti)
-                round(correnti, 2),
-                round(capitale, 2),
-                round(proprie, 2),
-                None,                            # debt_total → FHI neutro
-                round(incassi - pagamenti, 2),   # surplus_deficit = saldo di CASSA
-                round(pagamenti, 2),             # payments_made
-                None,                            # commitments: SIOPE non li ha
-                round(tot["prestiti_in"], 2),
+                None if nd else round(incassi, 2),               # revenue_total (incassi)
+                round(pagamenti, 2),                             # expenditure_total (pagamenti)
+                None if nd else round(correnti, 2),
+                None if nd else round(capitale, 2),
+                None if nd else round(proprie, 2),
+                None,                                            # debt_total → FHI neutro
+                None if nd else round(incassi - pagamenti, 2),   # surplus_deficit = saldo di CASSA
+                round(pagamenti, 2),                             # payments_made
+                None,                                            # commitments: SIOPE non li ha
+                None if nd else round(tot["prestiti_in"], 2),
                 round(tot["prestiti_out"], 2),
             ))
 
@@ -377,6 +383,7 @@ def main() -> None:
         if not a.senza_voci:
             print("→ dettaglio per voce (secondo passaggio sulle spese)…")
             per_comune, descr, scartate = voci_per_comune(f_spe)
+            per_comune = fondi(per_comune)
             esito = importa_voci(cur, per_comune, descr, a.year)
             conn.commit()
             cur.execute("select refresh_aree()")

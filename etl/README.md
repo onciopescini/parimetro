@@ -49,6 +49,20 @@ python 04_import_siope.py --dir ./siope_2024 --year 2024
 python 05_esporta_statico.py --dest ../../mappa-bilanci/public/dati
 ```
 
+### Spesa per categoria e prestiti
+
+`04_import_siope.py` carica anche il **dettaglio per voce** della spesa (`budget_items`, piano
+dei conti `U\d{10}`). Ogni voce e' classificata da `categorie_spesa.py` in una *natura* (dalla
+gerarchia del codice) e in un'*area* funzionale (tabella scritta a mano, in repo, verificabile).
+Dopo ogni import si guarda la percentuale che resta in "non attribuibile". Ritoccata la
+tabella: `python riclassifica_voci.py` riapplica le regole al database senza reimportare nulla.
+
+I prestiti (accensione tra gli incassi, rimborso tra i pagamenti) restano nei totali ma sono
+salvati a parte (`loans_in`, `loans_out`): il rango usa il saldo **di gestione** senza di loro.
+Per riempirli su un anno gia' caricato bastano gli entrate: `04_import_siope.py --dir ... --year
+2024 --solo-prestiti`. Se un comune ha spese ma nessun incasso, le entrate sono *dato mancante*
+(NULL), non zero.
+
 Più anni di fila, cancellando i CSV man mano (ogni esercizio pesa ~3 GB): `carica_anni.ps1`.
 Gli import sono sicuri da rilanciare: tutto è upsert. Dopo ogni import l'indice si ricalcola
 da solo (`refresh_fhi`); l'esportatore **cancella e rigenera** `public/dati`, perché un
@@ -93,6 +107,8 @@ python -m pytest
 | File | Cosa protegge |
 |---|---|
 | `test_siope.py` | cumulati, filtro sui comuni, esclusione dei sospesi |
+| `test_categorie_spesa.py` | tabella voce -> area/natura, prefisso piu' lungo, voci generiche non indovinate |
+| `test_categorie_db.py` | confronto tra pari, schede per comune, rango al netto dei prestiti (esercizio fittizio 2099) |
 | `test_istat.py` | intestazione con a-capo, riga di titolo, riga-totale 999 |
 | `test_contratto_con_il_sito.py` | che esportatore e sito calcolino gli stessi nomi di file |
 | `test_dati_db.py` | confini delle fasce e invarianti sui dati (richiede `TEST_DATABASE_URL`) |
