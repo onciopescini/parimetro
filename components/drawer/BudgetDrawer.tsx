@@ -474,6 +474,13 @@ export default function BudgetDrawer({
                     )}
                   </div>
                 )}
+                {current.revenue_total == null && (
+                  <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs leading-relaxed text-amber-100">
+                    Per il {current.year} SIOPE riporta i pagamenti di questo comune ma nessun
+                    incasso (di solito il tesoriere non ha trasmesso le riscossioni). Entrate, saldo e
+                    rango non sono calcolabili: non sono zero, sono dati mancanti.
+                  </p>
+                )}
                 <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs leading-relaxed text-slate-300">
                   Totali {current.year}: entrate {eur(current.revenue_total, true)} · spese{" "}
                   {eur(current.expenditure_total, true)}

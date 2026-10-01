@@ -14,6 +14,7 @@ export const AREE: Record<string, string> = {
   trasferimenti_imposte: "Trasferimenti, contributi e imposte",
   funzionamento: "Funzionamento dell'ente",
   patrimonio: "Immobili e patrimonio",
+  operazioni_finanziarie: "Operazioni finanziarie",
   non_attribuibile: "Non attribuibile",
 };
 

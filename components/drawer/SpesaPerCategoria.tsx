@@ -36,8 +36,21 @@ export default function SpesaPerCategoria({
   const na = aree.find((a) => a.area === "non_attribuibile");
   const quotaNa = na && totale > 0 ? (100 * na.importo) / totale : 0;
 
+  // Un comune piccolo che compra un immobile spende in un anno quanto in dieci:
+  // il pro capite e il confronto con i simili diventano fuorvianti, e va detto.
+  const prima = voci[0];
+  const concentrata = prima && totale > 0 && prima.importo / totale >= 0.4 ? prima : null;
+
   return (
     <div className="space-y-4">
+      {concentrata && (
+        <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs leading-relaxed text-amber-100">
+          Il {Math.round((100 * concentrata.importo) / totale)}% della spesa dell&apos;anno è una sola
+          voce (&ldquo;{concentrata.descrizione}&rdquo;, {eur(concentrata.importo, true)}): un
+          investimento isolato, non la spesa corrente. I confronti con i comuni simili
+          vanno letti con cautela.
+        </p>
+      )}
       <section>
         <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
           In cosa spende · pagamenti {year}
