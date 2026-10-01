@@ -34,7 +34,7 @@ database dell'officina: `selfhost/README.md`.
 ## Sviluppo
 
 ```bash
-npm test          # 37 test (vitest)
+npm test          # 38 test (vitest)
 npm run lint
 npx tsc --noEmit
 npm run build     # produce out/
