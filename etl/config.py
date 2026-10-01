@@ -80,6 +80,9 @@ SIOPE = {
     "col_periodo": "Anno/Mese calendario",     # "2024/01" … "2024/12"
     "col_titolo":  "Codice Titolo CG",         # "E1000000000" → titolo 1
     "col_importo": "Importo cumulato",         # progressivo da gennaio!
+    # Il dettaglio per voce (per le spese): codice del piano dei conti e descrizione
+    "col_gestionale": "Codice Gestionale Enti Locali",   # "U1030215004"
+    "col_descr": "Descrizione CG",
 }
 
 # SIOPE usa anche il titolo 0 = "INCASSI/PAGAMENTI DA REGOLARIZZARE": sospesi non

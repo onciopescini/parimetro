@@ -1,0 +1,1450 @@
+[
+{
+"codice": "U1010101001",
+"descrizione": "Arretrati per anni precedenti corrisposti al personale a tempo indeterminato"
+},
+{
+"codice": "U1010101002",
+"descrizione": "Voci stipendiali corrisposte al personale a tempo indeterminato"
+},
+{
+"codice": "U1010101003",
+"descrizione": "Straordinario per il personale a tempo indeterminato"
+},
+{
+"codice": "U1010101004",
+"descrizione": "Indennità ed altri compensi, esclusi i rimborsi spesa per missione, corrisposti al personale a tempo indeterminato"
+},
+{
+"codice": "U1010101005",
+"descrizione": "Arretrati per anni precedenti corrisposti al personale a tempo determinato"
+},
+{
+"codice": "U1010101006",
+"descrizione": "Voci stipendiali corrisposte al personale a tempo determinato"
+},
+{
+"codice": "U1010101007",
+"descrizione": "Straordinario per il personale a tempo determinato"
+},
+{
+"codice": "U1010101008",
+"descrizione": "Indennità ed altri compensi, esclusi i rimborsi spesa documentati per missione, corrisposti al personale a tempo determinato"
+},
+{
+"codice": "U1010102002",
+"descrizione": "Buoni pasto"
+},
+{
+"codice": "U1010102999",
+"descrizione": "Altre spese per il personale n.a.c."
+},
+{
+"codice": "U1010201001",
+"descrizione": "Contributi obbligatori per il personale"
+},
+{
+"codice": "U1010201002",
+"descrizione": "Contributi previdenza complementare"
+},
+{
+"codice": "U1010201003",
+"descrizione": "Contributi per Indennità di fine rapporto erogata tramite INPS"
+},
+{
+"codice": "U1010201999",
+"descrizione": "Altri contributi sociali effettivi n.a.c."
+},
+{
+"codice": "U1010202001",
+"descrizione": "Assegni familiari"
+},
+{
+"codice": "U1010202004",
+"descrizione": "Oneri per il personale in quiescenza"
+},
+{
+"codice": "U1010202005",
+"descrizione": "Arretrati per oneri per il personale in quiescenza"
+},
+{
+"codice": "U1010202999",
+"descrizione": "Contributi erogati direttamente al proprio personale n.a.c."
+},
+{
+"codice": "U1020101001",
+"descrizione": "Imposta regionale sulle attività produttive (IRAP)"
+},
+{
+"codice": "U1020102001",
+"descrizione": "Imposta di registro e di bollo"
+},
+{
+"codice": "U1020104001",
+"descrizione": "Tributo speciale per il deposito in discarica dei rifiuti solidi"
+},
+{
+"codice": "U1020105001",
+"descrizione": "Tributo funzione tutela e protezione ambiente"
+},
+{
+"codice": "U1020106001",
+"descrizione": "Tassa e/o tariffa smaltimento rifiuti solidi urbani"
+},
+{
+"codice": "U1020107001",
+"descrizione": "Tassa e/o canone occupazione spazi e aree pubbliche"
+},
+{
+"codice": "U1020109001",
+"descrizione": "Tassa di circolazione dei veicoli a motore (tassa automobilistica)"
+},
+{
+"codice": "U1020111001",
+"descrizione": "Imposta comunale sugli immobili (ICI)"
+},
+{
+"codice": "U1020112001",
+"descrizione": "Imposta Municipale Propria"
+},
+{
+"codice": "U1020199999",
+"descrizione": "Imposte, tasse e proventi assimilati a carico dell'ente n.a.c."
+},
+{
+"codice": "U1030101001",
+"descrizione": "Giornali e riviste"
+},
+{
+"codice": "U1030101002",
+"descrizione": "Pubblicazioni"
+},
+{
+"codice": "U1030102001",
+"descrizione": "Carta, cancelleria e stampati"
+},
+{
+"codice": "U1030102002",
+"descrizione": "Carburanti, combustibili e lubrificanti"
+},
+{
+"codice": "U1030102003",
+"descrizione": "Equipaggiamento"
+},
+{
+"codice": "U1030102004",
+"descrizione": "Vestiario"
+},
+{
+"codice": "U1030102005",
+"descrizione": "Accessori per uffici e alloggi"
+},
+{
+"codice": "U1030102006",
+"descrizione": "Materiale informatico"
+},
+{
+"codice": "U1030102007",
+"descrizione": "Altri materiali tecnico-specialistici non sanitari"
+},
+{
+"codice": "U1030102008",
+"descrizione": "Strumenti tecnico-specialistici non sanitari"
+},
+{
+"codice": "U1030102009",
+"descrizione": "Beni per attività di rappresentanza"
+},
+{
+"codice": "U1030102010",
+"descrizione": "Beni per consultazioni elettorali"
+},
+{
+"codice": "U1030102011",
+"descrizione": "Generi alimentari"
+},
+{
+"codice": "U1030102012",
+"descrizione": "Accessori per attività sportive e ricreative"
+},
+{
+"codice": "U1030102014",
+"descrizione": "Stampati specialistici"
+},
+{
+"codice": "U1030102999",
+"descrizione": "Altri beni e materiali di consumo n.a.c."
+},
+{
+"codice": "U1030103001",
+"descrizione": "Fauna selvatica e non selvatica"
+},
+{
+"codice": "U1030103002",
+"descrizione": "Flora selvatica e non selvatica"
+},
+{
+"codice": "U1030104001",
+"descrizione": "Armi leggere (uso singolo) e munizioni"
+},
+{
+"codice": "U1030104999",
+"descrizione": "Altro materiale per usi militari, ordine pubblico, sicurezza n.a.c."
+},
+{
+"codice": "U1030105001",
+"descrizione": "Prodotti farmaceutici ed emoderivati"
+},
+{
+"codice": "U1030105003",
+"descrizione": "Dispositivi medici"
+},
+{
+"codice": "U1030105007",
+"descrizione": "Materali e prodotti per uso veterinario"
+},
+{
+"codice": "U1030105999",
+"descrizione": "Altri beni e prodotti sanitari n.a.c."
+},
+{
+"codice": "U1030201001",
+"descrizione": "Organi istituzionali dell'amministrazione - Indennità"
+},
+{
+"codice": "U1030201002",
+"descrizione": "Organi istituzionali dell'amministrazione - Rimborsi"
+},
+{
+"codice": "U1030201007",
+"descrizione": "Commissioni elettorali"
+},
+{
+"codice": "U1030201008",
+"descrizione": "Compensi agli organi istituzionali di revisione, di controllo ed altri incarichi istituzionali dell'amministrazione"
+},
+{
+"codice": "U1030202001",
+"descrizione": "Rimborso per viaggio e trasloco"
+},
+{
+"codice": "U1030202002",
+"descrizione": "Indennità di missione e di trasferta"
+},
+{
+"codice": "U1030202004",
+"descrizione": "Pubblicità"
+},
+{
+"codice": "U1030202005",
+"descrizione": "Organizzazione e partecipazione a manifestazioni e convegni"
+},
+{
+"codice": "U1030202999",
+"descrizione": "Altre spese per relazioni pubbliche, convegni e mostre, pubblicità n.a.c"
+},
+{
+"codice": "U1030203999",
+"descrizione": "Altri aggi di riscossione n.a.c."
+},
+{
+"codice": "U1030204004",
+"descrizione": "Acquisto di servizi per formazione obbligatoria"
+},
+{
+"codice": "U1030204999",
+"descrizione": "Acquisto di servizi per altre spese per formazione e addestramento n.a.c."
+},
+{
+"codice": "U1030205001",
+"descrizione": "Telefonia fissa"
+},
+{
+"codice": "U1030205002",
+"descrizione": "Telefonia mobile"
+},
+{
+"codice": "U1030205003",
+"descrizione": "Accesso a banche dati e a pubblicazioni on line"
+},
+{
+"codice": "U1030205004",
+"descrizione": "Energia elettrica"
+},
+{
+"codice": "U1030205005",
+"descrizione": "Acqua"
+},
+{
+"codice": "U1030205006",
+"descrizione": "Gas"
+},
+{
+"codice": "U1030205999",
+"descrizione": "Utenze e canoni per altri servizi n.a.c."
+},
+{
+"codice": "U1030206001",
+"descrizione": "Canoni Disponibilità"
+},
+{
+"codice": "U1030206002",
+"descrizione": "Canoni Servizi"
+},
+{
+"codice": "U1030206999",
+"descrizione": "Altri canoni per progetti in partenariato pubblico-privato"
+},
+{
+"codice": "U1030207001",
+"descrizione": "Locazione di beni immobili"
+},
+{
+"codice": "U1030207002",
+"descrizione": "Noleggi di mezzi di trasporto"
+},
+{
+"codice": "U1030207003",
+"descrizione": "Noleggi di attrezzature scientifiche e sanitarie"
+},
+{
+"codice": "U1030207004",
+"descrizione": "Noleggi di hardware"
+},
+{
+"codice": "U1030207005",
+"descrizione": "Fitti di terreni e giacimenti"
+},
+{
+"codice": "U1030207006",
+"descrizione": "Licenze d'uso per software"
+},
+{
+"codice": "U1030207007",
+"descrizione": "Altre licenze"
+},
+{
+"codice": "U1030207008",
+"descrizione": "Noleggi di impianti e macchinari"
+},
+{
+"codice": "U1030207999",
+"descrizione": "Altre spese sostenute per utilizzo di beni di terzi n.a.c."
+},
+{
+"codice": "U1030208002",
+"descrizione": "Leasing operativo di attrezzature e macchinari"
+},
+{
+"codice": "U1030208999",
+"descrizione": "Leasing operativo di altri beni"
+},
+{
+"codice": "U1030209001",
+"descrizione": "Manutenzione ordinaria e riparazioni di mezzi di trasporto ad uso civile, di sicurezza e ordine pubblico"
+},
+{
+"codice": "U1030209003",
+"descrizione": "Manutenzione ordinaria e riparazioni di mobili e arredi"
+},
+{
+"codice": "U1030209004",
+"descrizione": "Manutenzione ordinaria e riparazioni di impianti e macchinari"
+},
+{
+"codice": "U1030209005",
+"descrizione": "Manutenzione ordinaria e riparazioni di attrezzature scientifiche e sanitarie"
+},
+{
+"codice": "U1030209006",
+"descrizione": "Manutenzione ordinaria e riparazioni di macchine per ufficio"
+},
+{
+"codice": "U1030209008",
+"descrizione": "Manutenzione ordinaria e riparazioni di beni immobili"
+},
+{
+"codice": "U1030209009",
+"descrizione": "Manutenzione ordinaria e riparazioni di beni immobili di valore culturale, storico ed artistico"
+},
+{
+"codice": "U1030209010",
+"descrizione": "Manutenzione ordinaria e riparazioni di oggetti di valore"
+},
+{
+"codice": "U1030209011",
+"descrizione": "Manutenzione ordinaria e riparazioni di altri beni materiali"
+},
+{
+"codice": "U1030209012",
+"descrizione": "Manutenzione ordinaria e riparazioni di terreni e beni materiali non prodotti"
+},
+{
+"codice": "U1030210001",
+"descrizione": "Incarichi libero professionali di studi, ricerca e consulenza"
+},
+{
+"codice": "U1030210002",
+"descrizione": "Esperti per commissioni, comitati e consigli"
+},
+{
+"codice": "U1030210003",
+"descrizione": "Incarichi a società di studi, ricerca e consulenza"
+},
+{
+"codice": "U1030211001",
+"descrizione": "Interpretariato e traduzioni"
+},
+{
+"codice": "U1030211002",
+"descrizione": "Assistenza psicologica, sociale e religiosa"
+},
+{
+"codice": "U1030211004",
+"descrizione": "Perizie"
+},
+{
+"codice": "U1030211006",
+"descrizione": "Patrocinio legale"
+},
+{
+"codice": "U1030211008",
+"descrizione": "Prestazioni di natura contabile, tributaria e del lavoro"
+},
+{
+"codice": "U1030211009",
+"descrizione": "Prestazioni tecnico-scientifiche a fini di ricerca"
+},
+{
+"codice": "U1030211999",
+"descrizione": "Altre prestazioni professionali e specialistiche n.a.c."
+},
+{
+"codice": "U1030212001",
+"descrizione": "Acquisto di servizi da agenzie di lavoro interinale"
+},
+{
+"codice": "U1030212003",
+"descrizione": "Collaborazioni coordinate e a progetto"
+},
+{
+"codice": "U1030212004",
+"descrizione": "Tirocini formativi extracurriculari"
+},
+{
+"codice": "U1030212999",
+"descrizione": "Altre forme di lavoro flessibile n.a.c."
+},
+{
+"codice": "U1030213001",
+"descrizione": "Servizi di sorveglianza, custodia e accoglienza"
+},
+{
+"codice": "U1030213002",
+"descrizione": "Servizi di pulizia e lavanderia"
+},
+{
+"codice": "U1030213003",
+"descrizione": "Trasporti, traslochi e facchinaggio"
+},
+{
+"codice": "U1030213004",
+"descrizione": "Stampa e rilegatura"
+},
+{
+"codice": "U1030213005",
+"descrizione": "Servizi ausiliari a beneficio del personale"
+},
+{
+"codice": "U1030213006",
+"descrizione": "Rimozione e smaltimento di rifiuti tossico-nocivi e di altri materiali"
+},
+{
+"codice": "U1030213999",
+"descrizione": "Altri servizi ausiliari n.a.c."
+},
+{
+"codice": "U1030214002",
+"descrizione": "Servizio mense personale civile"
+},
+{
+"codice": "U1030214999",
+"descrizione": "Altri servizi di ristorazione"
+},
+{
+"codice": "U1030215001",
+"descrizione": "Contratti di servizio di trasporto pubblico"
+},
+{
+"codice": "U1030215002",
+"descrizione": "Contratti di servizio di trasporto scolastico"
+},
+{
+"codice": "U1030215003",
+"descrizione": "Contratti di servizio per il trasporto di disabili e anziani"
+},
+{
+"codice": "U1030215004",
+"descrizione": "Contratti di servizio per la raccolta rifiuti"
+},
+{
+"codice": "U1030215005",
+"descrizione": "Contratti di servizio per il conferimento in discarica dei rifiuti"
+},
+{
+"codice": "U1030215006",
+"descrizione": "Contratti di servizio per le mense scolastiche"
+},
+{
+"codice": "U1030215007",
+"descrizione": "Contratti di servizio per la formazione dei cittadini"
+},
+{
+"codice": "U1030215008",
+"descrizione": "Contratti di servizio di assistenza sociale residenziale e semiresidenziale"
+},
+{
+"codice": "U1030215009",
+"descrizione": "Contratti di servizio di assistenza sociale domiciliare"
+},
+{
+"codice": "U1030215010",
+"descrizione": "Contratti di servizio di asilo nido"
+},
+{
+"codice": "U1030215011",
+"descrizione": "Contratti di servizio per la lotta al randagismo"
+},
+{
+"codice": "U1030215012",
+"descrizione": "Contratti di servizio per la gestione delle aree di sosta a pagamento"
+},
+{
+"codice": "U1030215013",
+"descrizione": "Contratti di servizio per la gestione del servizio idrico integrato"
+},
+{
+"codice": "U1030215014",
+"descrizione": "Contratti di servizio per la distribuzione del gas"
+},
+{
+"codice": "U1030215015",
+"descrizione": "Contratti di servizio per l'illuminazione pubblica"
+},
+{
+"codice": "U1030215999",
+"descrizione": "Altre spese per contratti di servizio pubblico"
+},
+{
+"codice": "U1030216001",
+"descrizione": "Pubblicazione bandi di gara"
+},
+{
+"codice": "U1030216002",
+"descrizione": "Spese postali"
+},
+{
+"codice": "U1030216003",
+"descrizione": "Onorificenze e riconoscimenti istituzionali"
+},
+{
+"codice": "U1030216004",
+"descrizione": "Spese notarili"
+},
+{
+"codice": "U1030216999",
+"descrizione": "Altre spese per servizi amministrativi"
+},
+{
+"codice": "U1030217001",
+"descrizione": "Commissioni per servizi finanziari"
+},
+{
+"codice": "U1030217002",
+"descrizione": "Oneri per servizio di tesoreria"
+},
+{
+"codice": "U1030217999",
+"descrizione": "Spese per servizi finanziari n.a.c."
+},
+{
+"codice": "U1030218001",
+"descrizione": "Spese per accertamenti sanitari resi necessari dall'attività lavorativa"
+},
+{
+"codice": "U1030218005",
+"descrizione": "Acquisti di servizi sanitari per assistenza riabilitativa"
+},
+{
+"codice": "U1030218006",
+"descrizione": "Acquisti di servizi sanitari per assistenza integrativa"
+},
+{
+"codice": "U1030218008",
+"descrizione": "Acquisti di servizi sanitari per assistenza termale"
+},
+{
+"codice": "U1030218013",
+"descrizione": "Acquisti di servizi di trasporto in emergenza e urgenza"
+},
+{
+"codice": "U1030218014",
+"descrizione": "Acquisti di servizi socio sanitari a rilevanza sanitaria"
+},
+{
+"codice": "U1030218999",
+"descrizione": "Altri acquisti di servizi sanitari n.a.c."
+},
+{
+"codice": "U1030219001",
+"descrizione": "Gestione e manutenzione applicazioni"
+},
+{
+"codice": "U1030219002",
+"descrizione": "Assistenza all'utente e formazione"
+},
+{
+"codice": "U1030219003",
+"descrizione": "Servizi per l'interoperabilità e la cooperazione"
+},
+{
+"codice": "U1030219004",
+"descrizione": "Servizi di rete per trasmissione dati e VoIP e relativa manutenzione"
+},
+{
+"codice": "U1030219005",
+"descrizione": "Servizi per i sistemi e relativa manutenzione"
+},
+{
+"codice": "U1030219006",
+"descrizione": "Servizi di sicurezza"
+},
+{
+"codice": "U1030219007",
+"descrizione": "Servizi di gestione documentale"
+},
+{
+"codice": "U1030219008",
+"descrizione": "Servizi di monitoraggio della qualità dei servizi"
+},
+{
+"codice": "U1030219009",
+"descrizione": "Servizi per le postazioni di lavoro e relativa manutenzione"
+},
+{
+"codice": "U1030219010",
+"descrizione": "Servizi di consulenza e prestazioni professionali ICT"
+},
+{
+"codice": "U1030219011",
+"descrizione": "Processi trasversali alle classi di servizio"
+},
+{
+"codice": "U1030219999",
+"descrizione": "Altri servizi informatici e di telecomunicazioni n.a.c."
+},
+{
+"codice": "U1030299001",
+"descrizione": "Spese legali per esproprio"
+},
+{
+"codice": "U1030299002",
+"descrizione": "Altre spese legali"
+},
+{
+"codice": "U1030299003",
+"descrizione": "Quote di associazioni"
+},
+{
+"codice": "U1030299004",
+"descrizione": "Altre spese per consultazioni elettorali dell'ente"
+},
+{
+"codice": "U1030299005",
+"descrizione": "Spese per commissioni e comitati dell'Ente"
+},
+{
+"codice": "U1030299008",
+"descrizione": "Servizi di mobilità a terzi (bus navetta)"
+},
+{
+"codice": "U1030299009",
+"descrizione": "Acquisto di sevizi per verde e arredo urbano"
+},
+{
+"codice": "U1030299010",
+"descrizione": "Formazione a personale esterno all'ente"
+},
+{
+"codice": "U1030299011",
+"descrizione": "Servizi per attività di rappresentanza"
+},
+{
+"codice": "U1030299013",
+"descrizione": "Comunicazione WEB"
+},
+{
+"codice": "U1030299999",
+"descrizione": "Altri servizi diversi n.a.c."
+},
+{
+"codice": "U1040101001",
+"descrizione": "Trasferimenti correnti a Ministeri"
+},
+{
+"codice": "U1040101002",
+"descrizione": "Trasferimenti correnti a Ministero dell'Istruzione - Istituzioni scolastiche"
+},
+{
+"codice": "U1040101003",
+"descrizione": "Trasferimenti correnti a Presidenza del Consiglio dei Ministri"
+},
+{
+"codice": "U1040101006",
+"descrizione": "Trasferimenti correnti a enti di regolazione dell'attività economica"
+},
+{
+"codice": "U1040101008",
+"descrizione": "Trasferimenti correnti a Anas S.p.A."
+},
+{
+"codice": "U1040101009",
+"descrizione": "Trasferimenti correnti a altri enti centrali produttori di servizi economici"
+},
+{
+"codice": "U1040101010",
+"descrizione": "Trasferimenti correnti a autorità amministrative indipendenti"
+},
+{
+"codice": "U1040101011",
+"descrizione": "Trasferimenti correnti a enti centrali a struttura associativa"
+},
+{
+"codice": "U1040101012",
+"descrizione": "Trasferimenti correnti a enti centrali produttori di servizi assistenziali, ricreativi e culturali"
+},
+{
+"codice": "U1040101020",
+"descrizione": "Trasferimenti correnti al Ministero dell'economia in attuazione di norme in materia di contenimento di spesa"
+},
+{
+"codice": "U1040101999",
+"descrizione": "Trasferimenti correnti a altre Amministrazioni Centrali n.a.c."
+},
+{
+"codice": "U1040102001",
+"descrizione": "Trasferimenti correnti a Regioni e province autonome"
+},
+{
+"codice": "U1040102002",
+"descrizione": "Trasferimenti correnti a Province"
+},
+{
+"codice": "U1040102003",
+"descrizione": "Trasferimenti correnti a Comuni"
+},
+{
+"codice": "U1040102005",
+"descrizione": "Trasferimenti correnti a Unioni di Comuni"
+},
+{
+"codice": "U1040102006",
+"descrizione": "Trasferimenti correnti a Comunità Montane"
+},
+{
+"codice": "U1040102007",
+"descrizione": "Trasferimenti correnti a Camere di Commercio"
+},
+{
+"codice": "U1040102008",
+"descrizione": "Trasferimenti correnti a Università"
+},
+{
+"codice": "U1040102011",
+"descrizione": "Trasferimenti correnti a Aziende sanitarie locali n.a.f."
+},
+{
+"codice": "U1040102015",
+"descrizione": "Trasferimenti correnti a altre Amministrazioni Locali produttrici di servizi sanitari"
+},
+{
+"codice": "U1040102017",
+"descrizione": "Trasferimenti correnti a altri enti e agenzie regionali e sub regionali"
+},
+{
+"codice": "U1040102018",
+"descrizione": "Trasferimenti correnti a Consorzi di enti locali"
+},
+{
+"codice": "U1040102019",
+"descrizione": "Trasferimenti correnti a Fondazioni e istituzioni liriche locali e a Teatri stabili di iniziativa pubblica"
+},
+{
+"codice": "U1040102999",
+"descrizione": "Trasferimenti correnti a altre Amministrazioni Locali n.a.c."
+},
+{
+"codice": "U1040103002",
+"descrizione": "Trasferimenti correnti a INAIL"
+},
+{
+"codice": "U1040103999",
+"descrizione": "Trasferimenti correnti a altri Enti di Previdenza n.a.c."
+},
+{
+"codice": "U1040104001",
+"descrizione": "Trasferimenti correnti a organismi interni e/o unità locali della amministrazione"
+},
+{
+"codice": "U1040201999",
+"descrizione": "Altri sussidi e assegni"
+},
+{
+"codice": "U1040202999",
+"descrizione": "Altri assegni e sussidi assistenziali"
+},
+{
+"codice": "U1040203001",
+"descrizione": "Borse di studio"
+},
+{
+"codice": "U1040203005",
+"descrizione": "Tirocini formativi curriculari"
+},
+{
+"codice": "U1040205001",
+"descrizione": "Servizio civile"
+},
+{
+"codice": "U1040205999",
+"descrizione": "Altri trasferimenti a famiglie n.a.c."
+},
+{
+"codice": "U1040399999",
+"descrizione": "Trasferimenti correnti a altre imprese"
+},
+{
+"codice": "U1040401001",
+"descrizione": "Trasferimenti correnti a Istituzioni Sociali Private"
+},
+{
+"codice": "U1040504001",
+"descrizione": "Trasferimenti correnti al Resto del Mondo"
+},
+{
+"codice": "U1040599001",
+"descrizione": "Altri Trasferimenti correnti alla UE"
+},
+{
+"codice": "U1070201001",
+"descrizione": "Interessi passivi su titoli obbligazionari a medio-lungo termine a tasso fisso - valuta domestica"
+},
+{
+"codice": "U1070401001",
+"descrizione": "Interessi passivi a Ministeri su finanziamenti a breve termine"
+},
+{
+"codice": "U1070401009",
+"descrizione": "Interessi passivi a altri enti centrali produttori di servizi economici su finanziamenti a breve termine"
+},
+{
+"codice": "U1070402003",
+"descrizione": "Interessi passivi a Comuni su finanziamenti a breve termine"
+},
+{
+"codice": "U1070404001",
+"descrizione": "Interessi passivi a imprese controllate su finanziamenti a breve termine"
+},
+{
+"codice": "U1070404003",
+"descrizione": "Interessi passivi a Cassa Depositi e Prestiti - SPA su finanziamenti a breve termine"
+},
+{
+"codice": "U1070405001",
+"descrizione": "Interessi passivi su finanziamenti a breve termine ad altri soggetti"
+},
+{
+"codice": "U1070501001",
+"descrizione": "Interessi passivi a Ministeri su mutui e altri finanziamenti a medio lungo termine"
+},
+{
+"codice": "U1070501006",
+"descrizione": "Interessi passivi a enti di regolazione dell'attività economica su mutui e altri finanziamenti a medio lungo termine"
+},
+{
+"codice": "U1070501009",
+"descrizione": "Interessi passivi a altri enti centrali produttori di servizi economici su mutui e altri finanziamenti a medio lungo termine"
+},
+{
+"codice": "U1070501010",
+"descrizione": "Interessi passivi a autorità amministrative indipendenti su mutui e altri finanziamenti a medio lungo termine"
+},
+{
+"codice": "U1070501999",
+"descrizione": "Interessi passivi a altre Amministrazioni Centrali n.a.c. su mutui e altri finanziamenti a medio lungo termine"
+},
+{
+"codice": "U1070502999",
+"descrizione": "Interessi passivi a altre Amministrazioni Locali n.a.c. su mutui e altri finanziamenti a medio lungo termine"
+},
+{
+"codice": "U1070504001",
+"descrizione": "Interessi passivi a imprese controllate su finanziamenti a medio lungo termine"
+},
+{
+"codice": "U1070504003",
+"descrizione": "Interessi passivi a Cassa Depositi e Prestiti SPA su mutui e altri finanziamenti a medio lungo termine"
+},
+{
+"codice": "U1070504004",
+"descrizione": "Interessi passivi a Cassa Depositi e Prestiti - Gestione Tesoro su mutui e altri finanziamenti a medio lungo termine"
+},
+{
+"codice": "U1070504999",
+"descrizione": "Interessi passivi a altre imprese su finanziamenti a medio lungo termine"
+},
+{
+"codice": "U1070505999",
+"descrizione": "Interessi passivi su mutui e altri finanziamenti a medio lungo termine ad altri soggetti"
+},
+{
+"codice": "U1070602003",
+"descrizione": "Interessi di mora a Enti previdenziali"
+},
+{
+"codice": "U1070602999",
+"descrizione": "Interessi di mora ad altri soggetti"
+},
+{
+"codice": "U1070604001",
+"descrizione": "Interessi passivi su anticipazioni di tesoreria degli istituti tesorieri/cassieri"
+},
+{
+"codice": "U1070699002",
+"descrizione": "Altri interessi passivi a Amministrazioni Locali"
+},
+{
+"codice": "U1070699999",
+"descrizione": "Altri interessi passivi ad altri soggetti"
+},
+{
+"codice": "U1080201001",
+"descrizione": "Diritti reali di godimento e servitù onerose"
+},
+{
+"codice": "U1089901001",
+"descrizione": "Oneri finanziari derivanti dalla estinzione anticipata di prestiti"
+},
+{
+"codice": "U1089999999",
+"descrizione": "Altre spese per redditi da capitale n.a.c."
+},
+{
+"codice": "U1090101001",
+"descrizione": "Rimborsi per spese di personale (comando, distacco, fuori ruolo, convenzioni, ecc)"
+},
+{
+"codice": "U1090201001",
+"descrizione": "Rimborsi di imposte e tasse di natura corrente"
+},
+{
+"codice": "U1090202001",
+"descrizione": "Rimborsi di imposte in conto capitale in uscita"
+},
+{
+"codice": "U1099901001",
+"descrizione": "Rimborsi di parte corrente ad Amministrazioni Centrali di somme non dovute o incassate in eccesso"
+},
+{
+"codice": "U1099902001",
+"descrizione": "Rimborsi di parte corrente ad Amministrazioni Locali di somme non dovute o incassate in eccesso"
+},
+{
+"codice": "U1099904001",
+"descrizione": "Rimborsi di parte corrente a Famiglie di somme non dovute o incassate in eccesso"
+},
+{
+"codice": "U1099905001",
+"descrizione": "Rimborsi di parte corrente a Imprese di somme non dovute o incassate in eccesso"
+},
+{
+"codice": "U1100301001",
+"descrizione": "Versamenti IVA a debito per le gestioni commerciali"
+},
+{
+"codice": "U1100401001",
+"descrizione": "Premi di assicurazione su beni mobili"
+},
+{
+"codice": "U1100401002",
+"descrizione": "Premi di assicurazione su beni immobili"
+},
+{
+"codice": "U1100401003",
+"descrizione": "Premi di assicurazione per responsabilità civile verso terzi"
+},
+{
+"codice": "U1100401999",
+"descrizione": "Altri premi di assicurazione contro i danni"
+},
+{
+"codice": "U1100499999",
+"descrizione": "Altri premi di assicurazione n.a.c."
+},
+{
+"codice": "U1100501001",
+"descrizione": "Spese dovute a sanzioni"
+},
+{
+"codice": "U1100502001",
+"descrizione": "Spese per risarcimento danni"
+},
+{
+"codice": "U1100503001",
+"descrizione": "Spese per indennizzi"
+},
+{
+"codice": "U1100504001",
+"descrizione": "Oneri da contenzioso"
+},
+{
+"codice": "U1100599999",
+"descrizione": "Altre spese dovute per irregolarità e illeciti n.a.c."
+},
+{
+"codice": "U1109999999",
+"descrizione": "Altre spese correnti n.a.c."
+},
+{
+"codice": "U2010101001",
+"descrizione": "Tributi in conto capitale a carico dell'ente"
+},
+{
+"codice": "U2020101001",
+"descrizione": "Mezzi di trasporto stradali"
+},
+{
+"codice": "U2020101999",
+"descrizione": "Mezzi di trasporto ad uso civile, di sicurezza e ordine pubblico n.a.c."
+},
+{
+"codice": "U2020103001",
+"descrizione": "Mobili e arredi per ufficio"
+},
+{
+"codice": "U2020103002",
+"descrizione": "Mobili e arredi per alloggi e pertinenze"
+},
+{
+"codice": "U2020103999",
+"descrizione": "Mobili e arredi n.a.c."
+},
+{
+"codice": "U2020104001",
+"descrizione": "Macchinari"
+},
+{
+"codice": "U2020104002",
+"descrizione": "Impianti"
+},
+{
+"codice": "U2020105999",
+"descrizione": "Attrezzature n.a.c."
+},
+{
+"codice": "U2020106001",
+"descrizione": "Macchine per ufficio"
+},
+{
+"codice": "U2020107001",
+"descrizione": "Server"
+},
+{
+"codice": "U2020107002",
+"descrizione": "Postazioni di lavoro"
+},
+{
+"codice": "U2020107003",
+"descrizione": "Periferiche"
+},
+{
+"codice": "U2020107999",
+"descrizione": "Hardware n.a.c."
+},
+{
+"codice": "U2020109001",
+"descrizione": "Fabbricati ad uso abitativo"
+},
+{
+"codice": "U2020109002",
+"descrizione": "Fabbricati ad uso commerciale"
+},
+{
+"codice": "U2020109003",
+"descrizione": "Fabbricati ad uso scolastico"
+},
+{
+"codice": "U2020109004",
+"descrizione": "Fabbricati industriali e costruzioni leggere"
+},
+{
+"codice": "U2020109005",
+"descrizione": "Fabbricati rurali"
+},
+{
+"codice": "U2020109008",
+"descrizione": "Opere destinate al culto"
+},
+{
+"codice": "U2020109009",
+"descrizione": "Infrastrutture telematiche"
+},
+{
+"codice": "U2020109010",
+"descrizione": "Infrastrutture idrauliche"
+},
+{
+"codice": "U2020109012",
+"descrizione": "Infrastrutture stradali"
+},
+{
+"codice": "U2020109013",
+"descrizione": "Altre vie di comunicazione"
+},
+{
+"codice": "U2020109014",
+"descrizione": "Opere per la sistemazione del suolo"
+},
+{
+"codice": "U2020109015",
+"descrizione": "Cimiteri"
+},
+{
+"codice": "U2020109016",
+"descrizione": "Impianti sportivi"
+},
+{
+"codice": "U2020109017",
+"descrizione": "Fabbricati destinati ad asili nido"
+},
+{
+"codice": "U2020109018",
+"descrizione": "Musei, teatri e biblioteche"
+},
+{
+"codice": "U2020109019",
+"descrizione": "Fabbricati ad uso strumentale"
+},
+{
+"codice": "U2020109999",
+"descrizione": "Beni immobili n.a.c."
+},
+{
+"codice": "U2020110001",
+"descrizione": "Fabbricati ad uso abitativo di valore culturale, storico ed artistico"
+},
+{
+"codice": "U2020110002",
+"descrizione": "Fabbricati ad uso commerciale e istituzionale di valore culturale, storico ed artistico"
+},
+{
+"codice": "U2020110004",
+"descrizione": "Opere destinate al culto di valore culturale, storico ed artistico"
+},
+{
+"codice": "U2020110005",
+"descrizione": "Siti archeologici di valore culturale, storico ed artistico"
+},
+{
+"codice": "U2020110007",
+"descrizione": "Impianti sportivi di valore culturale, storico ed artistico"
+},
+{
+"codice": "U2020110008",
+"descrizione": "Musei, teatri e biblioteche di valore culturale, storico ed artistico"
+},
+{
+"codice": "U2020110009",
+"descrizione": "Fabbricati ad uso strumentale di valore culturale, storico ed artistico"
+},
+{
+"codice": "U2020110999",
+"descrizione": "Beni immobili di valore culturale, storico ed artistico n.a.c."
+},
+{
+"codice": "U2020111001",
+"descrizione": "Oggetti di valore"
+},
+{
+"codice": "U2020199001",
+"descrizione": "Materiale bibliografico"
+},
+{
+"codice": "U2020199999",
+"descrizione": "Altri beni materiali diversi"
+},
+{
+"codice": "U2020201001",
+"descrizione": "Terreni agricoli"
+},
+{
+"codice": "U2020201002",
+"descrizione": "Terreni edificabili"
+},
+{
+"codice": "U2020201999",
+"descrizione": "Altri terreni n.a.c."
+},
+{
+"codice": "U2020202002",
+"descrizione": "Demanio idrico"
+},
+{
+"codice": "U2020202003",
+"descrizione": "Foreste"
+},
+{
+"codice": "U2020202005",
+"descrizione": "Fauna"
+},
+{
+"codice": "U2020202006",
+"descrizione": "Flora"
+},
+{
+"codice": "U2020302001",
+"descrizione": "Sviluppo software e manutenzione evolutiva"
+},
+{
+"codice": "U2020302002",
+"descrizione": "Acquisto software"
+},
+{
+"codice": "U2020304001",
+"descrizione": "Opere dell'ingegno e Diritti d'autore"
+},
+{
+"codice": "U2020305001",
+"descrizione": "Incarichi professionali per la realizzazione di investimenti"
+},
+{
+"codice": "U2020306001",
+"descrizione": "Manutenzione straordinaria su beni demaniali di terzi"
+},
+{
+"codice": "U2020399001",
+"descrizione": "Spese di investimento per beni immateriali n.a.c."
+},
+{
+"codice": "U2020403999",
+"descrizione": "Spese di investimento per mobili e arredi n.a.c. acquisiti mediante operazioni di leasing finanziario"
+},
+{
+"codice": "U2020404001",
+"descrizione": "Macchinari diversi acquisiti mediante operazioni di leasing finanziario"
+},
+{
+"codice": "U2020409012",
+"descrizione": "Opere per la sistemazione del suolo acquisite mediante operazioni di leasing finanziario"
+},
+{
+"codice": "U2030101001",
+"descrizione": "Contributi agli investimenti a Ministeri"
+},
+{
+"codice": "U2030101002",
+"descrizione": "Contributi agli investimenti a Ministero dell'Istruzione - Istituzioni scolastiche"
+},
+{
+"codice": "U2030101003",
+"descrizione": "Contributi agli investimenti a Presidenza del Consiglio dei Ministri"
+},
+{
+"codice": "U2030101009",
+"descrizione": "Contributi agli investimenti ad altri enti centrali produttori di servizi economici"
+},
+{
+"codice": "U2030101999",
+"descrizione": "Contributi agli investimenti a altre Amministrazioni Centrali n.a.c."
+},
+{
+"codice": "U2030102001",
+"descrizione": "Contributi agli investimenti a Regioni e province autonome"
+},
+{
+"codice": "U2030102003",
+"descrizione": "Contributi agli investimenti a Comuni"
+},
+{
+"codice": "U2030102999",
+"descrizione": "Contributi agli investimenti a altre Amministrazioni Locali n.a.c."
+},
+{
+"codice": "U2030201001",
+"descrizione": "Contributi agli investimenti a Famiglie"
+},
+{
+"codice": "U2030301001",
+"descrizione": "Contributi agli investimenti a imprese controllate"
+},
+{
+"codice": "U2030302001",
+"descrizione": "Contributi agli investimenti a altre imprese partecipate"
+},
+{
+"codice": "U2030303999",
+"descrizione": "Contributi agli investimenti a altre Imprese"
+},
+{
+"codice": "U2030401001",
+"descrizione": "Contributi agli investimenti a Istituzioni Sociali Private"
+},
+{
+"codice": "U2030501001",
+"descrizione": "Contributi agli investimenti all'Unione Europea"
+},
+{
+"codice": "U2040201001",
+"descrizione": "Altri trasferimenti in conto capitale per assunzione di debiti di Famiglie"
+},
+{
+"codice": "U2040501001",
+"descrizione": "Altri trasferimenti in conto capitale per assunzione di debiti dell'Unione Europea"
+},
+{
+"codice": "U2042102003",
+"descrizione": "Altri trasferimenti in conto capitale n.a.c. a Comuni"
+},
+{
+"codice": "U2042199001",
+"descrizione": "Altri trasferimenti in conto capitale n.a.c. a organismi interni e/o unità locali della amministrazione"
+},
+{
+"codice": "U2042201001",
+"descrizione": "Altri trasferimenti in conto capitale n.a.c. a Famiglie"
+},
+{
+"codice": "U2050401001",
+"descrizione": "Rimborsi in conto capitale ad Amministrazioni Centrali di somme non dovute o incassate in eccesso"
+},
+{
+"codice": "U2050402001",
+"descrizione": "Rimborsi in conto capitale ad Amministrazioni Locali di somme non dovute o incassate in eccesso"
+},
+{
+"codice": "U2050404001",
+"descrizione": "Rimborsi in conto capitale a Famiglie di somme non dovute o incassate in eccesso"
+},
+{
+"codice": "U2059999999",
+"descrizione": "Altre spese in conto capitale n.a.c."
+},
+{
+"codice": "U3010102002",
+"descrizione": "Acquisizioni di partecipazioni e conferimenti di capitale in altre imprese partecipate incluse nelle Amministrazioni Locali"
+},
+{
+"codice": "U3010103002",
+"descrizione": "Acquisizioni di partecipazioni e conferimenti di capitale in altre imprese partecipate"
+},
+{
+"codice": "U3010103003",
+"descrizione": "Acquisizioni di partecipazioni e conferimenti di capitale in altre imprese"
+},
+{
+"codice": "U3010105003",
+"descrizione": "Acquisizioni di partecipazioni e conferimenti di capitale in altre PA incluse nelle Amministrazioni Locali"
+},
+{
+"codice": "U3040701001",
+"descrizione": "Versamenti a depositi bancari"
+},
+{
+"codice": "U4020101001",
+"descrizione": "Rimborso finanziamenti a breve termine a Ministeri"
+},
+{
+"codice": "U4020104999",
+"descrizione": "Rimborso finanziamenti a breve termine a altre imprese"
+},
+{
+"codice": "U4020105001",
+"descrizione": "Rimborso finanziamenti a breve termine a altri soggetti"
+},
+{
+"codice": "U4020201001",
+"descrizione": "Chiusura Anticipazioni a titolo oneroso ricevute da Amministrazioni Centrali"
+},
+{
+"codice": "U4020201999",
+"descrizione": "Chiusura Anticipazioni a titolo oneroso ricevute da altri soggetti"
+},
+{
+"codice": "U4030101001",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a Ministeri"
+},
+{
+"codice": "U4030101002",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a Presidenza del Consiglio dei Ministri"
+},
+{
+"codice": "U4030101005",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a enti di regolazione dell'attività economica"
+},
+{
+"codice": "U4030101008",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a altri enti centrali produttori di servizi economici"
+},
+{
+"codice": "U4030101009",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a autorità amministrative indipendenti"
+},
+{
+"codice": "U4030101010",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a enti centrali a struttura associativa"
+},
+{
+"codice": "U4030101999",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a altre Amministrazioni Centrali n.a.c."
+},
+{
+"codice": "U4030102001",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a Regioni e province autonome"
+},
+{
+"codice": "U4030102003",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a Comuni"
+},
+{
+"codice": "U4030102005",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a Unioni di Comuni"
+},
+{
+"codice": "U4030102017",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a altri enti e agenzie regionali e sub regionali"
+},
+{
+"codice": "U4030103999",
+"descrizione": "Rimborso mutui e altri finanziamenti a medio lungo termine a altri Enti di Previdenza n.a.c."
+},
+{
+"codice": "U4030104001",
+"descrizione": "Rimborso Mutui e altri finanziamenti a medio lungo termine a imprese controllate"
+},
+{
+"codice": "U4030104003",
+"descrizione": "Rimborso Mutui e altri finanziamenti a medio lungo termine a Cassa Depositi e Prestiti - Gestione CDP SPA"
+},
+{
+"codice": "U4030104004",
+"descrizione": "Rimborso Mutui e altri finanziamenti a medio lungo termine a Cassa Depositi e Prestiti - Gestione Tesoro"
+},
+{
+"codice": "U4030104999",
+"descrizione": "Rimborso Mutui e altri finanziamenti a medio lungo termine ad altre imprese"
+},
+{
+"codice": "U4030105001",
+"descrizione": "Rimborso Mutui e altri finanziamenti a medio lungo termine ad altri soggetti con controparte residente"
+}
+]

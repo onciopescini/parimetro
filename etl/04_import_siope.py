@@ -33,6 +33,7 @@
 import argparse
 import glob
 import os
+import re
 import sys
 from collections import defaultdict
 
@@ -40,6 +41,7 @@ import pandas as pd
 import psycopg
 from dotenv import load_dotenv
 
+from categorie_spesa import AREE, classifica
 from config import (
     SIOPE,
     TITOLI_CAPITALE,
@@ -118,6 +120,96 @@ def ultimo_mese(acc: dict) -> dict:
     return out
 
 
+CODICE_VOCE = re.compile(r"U\d{10}")
+
+
+def voci_per_comune(paths: list[str]) -> tuple[dict, dict, int]:
+    """Spesa per voce di ogni comune, all'ultimo mese disponibile.
+
+    Ritorna ({istat: {codice: importo}}, {codice: descrizione}, voci_scartate).
+
+    Si riduce file per file: ogni file SIOPE e' una regione e un comune non sta
+    in due file, quindi si puo' buttare via tutto tranne l'ultimo mese appena
+    finito il file. Tenere in memoria (comune, mese, voce) per un anno intero
+    vorrebbe dire ~8 milioni di chiavi e piu' di un gigabyte.
+
+    Restano fuori le voci dei titoli esclusi dai totali (sospesi, chiusura
+    anticipazioni, partite di giro), come in totali_comune(), cosi' il dettaglio
+    somma esattamente a cio' che e' contato come pagamenti.
+    """
+    c = SIOPE
+    need = [c["col_prov"], c["col_com"], c["col_tipo"], c["col_periodo"], c["col_titolo"],
+            c["col_importo"], c["col_gestionale"], c["col_descr"]]
+    risultato: dict = {}
+    descrizioni: dict = {}
+    scartate = 0
+    for path in paths:
+        testa = pd.read_csv(path, sep=c["sep"], encoding=c["encoding"], nrows=0)
+        mancanti = [x for x in need if x not in testa.columns]
+        if mancanti:
+            sys.exit(
+                f"{os.path.basename(path)}: colonne non trovate {mancanti}\n"
+                "Lancia --inspect sul file e correggi SIOPE in config.py."
+            )
+        acc: dict = defaultdict(float)
+        for ch in pd.read_csv(path, sep=c["sep"], encoding=c["encoding"], dtype=str,
+                              usecols=need, chunksize=CHUNK):
+            ch = ch[ch[c["col_tipo"]].astype(str).str.strip() == c["tipo_comuni"]]
+            if ch.empty:
+                continue
+            df = pd.DataFrame({
+                "i": (ch[c["col_prov"]].astype(str).str.strip().str.zfill(3)
+                      + ch[c["col_com"]].astype(str).str.strip().str.zfill(3)),
+                "m": pd.to_numeric(ch[c["col_periodo"]].astype(str).str.split("/").str[-1],
+                                   errors="coerce"),
+                "t": ch[c["col_titolo"]].astype(str).str.extract(r"[A-Za-z](\d)", expand=False),
+                "c": ch[c["col_gestionale"]].astype(str).str.strip(),
+                "d": ch[c["col_descr"]].astype(str).str.strip(),
+                "v": pd.to_numeric(ch[c["col_importo"]], errors="coerce").fillna(0.0),
+            }).dropna(subset=["m", "t"])
+            df = df[~df["t"].isin(SPESE_FUORI)]
+            valido = df["c"].str.fullmatch(CODICE_VOCE.pattern)
+            scartate += int((~valido).sum())
+            df = df[valido]
+            for (i, m, cod), v in df.groupby(["i", "m", "c"])["v"].sum().items():
+                acc[(i, int(m), cod)] += float(v)
+            for cod, des in df.drop_duplicates("c")[["c", "d"]].itertuples(index=False):
+                descrizioni.setdefault(cod, des)
+        risultato.update({i: dict(v) for i, v in ultimo_mese(acc).items()})
+        print(f"   {os.path.basename(path):46s} {len(acc):>9,} (comune, mese, voce)".replace(",", "."))
+    return risultato, descrizioni, scartate
+
+
+def importa_voci(cur, per_comune: dict, descrizioni: dict, anno: int) -> dict:
+    """Scrive anagrafica delle voci e importi per bilancio. Riscrive l'anno: rilanciabile."""
+    cur.executemany(
+        "insert into spese_voci (codice, descrizione, natura, area) values (%s,%s,%s,%s) "
+        "on conflict (codice) do update set descrizione = excluded.descrizione, "
+        "natura = excluded.natura, area = excluded.area",
+        [(cod, descrizioni[cod], *classifica(cod)) for cod in sorted(descrizioni)],
+    )
+    cur.execute(
+        "select m.istat_code, b.id from budget_records b "
+        "join municipalities m on m.id = b.municipality_id where b.year = %s",
+        (anno,),
+    )
+    bilancio = dict(cur.fetchall())
+    senza_bilancio = [i for i in per_comune if i not in bilancio]
+    ids = [bilancio[i] for i in per_comune if i in bilancio]
+    cur.execute("delete from budget_items where budget_id = any(%s)", (ids,))
+    righe = 0
+    with cur.copy("copy budget_items (budget_id, codice, importo) from stdin") as cp:
+        for ist, voci in per_comune.items():
+            b = bilancio.get(ist)
+            if b is None:
+                continue
+            for cod, imp in voci.items():
+                if imp != 0:
+                    cp.write_row((b, cod, round(imp, 2)))
+                    righe += 1
+    return {"righe": righe, "comuni": len(ids), "senza_bilancio": senza_bilancio}
+
+
 def totali_comune(entrate: dict, spese: dict) -> dict:
     """Totali di un comune dai suoi importi per titolo (gia' all'ultimo mese).
 
@@ -142,6 +234,8 @@ def main() -> None:
     ap.add_argument("--dir", help="Cartella con entrate_*.csv e spese_*.csv")
     ap.add_argument("--year", type=int, help="Esercizio di riferimento")
     ap.add_argument("--inspect", metavar="CSV", help="Stampa header e prime righe")
+    ap.add_argument("--senza-voci", action="store_true",
+                    help="Salta il dettaglio per voce (solo i totali, piu' veloce)")
     a = ap.parse_args()
 
     if a.inspect:
@@ -233,6 +327,30 @@ def main() -> None:
         cur.execute("select refresh_fhi(%s)", (a.year,))
         print(f"→ indice ricalcolato su {cur.fetchone()[0]} righe")
         conn.commit()
+
+        if not a.senza_voci:
+            print("→ dettaglio per voce (secondo passaggio sulle spese)…")
+            per_comune, descr, scartate = voci_per_comune(f_spe)
+            esito = importa_voci(cur, per_comune, descr, a.year)
+            conn.commit()
+            cur.execute("select refresh_aree()")
+            conn.commit()
+            print(f"  {esito['righe']:,} importi in {esito['comuni']} comuni · {len(descr)} voci distinte"
+                  .replace(",", "."))
+            if scartate:
+                print(f"  ⚠ {scartate} righe scartate: codice gestionale fuori formato")
+            if esito["senza_bilancio"]:
+                print(f"  ⚠ {len(esito['senza_bilancio'])} comuni con spese ma senza bilancio "
+                      f"(nessuna entrata): {esito['senza_bilancio'][:5]}")
+            # Quanto resta in 'non_attribuibile' e' la misura di cio' che la tabella di
+            # corrispondenza non sa classificare: va guardato a ogni import
+            tot = nonattr = 0.0
+            for voci in per_comune.values():
+                for cod, imp in voci.items():
+                    tot += imp
+                    nonattr += imp if classifica(cod)[1] == "non_attribuibile" else 0
+            if tot:
+                print(f"  {nonattr / tot:.1%} della spesa resta '{AREE['non_attribuibile']}'")
 
     print(f"✔ {len(righe)} comuni caricati per il {a.year}.")
     if non_abbinati:

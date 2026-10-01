@@ -163,3 +163,116 @@ class TestTotaliComune:
         senza = siope.totali_comune({"1": 80, "3": 20}, {})
         assert con == senza
         assert con["proprie"] / con["incassi"] == pytest.approx(1.0)
+
+
+# --- Dettaglio per voce ----------------------------------------------------------
+
+INTESTAZIONE_VOCI = (
+    "Codice istat provincia;Codice istat comune;Codice Tipologia Ente BDAP;"
+    "Anno/Mese calendario;Codice Titolo CG;Codice Gestionale Enti Locali;"
+    "Descrizione CG;Importo cumulato"
+)
+
+
+def csv_voci(tmp_path, righe, nome="spese_X.csv"):
+    testo = "\n".join([INTESTAZIONE_VOCI] + [";".join(map(str, r)) for r in righe]) + "\n"
+    p = tmp_path / nome
+    p.write_text(testo, encoding="latin-1")
+    return str(p)
+
+
+RIF = ("U1000000000", "U1030215004", "Contratti di servizio per la raccolta rifiuti")
+STIP = ("U1000000000", "U1010101002", "Voci stipendiali")
+
+
+class TestVociPerComune:
+    def test_prende_l_ultimo_mese_di_ogni_voce(self, siope, tmp_path):
+        f = csv_voci(tmp_path, [
+            ("070", "001", "CO", "2024/03", *RIF, 100),
+            ("070", "001", "CO", "2024/12", *RIF, 1200),  # cumulato: l'anno e' 1200
+        ])
+        voci, _, _ = siope.voci_per_comune([f])
+        assert voci == {"070001": {"U1030215004": pytest.approx(1200)}}
+
+    def test_sommare_i_mesi_sarebbe_un_errore(self, siope, tmp_path):
+        f = csv_voci(tmp_path, [("070", "001", "CO", f"2024/{m:02d}", *RIF, 100 * m)
+                                for m in range(1, 13)])
+        voci, _, _ = siope.voci_per_comune([f])
+        assert voci["070001"]["U1030215004"] == pytest.approx(1200)  # non 7.800
+
+    def test_il_dettaglio_somma_ai_pagamenti_dei_totali(self, siope, tmp_path):
+        # L'invariante che tiene insieme le due viste della stessa spesa:
+        # se divergono, il sito mostrerebbe due totali diversi per lo stesso comune.
+        f = csv_voci(tmp_path, [
+            ("070", "001", "CO", "2024/12", *RIF, 500),
+            ("070", "001", "CO", "2024/12", *STIP, 700),
+            ("070", "001", "CO", "2024/12", "U0000000000", "U0000000000", "Pagamenti da regolarizzare", 90),
+            ("070", "001", "CO", "2024/12", "U7000000000", "U7000000001", "Partite di giro", 800),
+            ("070", "001", "CO", "2024/12", "U5000000000", "U5000000001", "Chiusura anticipazioni", 600),
+        ])
+        voci, _, _ = siope.voci_per_comune([f])
+        dettaglio = sum(voci["070001"].values())
+        # I totali leggono gli stessi righe con un'altra intestazione
+        f2 = tmp_path / "spese_totali.csv"
+        f2.write_text(
+            INTESTAZIONE + "\n" + "\n".join(
+                ";".join(map(str, (p, c, t, m, ti, i))) for p, c, t, m, ti, _g, _d, i in [
+                    ("070", "001", "CO", "2024/12", *RIF, 500),
+                    ("070", "001", "CO", "2024/12", *STIP, 700),
+                    ("070", "001", "CO", "2024/12", "U0000000000", "x", "x", 90),
+                    ("070", "001", "CO", "2024/12", "U7000000000", "x", "x", 800),
+                    ("070", "001", "CO", "2024/12", "U5000000000", "x", "x", 600),
+                ]
+            ) + "\n", encoding="latin-1")
+        pagamenti = siope.totali_comune({}, siope.ultimo_mese(siope.aggrega([str(f2)]))["070001"])["pagamenti"]
+        assert dettaglio == pytest.approx(pagamenti) == pytest.approx(1200)
+
+    def test_escludono_sospesi_partite_di_giro_e_chiusura_anticipazioni(self, siope, tmp_path):
+        f = csv_voci(tmp_path, [
+            ("070", "001", "CO", "2024/12", *RIF, 10),
+            ("070", "001", "CO", "2024/12", "U0000000000", "U0000000000", "sospesi", 99),
+            ("070", "001", "CO", "2024/12", "U7000000000", "U7000000001", "conto terzi", 99),
+            ("070", "001", "CO", "2024/12", "U5000000000", "U5000000001", "anticipazioni", 99),
+        ])
+        voci, descr, _ = siope.voci_per_comune([f])
+        assert list(voci["070001"]) == ["U1030215004"]
+        assert set(descr) == {"U1030215004"}
+
+    def test_scarta_i_codici_fuori_formato_e_li_conta(self, siope, tmp_path):
+        # La vecchia codifica a 5 caratteri appartiene ad altri tipi di ente,
+        # ma se arrivasse per un comune non deve finire in anagrafica
+        f = csv_voci(tmp_path, [
+            ("070", "001", "CO", "2024/12", *RIF, 10),
+            ("070", "001", "CO", "2024/12", "U1000000000", "1010", "Vecchio codice", 5),
+        ])
+        voci, _, scartate = siope.voci_per_comune([f])
+        assert list(voci["070001"]) == ["U1030215004"]
+        assert scartate == 1
+
+    def test_solo_i_comuni(self, siope, tmp_path):
+        f = csv_voci(tmp_path, [
+            ("070", "001", "CO", "2024/12", *RIF, 10),
+            ("070", "000", "PR", "2024/12", *RIF, 9999),
+        ])
+        voci, _, _ = siope.voci_per_comune([f])
+        assert voci == {"070001": {"U1030215004": pytest.approx(10)}}
+
+    def test_ogni_file_e_una_regione_e_non_si_contaminano(self, siope, tmp_path):
+        # Un comune con dati fino a giugno e uno fino a dicembre in file diversi:
+        # ciascuno conserva il proprio ultimo mese
+        a = csv_voci(tmp_path, [("070", "001", "CO", "2024/06", *RIF, 300)], "spese_A.csv")
+        b = csv_voci(tmp_path, [("001", "001", "CO", "2024/12", *RIF, 900)], "spese_B.csv")
+        voci, _, _ = siope.voci_per_comune([a, b])
+        assert voci["070001"]["U1030215004"] == pytest.approx(300)
+        assert voci["001001"]["U1030215004"] == pytest.approx(900)
+
+    def test_la_descrizione_si_conserva(self, siope, tmp_path):
+        f = csv_voci(tmp_path, [("070", "001", "CO", "2024/12", *RIF, 10)])
+        _, descr, _ = siope.voci_per_comune([f])
+        assert descr == {"U1030215004": "Contratti di servizio per la raccolta rifiuti"}
+
+    def test_colonne_mancanti_fermano_lo_script(self, siope, tmp_path):
+        p = tmp_path / "rotto.csv"
+        p.write_text("a;b;c\n1;2;3\n", encoding="latin-1")
+        with pytest.raises(SystemExit):
+            siope.voci_per_comune([str(p)])

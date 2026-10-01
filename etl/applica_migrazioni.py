@@ -43,7 +43,7 @@ def main() -> None:
             except Exception as e:
                 sys.exit(f"ERRORE in {f.name}: {str(e).splitlines()[0]}")
             print(f"  OK  {f.name}")
-    print(f"✔ {len(file)} migrazioni applicate")
+    print(f"{len(file)} migrazioni applicate")
 
 
 if __name__ == "__main__":
