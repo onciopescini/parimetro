@@ -262,8 +262,8 @@ export default function BudgetDrawer({
         // sé compreso": meglio dirlo in chiaro.
         text:
           current.fhi === 100
-            ? "È il primo della sua fascia demografica per autonomia finanziaria e saldo di cassa."
-            : `Fra i comuni della sua fascia demografica sta meglio del ${current.fhi}%, su autonomia finanziaria e saldo di cassa.`,
+            ? "È il primo della sua fascia demografica per autonomia finanziaria e saldo di gestione (al netto dei prestiti)."
+            : `Fra i comuni della sua fascia demografica sta meglio del ${current.fhi}%, su autonomia finanziaria e saldo di gestione (al netto dei prestiti).`,
       });
     }
     if (!list.length) {
@@ -325,7 +325,7 @@ export default function BudgetDrawer({
               <div
                 title={
                   peerAvg
-                    ? `Posizione fra i ${num(peerAvg.n)} comuni della fascia ${peerAvg.fascia}: meglio del ${current.fhi ?? "—"}% di loro, su autonomia finanziaria e saldo di cassa.`
+                    ? `Posizione fra i ${num(peerAvg.n)} comuni della fascia ${peerAvg.fascia}: meglio del ${current.fhi ?? "—"}% di loro, su autonomia finanziaria e saldo di gestione (al netto dei prestiti).`
                     : "Posizione del comune fra quelli della sua fascia demografica (0-100)."
                 }
                 className={`rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-center ${fhiColor(current.fhi)}`}
