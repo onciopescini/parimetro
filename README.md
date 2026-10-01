@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# mappa-bilanci
 
-## Getting Started
+Mappa 3D interattiva dei bilanci dei comuni italiani: altezza e colore di ogni comune
+seguono due metriche a scelta, e cliccando si apre il dettaglio con storico, confronto
+con i comuni della stessa fascia demografica e classifiche.
 
-First, run the development server:
+Il sito è **interamente statico** (`output: "export"`): online non gira nessun server né
+database. Legge file JSON da `public/dati/`, prodotti dalla pipeline nell'altro repository
+(`mappa-3d-bilanci/etl`).
+
+## Provarlo senza i dati veri
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run fixture   # genera 7 comuni finti in public/dati (cartella ignorata da git)
+npm run dev       # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+I comuni della fixture sono inventati e con nomi volutamente finti: non scambiarli per dati.
+La fixture riusa `slug()` e `percorsoClassifica()` del sito, quindi non può divergere dai
+nomi di file che la pagina cerca.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Con i dati veri
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Si prepara con la pipeline ETL (`mappa-3d-bilanci/etl/README.md`) e si esporta qui:
 
-## Learn More
+```bash
+python 05_esporta_statico.py --dest ../../mappa-bilanci/public/dati
+```
 
-To learn more about Next.js, take a look at the following resources:
+Poi `selfhost/pubblica.sh` fa export, build e deploy su Cloudflare Pages. Come montare il
+database dell'officina: `selfhost/README.md`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Sviluppo
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm test          # 37 test (vitest)
+npm run lint
+npx tsc --noEmit
+npm run build     # produce out/
+```
 
-## Deploy on Vercel
+`predev` e `prebuild` copiano in `public/maplibre/` i file del worker di maplibre-gl: la
+versione 6 è solo ESM e Turbopack sposta il codice in chunk diversi, quindi senza questo la
+mappa base non si disegna ("Worker failed to load").
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Com'è fatto
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| | |
+|---|---|
+| `app/page.tsx` | stato della vista (nella query string: ogni schermata è un link), ricerca, classifiche |
+| `components/map/Map3D.tsx` | mappa deck.gl con estrusione a due metriche e due livelli di dettaglio |
+| `components/drawer/BudgetDrawer.tsx` | dettaglio di un comune: KPI, confronto, grafici, alert |
+| `components/ranking/RankingPanel.tsx` | classifiche per fascia e regione |
+| `lib/dati.ts` | **unico** posto che conosce i percorsi dei file di dati |
+| `db/migrations/` | schema e funzioni del database dell'officina |
+| `tests/fixtures/` | tabelle condivise con l'ETL: stessi slug, stessi nomi di file |
+
+## Cosa tenere a mente
+
+- **I dati sono di cassa** (SIOPE): incassi e pagamenti, non accertamenti e impegni. Il sito lo
+  dichiara. Il "rango" è la posizione del comune tra quelli della sua fascia demografica,
+  non un giudizio sulla salute finanziaria.
+- **`lib/dati.ts` e `etl/05_esporta_statico.py` devono calcolare gli stessi nomi di file.**
+  Lo garantiscono le fixture condivise, presenti in copia identica nei due repository.
+- Pages accetta al massimo 20.000 file per deploy.

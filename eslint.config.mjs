@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generati, non scritti da noi: il worker di maplibre copiato in public/
+    // (minificato: oltre mille avvisi) e i dati prodotti dall'ETL
+    "public/maplibre/**",
+    "public/dati/**",
   ]),
 ]);
 

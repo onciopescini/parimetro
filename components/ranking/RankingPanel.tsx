@@ -59,6 +59,7 @@ function formatta(metric: string, v: number | null) {
 }
 
 export default function RankingPanel({
+  anno,
   onSelect,
   onClose,
   caricaFiltri,
@@ -68,42 +69,50 @@ export default function RankingPanel({
   onClose: () => void;
   caricaFiltri: () => Promise<RankingFilters>;
   caricaClassifica: (q: RankingQuery) => Promise<RankingRow[]>;
+  /** Serve a riconoscere una risposta vecchia quando cambia l'esercizio */
+  anno: number;
 }) {
   const [filtri, setFiltri] = useState<RankingFilters | null>(null);
+  const [erroreFiltri, setErroreFiltri] = useState<string | null>(null);
   const [q, setQ] = useState<RankingQuery>({
     metric: "fhi",
     fascia: null,
     region: null,
     desc: true,
   });
-  const [righe, setRighe] = useState<RankingRow[]>([]);
-  const [caricando, setCaricando] = useState(true);
-  const [errore, setErrore] = useState<string | null>(null);
+  // L'esito porta con se' la richiesta a cui risponde: "sta caricando" e'
+  // semplicemente "l'ultima risposta non e' per la richiesta attuale". Cosi' non
+  // si impostano stati all'inizio dell'effetto, e una risposta in ritardo di
+  // un filtro precedente non puo' comparire sotto quello nuovo.
+  const chiave = `${anno}|${JSON.stringify(q)}`;
+  const [esito, setEsito] = useState<{
+    chiave: string;
+    righe: RankingRow[];
+    errore: string | null;
+  } | null>(null);
+  const caricando = esito?.chiave !== chiave;
+  const righe = esito?.chiave === chiave ? esito.righe : [];
+  const errore = esito?.chiave === chiave ? esito.errore : null;
 
   useEffect(() => {
     caricaFiltri()
       .then(setFiltri)
-      .catch((e) => setErrore(String(e)));
+      .catch((e) => setErroreFiltri(String(e)));
   }, [caricaFiltri]);
 
   useEffect(() => {
     let annullato = false;
-    setCaricando(true);
-    setErrore(null);
     caricaClassifica(q)
       .then((r) => {
-        if (!annullato) setRighe(r);
+        if (!annullato) setEsito({ chiave, righe: r, errore: null });
       })
       .catch((e) => {
-        if (!annullato) setErrore(String(e));
-      })
-      .finally(() => {
-        if (!annullato) setCaricando(false);
+        if (!annullato) setEsito({ chiave, righe: [], errore: String(e) });
       });
     return () => {
       annullato = true;
     };
-  }, [q, caricaClassifica]);
+  }, [q, caricaClassifica, chiave]);
 
   const sel =
     "mt-1 w-full rounded-md border border-white/10 bg-slate-800/80 px-2 py-1 text-[11px] text-slate-200";
@@ -194,7 +203,11 @@ export default function RankingPanel({
       </select>
 
       <div className="mt-3 min-h-0 flex-1 overflow-y-auto">
-        {errore && <p className="text-[11px] text-red-300">Classifica non disponibile: {errore}</p>}
+        {(errore ?? erroreFiltri) && (
+          <p className="text-[11px] text-red-300">
+            Classifica non disponibile: {errore ?? erroreFiltri}
+          </p>
+        )}
 
         {caricando && !errore && (
           <div className="flex items-center gap-2 py-3 text-[11px] text-slate-400">

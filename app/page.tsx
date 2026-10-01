@@ -10,7 +10,8 @@
 // è un link condivisibile.
 // ============================================================
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, Trophy, X } from "lucide-react";
 import Map3D, {
   METRIC_LABELS,
@@ -41,13 +42,35 @@ type Anagrafica = Pick<MunicipalityProps, "istat" | "name" | "region" | "provinc
 /** Riga della ricerca: anagrafica piu' il punto su cui volare. */
 type Risultato = Anagrafica & { lon: number; lat: number };
 
+/** Una metrica letta dalla URL vale solo se esiste: un link vecchio o storpiato non deve rompere la mappa. */
+function metricaDa(v: string | null, predefinita: MetricKey): MetricKey {
+  return v && (METRICS as string[]).includes(v) ? (v as MetricKey) : predefinita;
+}
+
+// useSearchParams richiede un confine Suspense con l'export statico: il
+// server prerenderizza il guscio, il browser monta la mappa con la query
+// string vera. Cosi' lo stato iniziale si legge in render, senza effetti e
+// senza rischio di idratazione sfasata.
 export default function Home() {
-  const [year, setYear] = useState(2024);
-  const [heightMetric, setHeightMetric] = useState<MetricKey>("expenditure");
-  const [colorMetric, setColorMetric] = useState<MetricKey>("expenditure");
-  const [perCapita, setPerCapita] = useState(false);
+  return (
+    <Suspense fallback={<main className="h-dvh w-full bg-slate-950" />}>
+      <Mappa />
+    </Suspense>
+  );
+}
+
+function Mappa() {
+  const params = useSearchParams();
+  const [year, setYear] = useState(() => Number(params.get("anno")) || 2024);
+  const [heightMetric, setHeightMetric] = useState<MetricKey>(() =>
+    metricaDa(params.get("alt"), "expenditure"),
+  );
+  const [colorMetric, setColorMetric] = useState<MetricKey>(() =>
+    metricaDa(params.get("col"), "expenditure"),
+  );
+  const [perCapita, setPerCapita] = useState(() => params.get("pc") === "1");
   // true = i ~7.900 comuni estrusi già dalla vista nazionale
-  const [comuniOvunque, setComuniOvunque] = useState(true);
+  const [comuniOvunque, setComuniOvunque] = useState(() => params.get("lod") !== "province");
 
   const [detail, setDetail] = useState<MunicipalityDetail | null>(null);
   const [avg, setAvg] = useState<NationalAverages | null>(null);
@@ -55,33 +78,13 @@ export default function Home() {
   const [open, setOpen] = useState(false);
   const [flyTo, setFlyTo] = useState<{ lon: number; lat: number; nonce: number } | null>(null);
 
-  // ---- Stato iniziale dalla query string ------------------------------- //
-  // Va letto dopo il mount e non durante il render: il server non ha la query
-  // string, e leggerla in render romperebbe l'idratazione.
-  const [pronto, setPronto] = useState(false);
-  const comuneDaAprire = useRef<string | null>(null);
-
-  useEffect(() => {
-    const p = new URLSearchParams(window.location.search);
-    const anno = Number(p.get("anno"));
-    if (anno) setYear(anno);
-    const alt = p.get("alt") as MetricKey | null;
-    if (alt && METRICS.includes(alt)) setHeightMetric(alt);
-    const col = p.get("col") as MetricKey | null;
-    if (col && METRICS.includes(col)) setColorMetric(col);
-    if (p.get("pc")) setPerCapita(p.get("pc") === "1");
-    if (p.get("lod")) setComuniOvunque(p.get("lod") !== "province");
-    comuneDaAprire.current = p.get("comune");
-    setPronto(true);
-  }, []);
+  // Comune indicato nella URL: lo apre l'effetto piu' sotto, a dati pronti
+  const comuneDaAprire = useRef<string | null>(params.get("comune"));
 
   // ---- Esercizi disponibili, dichiarati dalla sorgente ------------------ //
-  // L'elenco è legato alla sorgente da cui proviene: appena si cambia sorgente
-  // torna vuoto, così non si usa mai la lista dell'altra per validare un anno.
   const [years, setYears] = useState<number[]>([]);
 
   useEffect(() => {
-    if (!pronto) return;
     let annullato = false;
     (async () => {
       const anni = await leggi<number[]>(`${URL_DATI}/anni.json`);
@@ -100,15 +103,15 @@ export default function Home() {
     return () => {
       annullato = true;
     };
-  }, [pronto]);
+  }, []);
 
   // Anno passato alla mappa: avanza solo quando è confermato dalla sorgente
   // corrente. Resta null finché non lo sappiamo, così la mappa non parte con
   // un anno provvisorio e non spreca una richiesta da 5 MB.
   const [annoMappa, setAnnoMappa] = useState<number | null>(null);
-  useEffect(() => {
-    if (years.includes(year)) setAnnoMappa(year);
-  }, [year, years]);
+  // Si aggiorna durante il render (non in un effetto): e' lo schema che React
+  // indica per derivare stato da altro stato, e evita un render con l'anno vecchio.
+  if (years.includes(year) && annoMappa !== year) setAnnoMappa(year);
 
   // ---- Selezione di un comune (dalla mappa o dalla ricerca) ------------- //
   const handleSelect = useCallback(
@@ -144,7 +147,9 @@ export default function Home() {
 
   // ---- Ricerca --------------------------------------------------------- //
   const [query, setQuery] = useState("");
-  const [risultati, setRisultati] = useState<Risultato[]>([]);
+  const [trovati, setRisultati] = useState<Risultato[]>([]);
+  // Sotto i 2 caratteri non si mostra nulla, anche se restano risultati vecchi
+  const risultati = query.trim().length < 2 ? [] : trovati;
 
   // La ricerca gira in browser su un indice di ~7.900 righe scaricato una
   // volta sola: niente server. leggi() solleva sugli errori invece di
@@ -154,10 +159,7 @@ export default function Home() {
 
   useEffect(() => {
     const q = query.trim();
-    if (q.length < 2) {
-      setRisultati([]);
-      return;
-    }
+    if (q.length < 2) return;
     // Debounce: senza, ogni tasto premuto è una query
     const t = setTimeout(() => {
       cerca(q)
@@ -204,7 +206,7 @@ export default function Home() {
   // cache fredda ed è la più esposta al timeout, quindi si riprova una volta.
   useEffect(() => {
     const istat = comuneDaAprire.current;
-    if (!istat || !pronto || annoMappa === null) return;
+    if (!istat || annoMappa === null) return;
     comuneDaAprire.current = null;
 
     let annullato = false;
@@ -234,11 +236,11 @@ export default function Home() {
     return () => {
       annullato = true;
     };
-  }, [pronto, annoMappa, cerca, vaiA]);
+  }, [annoMappa, cerca, vaiA]);
 
   // ---- Stato → query string -------------------------------------------- //
   useEffect(() => {
-    if (!pronto || annoMappa === null) return;
+    if (annoMappa === null) return;
     const p = new URLSearchParams();
     p.set("anno", String(annoMappa));
     p.set("alt", heightMetric);
@@ -251,7 +253,6 @@ export default function Home() {
     // Indietro inservibile.
     window.history.replaceState(null, "", `?${p.toString()}`);
   }, [
-    pronto,
     annoMappa,
     heightMetric,
     colorMetric,
@@ -286,6 +287,7 @@ export default function Home() {
       {classifiche && (
         <div className={open ? "hidden md:block" : ""}>
           <RankingPanel
+            anno={annoMappa ?? year}
             onSelect={vaiA}
             onClose={() => setClassifiche(false)}
             caricaFiltri={caricaFiltri}

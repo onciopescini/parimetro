@@ -47,3 +47,6 @@ next-env.d.ts
 # generati dall'ETL (05_esporta_statico.py) e dalla build statica
 /public/dati/
 /out/
+
+# copiati da node_modules a ogni dev/build (scripts/copia-worker-maplibre.mjs)
+/public/maplibre/

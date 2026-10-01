@@ -4,15 +4,28 @@
 // Online non c'e' un database: l'ETL (05_esporta_statico.py) scrive file
 // JSON in public/dati/ e il sito li legge da li'. Questo modulo e' l'unico
 // posto che conosce i percorsi, e lo schema dei nomi DEVE restare identico
-// a quello dell'esportatore Python.
+// a quello dell'esportatore Python (etl/05_esporta_statico.py).
+//
+// La parita' e' verificata da tests/fixtures/*.json, che esiste in copia
+// identica nell'altro repository: vedi i test su entrambi i lati.
 // ============================================================
 
 export const URL_DATI = "/dati";
 
-/** Stesso slug dell'esportatore: minuscole, tutto cio' che non e' [a-z0-9] -> "-". */
+/**
+ * Minuscolo e senza segni diacritici: "Forlì" -> "forli".
+ * NFKD scompone le lettere accentate (e le legature: "ﬁ" -> "fi"), poi si
+ * tolgono i soli segni combinanti non spaziati (categoria Mn), che e' anche
+ * cio' che fa il Python: con \p{M} (che include Mc e Me) i due potrebbero
+ * divergere su alfabeti non latini.
+ */
+export function senzaAccenti(s: string): string {
+  return s.toLowerCase().normalize("NFKD").replace(/\p{Mn}/gu, "");
+}
+
+/** Chiave di file: solo [a-z0-9] separati da "-". Identica a slug() in 05_esporta_statico.py. */
 export function slug(s: string): string {
-  return s
-    .toLowerCase()
+  return senzaAccenti(s)
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 }
@@ -47,34 +60,51 @@ export interface VoceIndice {
   lat: number;
 }
 
-let indice: Promise<VoceIndice[]> | null = null;
+/** Forma di confronto: senza accenti e con ogni segno ridotto a uno spazio ("Sant'Agata" -> "sant agata"). */
+const forma = (s: string) => senzaAccenti(s).replace(/[^a-z0-9]+/g, " ").trim();
 
-/** L'indice (~7.900 righe) si scarica una volta sola, alla prima ricerca. */
-export function caricaIndice(): Promise<VoceIndice[]> {
-  indice ??= leggi<VoceIndice[]>(`${URL_DATI}/indice.json`);
+let indice: Promise<{ v: VoceIndice; n: string }[]> | null = null;
+
+/**
+ * L'indice (~7.900 righe) si scarica una volta sola, alla prima ricerca, e le
+ * forme di confronto si calcolano subito: a ogni tasto premuto sarebbero
+ * 7.900 normalizzazioni inutili.
+ */
+function caricaIndice() {
+  indice ??= leggi<VoceIndice[]>(`${URL_DATI}/indice.json`).then((voci) =>
+    voci.map((v) => ({ v, n: forma(v.name) })),
+  );
+  // Se il download fallisce non si deve ricordare il fallimento per sempre
+  indice.catch(() => {
+    indice = null;
+  });
   return indice;
 }
 
 /**
- * Ricerca in browser, stessa logica di search_municipalities():
+ * Ricerca in browser, stessa graduatoria di search_municipalities():
  * codice ISTAT esatto, poi chi inizia col termine, poi inizio di parola;
- * a parita' vince il piu' popoloso.
+ * a parita' vince il piu' popoloso. Insensibile ad accenti e apostrofi.
  */
 export async function cerca(q: string, limite = 8): Promise<VoceIndice[]> {
-  const t = q.trim().toLowerCase();
+  const t = forma(q);
   if (t.length < 2) return [];
   const voci = await caricaIndice();
-  const punteggio = (v: VoceIndice) => {
-    const n = v.name.toLowerCase();
+  const punteggio = ({ v, n }: { v: VoceIndice; n: string }) => {
     if (v.istat === t) return 0;
     if (n.startsWith(t)) return 1;
     if (n.includes(" " + t)) return 2;
     return 99;
   };
   return voci
-    .map((v) => ({ v, p: punteggio(v) }))
-    .filter((x) => x.p < 99)
-    .sort((a, b) => a.p - b.p || b.v.population - a.v.population)
+    .map((x) => ({ x, p: punteggio(x) }))
+    .filter((r) => r.p < 99)
+    .sort((a, b) => a.p - b.p || b.x.v.population - a.x.v.population)
     .slice(0, limite)
-    .map((x) => x.v);
+    .map((r) => r.x.v);
+}
+
+/** Solo per i test: dimentica l'indice scaricato. */
+export function _azzeraIndice() {
+  indice = null;
 }

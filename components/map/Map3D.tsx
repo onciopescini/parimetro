@@ -24,6 +24,24 @@ import {
 import { Map as BaseMap } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 
+/**
+ * maplibre-gl 6 cerca il worker accanto a se' stesso, ma Turbopack sposta il
+ * codice in altri chunk: senza questo la mappa base non si disegna ("Worker
+ * failed to load"). I file li copia scripts/copia-worker-maplibre.mjs.
+ *
+ * L'URL va impostato PRIMA che la mappa nasca, per questo lo si fa dentro la
+ * promessa che react-map-gl aspetta come `mapLib`. Lato server non si importa
+ * nulla: maplibre-gl ha bisogno del browser.
+ */
+let maplibrePronto: Promise<typeof import("maplibre-gl")> | null = null;
+function caricaMaplibre() {
+  maplibrePronto ??= import("maplibre-gl").then((m) => {
+    m.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
+    return m;
+  });
+  return maplibrePronto;
+}
+
 // ---------------------------------------------------------- //
 // Tipi
 // ---------------------------------------------------------- //
@@ -255,10 +273,16 @@ export default function Map3D({
   palette = "health",
   flyTo = null,
 }: Map3DProps) {
+  // undefined sul server (non influisce sull'HTML), la promessa nel browser
+  const [mapLib] = useState(() => (typeof window === "undefined" ? undefined : caricaMaplibre()));
   const [viewState, setViewState] = useState<MapViewState>(INITIAL_VIEW_STATE);
   const [munis, setMunis] = useState<MuniFC | null>(null);
   const [provinces, setProvinces] = useState<ProvinceAgg[]>([]);
-  const [loading, setLoading] = useState(false);
+  // Quale combinazione anno/cartella ha gia' finito di caricare. "Sta
+  // caricando" si deriva da qui, senza impostarlo all'inizio dell'effetto.
+  const [caricatoPer, setCaricatoPer] = useState<string | null>(null);
+  const chiaveDati = `${dataUrl}|${year}`;
+  const loading = caricatoPer !== chiaveDati;
 
   // ---- Volo comandato dall'esterno (ricerca, deep link) ----
   const ultimoVolo = useRef<number | null>(null);
@@ -279,7 +303,6 @@ export default function Map3D({
   // ---- Fetch dei due livelli LOD: file statici generati dall'ETL ----
   useEffect(() => {
     let alive = true;
-    setLoading(true);
     Promise.all([
       fetch(`${dataUrl}/comuni-${year}.json`).then((r) => r.json()),
       fetch(`${dataUrl}/province-${year}.json`).then((r) => r.json()),
@@ -290,11 +313,11 @@ export default function Map3D({
         setProvinces(Array.isArray(prov) ? prov : []);
       })
       .catch(console.error)
-      .finally(() => alive && setLoading(false));
+      .finally(() => alive && setCaricatoPer(chiaveDati));
     return () => {
       alive = false;
     };
-  }, [year, dataUrl]);
+  }, [year, dataUrl, chiaveDati]);
 
   const showPolygons = viewState.zoom >= lodThreshold;
 
@@ -474,6 +497,7 @@ export default function Map3D({
         onClick={handleClick}
       >
         <BaseMap
+          mapLib={mapLib}
           mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json"
           reuseMaps
           attributionControl={false}
