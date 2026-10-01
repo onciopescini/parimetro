@@ -23,27 +23,16 @@ from dotenv import load_dotenv
 from config import POSAS, inspect_csv
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser(description="Import popolazione per comune/anno")
-    ap.add_argument("csv", nargs="?", help="CSV popolazione (POSAS o equivalente)")
-    ap.add_argument("--year", type=int, help="Anno di riferimento della popolazione")
-    ap.add_argument("--inspect", metavar="CSV", help="Stampa header e prime righe di un CSV")
-    a = ap.parse_args()
+def popolazione_da_csv(path: str) -> list[tuple[str, int]]:
+    """(codice ISTAT a 6 cifre, residenti) per ogni comune del CSV.
 
-    if a.inspect:
-        inspect_csv(a.inspect)
-        return
-    if not (a.csv and a.year):
-        ap.error("servono csv e --year (oppure --inspect FILE)")
-
-    load_dotenv()
-    url = os.getenv("DATABASE_URL")
-    if not url:
-        sys.exit("DATABASE_URL mancante: copia .env.example in .env e compilalo.")
-
+    Gestisce le due forme in cui ISTAT distribuisce il dato: un CSV con la
+    colonna del totale, oppure il POSAS classico con una riga per eta' dove
+    si tiene la riga-totale (999) e si sommano maschi e femmine.
+    """
     c = POSAS
     df = pd.read_csv(
-        a.csv,
+        path,
         sep=c["sep"],
         encoding=c["encoding"],
         dtype=str,
@@ -66,7 +55,7 @@ def main() -> None:
                     f"Colonna '{col}' assente nel CSV.\n"
                     "Lancia --inspect e correggi la mappatura POSAS in config.py."
                 )
-        df = df[df[c["col_eta"]].astype(str).str.strip() == str(c["eta_totale"])]
+        df = df[df[c["col_eta"]].astype(str).str.strip() == str(c["eta_totale"])].copy()
         df["pop"] = (
             pd.to_numeric(df[c["col_maschi"]], errors="coerce").fillna(0)
             + pd.to_numeric(df[c["col_femmine"]], errors="coerce").fillna(0)
@@ -75,7 +64,28 @@ def main() -> None:
     df["istat"] = df[c["col_istat"]].astype(str).str.strip().str.zfill(6)
     df = df.dropna(subset=["pop"])
     agg = df.groupby("istat", as_index=False)["pop"].sum()
-    rows = [(i, a.year, int(p)) for i, p in zip(agg["istat"], agg["pop"])]
+    return [(i, int(p)) for i, p in zip(agg["istat"], agg["pop"])]
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description="Import popolazione per comune/anno")
+    ap.add_argument("csv", nargs="?", help="CSV popolazione (POSAS o equivalente)")
+    ap.add_argument("--year", type=int, help="Anno di riferimento della popolazione")
+    ap.add_argument("--inspect", metavar="CSV", help="Stampa header e prime righe di un CSV")
+    a = ap.parse_args()
+
+    if a.inspect:
+        inspect_csv(a.inspect)
+        return
+    if not (a.csv and a.year):
+        ap.error("servono csv e --year (oppure --inspect FILE)")
+
+    load_dotenv()
+    url = os.getenv("DATABASE_URL")
+    if not url:
+        sys.exit("DATABASE_URL mancante: copia .env.example in .env e compilalo.")
+
+    rows = [(i, a.year, p) for i, p in popolazione_da_csv(a.csv)]
     if not rows:
         sys.exit("Nessuna riga di popolazione estratta: controlla la mappatura in config.py.")
 

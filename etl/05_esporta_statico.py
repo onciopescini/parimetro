@@ -17,6 +17,7 @@ import os
 import re
 import shutil
 import sys
+import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 
 import psycopg
@@ -26,9 +27,29 @@ METRICHE = ("fhi", "autonomia", "expenditure_pc", "revenue_pc")
 LIMITE_CLASSIFICA = 20
 
 
+def senza_accenti(s: str) -> str:
+    r"""Minuscolo e senza segni diacritici: "Forlì" -> "forli".
+
+    Identico a senzaAccenti() in lib/dati.ts. NFKD scompone le lettere
+    accentate (e le legature), poi si tolgono i soli segni combinanti non
+    spaziati (categoria Mn): in JavaScript l'equivalente e' \p{Mn}, non \p{M}.
+    """
+    scomposto = unicodedata.normalize("NFKD", s.lower())
+    return "".join(c for c in scomposto if unicodedata.category(c) != "Mn")
+
+
 def slug(s: str) -> str:
-    """Identico a slug() in lib/dati.ts."""
-    return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
+    """Chiave di file: solo [a-z0-9] separati da "-". Identica a slug() in lib/dati.ts."""
+    return re.sub(r"[^a-z0-9]+", "-", senza_accenti(s)).strip("-")
+
+
+def percorso_classifica(anno: int, metric: str, desc: bool,
+                        fascia: str | None, region: str | None) -> str:
+    """Percorso relativo a public/dati/. Identico a percorsoClassifica() in lib/dati.ts
+    (che lo fa precedere da "/dati/")."""
+    f = slug(fascia) if fascia else "tutte"
+    r = slug(region) if region else "italia"
+    return f"classifiche/{anno}/{metric}-{'disc' if desc else 'cresc'}-{f}-{r}.json"
 
 
 def scrivi(percorso: str, dati) -> None:
@@ -106,9 +127,7 @@ def main() -> None:
                     for fa in fasce:
                         for re_ in regioni:
                             righe = tabella(cur, "get_ranking", y, m, fa, re_, desc, LIMITE_CLASSIFICA)
-                            nome = (f"{m}-{'disc' if desc else 'cresc'}-"
-                                    f"{slug(fa) if fa else 'tutte'}-{slug(re_) if re_ else 'italia'}.json")
-                            scrivi(f"{dest}/classifiche/{y}/{nome}", righe)
+                            scrivi(f"{dest}/{percorso_classifica(y, m, desc, fa, re_)}", righe)
                             n_cl += 1
             print(f"→ classifiche {y}: {n_cl} file finora")
 

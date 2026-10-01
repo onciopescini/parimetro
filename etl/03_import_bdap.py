@@ -5,8 +5,9 @@
 # Legge i CSV del rendiconto (uno per le ENTRATE con gli
 # accertamenti per titolo, uno per le SPESE con impegni e
 # pagamenti), aggrega per comune, mappa sulle colonne dello
-# schema e fa upsert: il trigger set_fhi calcola da solo il
-# Financial Health Index a ogni riga.
+# schema e fa upsert; a fine import lancia refresh_fhi(), che
+# ricalcola il rango nella fascia demografica (non e' piu' un
+# trigger di riga: un percentile si calcola sulla coorte).
 #
 # Approssimazioni v1, dichiarate:
 #  - surplus_deficit = accertamenti − impegni (proxy del risultato

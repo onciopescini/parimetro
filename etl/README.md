@@ -1,29 +1,26 @@
-# Modulo ETL · Dati reali (ISTAT + OpenBDAP)
+# ETL · dal dato ufficiale al sito
 
-Pipeline in 3 script Python che riempie `municipalities` e `budget_records` con i dati veri di ~7.900 comuni. Il Financial Health Index non va calcolato: lo fa il trigger del database a ogni riga inserita.
+Riempie `municipalities` e `budget_records` con i dati veri di ~7.900 comuni e poi esporta
+tutto come JSON statici. Panoramica e motivi delle scelte: `../README.md`.
 
 ## Prerequisiti
 
-- Python 3.10+ e GDAL (`ogr2ogr`): macOS `brew install gdal` · Ubuntu `sudo apt install gdal-bin` · Windows installer OSGeo4W
-- Dipendenze: `pip install -r requirements.txt`
-- Connessione DB: `cp .env.example .env` e compila `DATABASE_URL`
+- Python 3.10+ e GDAL (`ogr2ogr`): macOS `brew install gdal` · Ubuntu `sudo apt install gdal-bin`.
+  Su Windows senza OSGeo4W: `ogr2ogr-shim/` espone `ogr2ogr` come eseguibile che inoltra a
+  Docker (`pip install ./ogr2ogr-shim`).
+- `pip install -r requirements.txt` (e `requirements-dev.txt` per i test)
+- Un Postgres con PostGIS e le migrazioni applicate (`mappa-bilanci/db/migrations`, vedi
+  `mappa-bilanci/selfhost/`). Poi `cp .env.example .env` e compila `DATABASE_URL`.
 
-## I 4 file da scaricare
+## Le fonti
 
-1. **Confini comunali (shapefile)** — sito ISTAT, cerca "Confini delle unità amministrative a fini statistici". Scarica la versione **generalizzata** (cartella/suffisso `_g`): pesa ~10 volte meno e per il web è identica. Dal zip serve lo shapefile dei comuni, es. `Com01012025_g_WGS84.shp` (tieni insieme anche .dbf/.shx/.prj).
-2. **Elenco comuni (CSV)** — sito ISTAT, "Codici statistici delle unità amministrative territoriali": file `Elenco-comuni-italiani.csv`. Serve per i nomi di regione e provincia, che nello shapefile non ci sono.
-3. **Popolazione per comune (CSV)** — demo.istat.it, dataset "Popolazione residente al 1° gennaio" (POSAS), CSV per comuni dell'anno che ti serve. Uno per ogni esercizio che caricherai.
-4. **Rendiconti (CSV)** — openbdap.rgs.mef.gov.it → sezione open data → cerca i dataset del **rendiconto della gestione** dei comuni: uno per le **entrate** (accertamenti per titolo) e uno per le **spese** (impegni e pagamenti), per ciascun anno. Sono file grandi: gli script li leggono a blocchi.
-
-## Il workflow anti-sorprese: `--inspect`
-
-Gli open data italiani cambiano intestazioni tra un millesimo e l'altro. Per questo ogni script ha una modalità di ispezione:
-
-```bash
-python 03_import_bdap.py --inspect entrate_2023.csv
-```
-
-Stampa encoding, separatore, elenco colonne e prime righe. Se un import fallisce per "colonne non trovate", il giro è sempre: `--inspect` → correggi la mappatura in `config.py` → rilancia. Due minuti, nessuna modifica al codice.
+1. **Confini comunali** — ISTAT, "Confini delle unità amministrative a fini statistici",
+   versione **generalizzata** (`_g`): pesa ~10 volte meno e per il web è identica.
+   Serve `Com01012025_g_WGS84.shp` con .dbf/.shx/.prj.
+2. **Elenco comuni** — ISTAT, `Elenco-comuni-italiani.csv`: i nomi di regione e provincia.
+3. **Popolazione** — demo.istat.it, POSAS "Popolazione residente per età, sesso e stato
+   civile", CSV dei comuni: uno per ogni anno.
+4. **Bilanci** — SIOPE (cassa) tramite il catalogo open data BDAP; vedi `scarica_siope.py`.
 
 ## Ordine dei comandi
 
@@ -32,37 +29,63 @@ Stampa encoding, separatore, elenco colonne e prime righe. Se un import fallisce
 python 01_import_boundaries.py Com01012025_g_WGS84.shp Elenco-comuni-italiani.csv
 
 # 2 · Popolazione (una volta per anno)
-python 02_import_population.py POSAS_2023_it_Comuni.csv --year 2023
+python 02_import_population.py POSAS_2024_it_Comuni.csv --year 2024
 
-# 3 · Bilanci (una volta per anno)
-python 03_import_bdap.py --entrate entrate_2023.csv --spese spese_2023.csv --year 2023
+# 3 · Bilanci SIOPE: scarica i 40 file (20 regioni x entrate/spese) e importa
+python scarica_siope.py --anno 2024 --dest ./siope_2024
+python 04_import_siope.py --dir ./siope_2024 --year 2024
+
+# 4 · Esporta per il sito
+python 05_esporta_statico.py --dest ../../mappa-bilanci/public/dati
 ```
 
-Ripeti 2 e 3 per ogni anno che vuoi coprire (es. 2019→2023). Riesecuzioni sicure: tutto è upsert.
+Più anni di fila, cancellando i CSV man mano (ogni esercizio pesa ~3 GB): `carica_anni.ps1`.
+Gli import sono sicuri da rilanciare: tutto è upsert. Dopo ogni import l'indice si ricalcola
+da solo (`refresh_fhi`); l'esportatore **cancella e rigenera** `public/dati`, perché un
+file vecchio che sopravvive sarebbe un dato falso servito online.
 
-Quando i dati veri sono dentro, elimina i comuni demo:
+## Il workflow anti-sorprese: `--inspect`
 
-```sql
-delete from municipalities where istat_code like 'DEMO%';
+Gli open data italiani cambiano intestazioni tra un millesimo e l'altro. Ogni script ha:
+
+```bash
+python 04_import_siope.py --inspect entrate_Molise.csv
 ```
 
-## Verifica
+Stampa encoding, separatore, colonne e prime righe. Se un import fallisce per "colonne non
+trovate": `--inspect` → correggi la mappatura in `config.py` → rilancia.
 
-```sql
--- Quanti comuni con bilancio per anno, e FHI medio
-select year, count(*) as comuni, round(avg(financial_health_score)) as fhi_medio
-from budget_records group by year order by year;
+## Le trappole già incontrate
 
--- I 10 comuni più indebitati pro capite dell'ultimo anno
-select m.name, b.debt_per_capita, b.financial_health_score
-from budget_records b join municipalities m on m.id = b.municipality_id
-where b.year = 2023 order by b.debt_per_capita desc nulls last limit 10;
+Ciascuna è costata un errore vero ed è coperta da un test in `tests/`.
+
+- **ISTAT, Elenco comuni**: il nome di una colonna contiene un a-capo letterale.
+- **ISTAT, POSAS**: una riga di titolo prima dell'intestazione; il totale del comune è la
+  riga con età `999`, non la somma delle età.
+- **ISTAT, shapefile**: il DBF dichiara `shape_area` come `numeric(18,11)` ma ci mette valori
+  a 8 cifre intere, e la COPY va in overflow (per questo `-select` sui soli campi utili).
+- **SIOPE, importi cumulati**: sono progressivi da gennaio. Sommare i dodici mesi gonfia i
+  valori di ~6 volte; il totale annuo è il mese più alto.
+- **SIOPE, enti**: nei file ci sono anche province, unioni e comunità montane (si tiene solo
+  `CO`), con una vecchia codifica dei titoli a 5 caratteri.
+- **SIOPE, titolo 0**: sono incassi e pagamenti *da regolarizzare*, non entrate: restano fuori
+  dai totali, altrimenti gonfiano il denominatore dell'autonomia finanziaria.
+- **SIOPE, URL**: nel catalogo sono in `http` ma la connessione cade; vanno forzati a `https`.
+- **WAF di ANAC** (per le fonti future): risponde HTTP 200 con una pagina "Request Rejected" a
+  un User-Agent non da browser. Controllare il tipo di contenuto, non il codice di stato.
+
+## Test
+
+```bash
+python -m pytest
 ```
 
-Poi ricontrolla la Edge Function: tiene una **cache di 6 ore** per anno, quindi dopo un import massiccio o aspetti il TTL o rideployi (`supabase functions deploy geo-budget --no-verify-jwt`) per svuotarla.
+| File | Cosa protegge |
+|---|---|
+| `test_siope.py` | cumulati, filtro sui comuni, esclusione dei sospesi |
+| `test_istat.py` | intestazione con a-capo, riga di titolo, riga-totale 999 |
+| `test_contratto_con_il_sito.py` | che esportatore e sito calcolino gli stessi nomi di file |
+| `test_dati_db.py` | confini delle fasce e invarianti sui dati (richiede `TEST_DATABASE_URL`) |
 
-## Cose da sapere
-
-- **Scelte contabili della v1** — anticipazioni e partite di giro sono escluse dai totali (gonfierebbero entrate e spese senza dire nulla sulla gestione); `surplus_deficit` è il saldo accertamenti−impegni (proxy del risultato di competenza); `debt_total` resta NULL finché non si aggiunge il dataset dell'indebitamento — l'FHI è progettato per trattare il dato mancante come neutro, quindi i punteggi restano sensati.
-- **Codici non abbinati** — lo script 03 segnala gli enti che non trovano il comune: quasi sempre sono fusioni/soppressioni (il codice ISTAT del rendiconto è di un millesimo diverso dai confini) o enti non comunali finiti nel CSV. Se sono pochi, ignora; se sono centinaia, probabilmente hai confini e bilanci di millesimi troppo distanti.
-- **Spazio su Supabase** — con la versione generalizzata dei confini + `geom_simplified` resti in genere dentro i 500 MB del piano free. Se sfori: alza la tolleranza (`--tolerance 0.006`) o valuta il piano Pro.
+`tests/fixtures/*.json` esistono in copia identica in `mappa-bilanci/tests/fixtures/`; un test
+verifica che restino uguali.

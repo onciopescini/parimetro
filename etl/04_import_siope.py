@@ -118,6 +118,25 @@ def ultimo_mese(acc: dict) -> dict:
     return out
 
 
+def totali_comune(entrate: dict, spese: dict) -> dict:
+    """Totali di un comune dai suoi importi per titolo (gia' all'ultimo mese).
+
+    Funzione pura, cosi' si puo' provare senza un database: e' qui che si
+    decide cosa entra nei totali e cosa no (anticipazioni, partite di giro,
+    sospesi da regolarizzare).
+    """
+    incassi = sum(v for t, v in entrate.items() if t not in ENTRATE_FUORI)
+    pagamenti = sum(v for t, v in spese.items() if t not in SPESE_FUORI)
+    return {
+        "incassi": incassi,
+        "pagamenti": pagamenti,
+        "correnti": sum(v for t, v in entrate.items() if t in TITOLI_CORRENTI),
+        "capitale": sum(v for t, v in entrate.items() if t in TITOLI_CAPITALE),
+        "proprie": sum(v for t, v in entrate.items() if t in TITOLI_PROPRIE),
+        "saldo": incassi - pagamenti,
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Import SIOPE (cassa) in budget_records")
     ap.add_argument("--dir", help="Cartella con entrate_*.csv e spese_*.csv")
@@ -170,13 +189,9 @@ def main() -> None:
             if not pop:
                 senza_pop += 1
 
-            incassi = sum(v for t, v in titoli.items() if t not in ENTRATE_FUORI)
-            correnti = sum(v for t, v in titoli.items() if t in TITOLI_CORRENTI)
-            capitale = sum(v for t, v in titoli.items() if t in TITOLI_CAPITALE)
-            proprie = sum(v for t, v in titoli.items() if t in TITOLI_PROPRIE)
-
-            st = spe.get(ist, {})
-            pagamenti = sum(v for t, v in st.items() if t not in SPESE_FUORI)
+            tot = totali_comune(titoli, spe.get(ist, {}))
+            incassi, pagamenti = tot["incassi"], tot["pagamenti"]
+            correnti, capitale, proprie = tot["correnti"], tot["capitale"], tot["proprie"]
 
             righe.append((
                 mid, a.year, pop,
