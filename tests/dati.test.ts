@@ -196,3 +196,22 @@ describe("cerca", () => {
     expect(dopo).toHaveLength(3);
   });
 });
+
+// Le etichette delle categorie devono coprire esattamente le chiavi che l'ETL
+// assegna: una chiave nuova in Python senza etichetta qui si vedrebbe in chiaro.
+describe("categorie", () => {
+  it("AREE e NATURE coincidono con etl/categorie_spesa.py", async () => {
+    const { readFileSync, existsSync } = await import("node:fs");
+    const { AREE, NATURE } = await import("../lib/categorie");
+    const py = "../mappa-3d-bilanci/etl/categorie_spesa.py";
+    if (!existsSync(py)) return; // repo ETL non affiancato (CI del solo sito)
+    const src = readFileSync(py, "utf-8");
+    const chiavi = (nome: string) => {
+      const da = src.indexOf(`${nome}: dict[str, str] = {`);
+      const blocco = src.slice(da, src.indexOf("}", da));
+      return [...blocco.matchAll(/"(\w+)":/g)].map((m) => m[1]).sort();
+    };
+    expect(Object.keys(AREE).sort()).toEqual(chiavi("AREE"));
+    expect(Object.keys(NATURE).sort()).toEqual(chiavi("NATURE"));
+  });
+});

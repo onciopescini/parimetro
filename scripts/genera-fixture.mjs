@@ -16,6 +16,7 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { percorsoClassifica } from "../lib/dati.ts";
+import { AREE, NATURE } from "../lib/categorie.ts";
 
 const DEST = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "dati");
 const ANNI = [2022, 2023, 2024];
@@ -140,8 +141,33 @@ for (const a of ANNI) {
         }
 }
 
+// Spesa per area: quote inventate che sommano al totale, come nei dati veri.
+// Il 2022 resta senza dettaglio, per provare anche il caso "non disponibile".
+const categorie = (c, b) => {
+  const chiavi = Object.keys(AREE);
+  const pesi = chiavi.map((k) => (k === "non_attribuibile" ? 0.12 : 0.2 + rnd()));
+  const somma = pesi.reduce((x, y) => x + y, 0);
+  const totale = b.expenditure_total;
+  const aree = chiavi.map((area, i) => {
+    const importo = Math.round((totale * pesi[i]) / somma);
+    const pc = +(importo / c.population).toFixed(2);
+    return { area, importo, pc, mediana_pc: +(pc * (0.7 + rnd() * 0.6)).toFixed(2),
+      n_simili: 3, rango: [0, 50, 100][Math.floor(rnd() * 3)] };
+  }).sort((x, y) => y.importo - x.importo);
+  const nat = Object.keys(NATURE);
+  const nature = nat.map((natura, i) => ({ natura, importo: Math.round(totale / nat.length * (1.6 - i * 0.12)) }));
+  const voci = aree.slice(0, 12).map((a, i) => ({
+    codice: `U99${String(i).padStart(8, "0")}`, descrizione: `Voce di prova ${i + 1}`,
+    area: a.area, importo: Math.round(a.importo * 0.6),
+  }));
+  return { totale, aree, nature, voci,
+    altre_voci: { n: 40, importo: totale - voci.reduce((s, v) => s + v.importo, 0) } };
+};
+
 for (const c of COMUNI) {
   scrivi(`comune/${c.istat}.json`, {
+    categorie: Object.fromEntries(ANNI.map((a) => [a,
+      a === 2022 ? null : categorie(c, storico[c.istat].find((x) => x.year === a))])),
     history: storico[c.istat],
     peers: Object.fromEntries(ANNI.map((a) => [a, {
       fascia: fascia(c.population), n: 3, revenue_pc: 1500, expenditure_pc: 1480,

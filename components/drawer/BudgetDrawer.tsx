@@ -11,6 +11,8 @@
 // ============================================================
 
 import { useMemo, useState } from "react";
+import SpesaPerCategoria from "./SpesaPerCategoria";
+import type { CategorieComune } from "@/lib/categorie";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertTriangle,
@@ -92,11 +94,12 @@ interface BudgetDrawerProps {
   year: number;
   nationalAvg?: NationalAverages | null;
   peerAvg?: PeerComparison | null;
+  categorie?: CategorieComune | null;
   open: boolean;
   onClose: () => void;
 }
 
-type Tab = "quadro" | "grafici" | "debito";
+type Tab = "quadro" | "spese" | "grafici" | "debito";
 
 // ---------------------------------------------------------- //
 // Utilità di formattazione (locale it-IT)
@@ -179,6 +182,7 @@ export default function BudgetDrawer({
   year,
   nationalAvg,
   peerAvg,
+  categorie,
   open,
   onClose,
 }: BudgetDrawerProps) {
@@ -343,7 +347,8 @@ export default function BudgetDrawer({
           <nav className="flex gap-1 border-b border-white/10 p-2">
             {(
               [
-                ["quadro", "Quadro generale"],
+                ["quadro", "Quadro"],
+                ["spese", "Spese"],
                 ["grafici", "Grafici"],
                 ["debito", haDebito ? "Debito & Alert" : "Alert"],
               ] as [Tab, string][]
@@ -475,6 +480,10 @@ export default function BudgetDrawer({
                   {haDebito ? ` · debito ${eur(current.debt_total, true)}` : ""}.
                 </div>
               </>
+            )}
+
+            {tab === "spese" && (
+              <SpesaPerCategoria categorie={categorie ?? null} year={current.year} />
             )}
 
             {tab === "grafici" && (

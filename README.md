@@ -52,6 +52,8 @@ mappa base non si disegna ("Worker failed to load").
 | `components/map/Map3D.tsx` | mappa deck.gl con estrusione a due metriche e due livelli di dettaglio |
 | `components/drawer/BudgetDrawer.tsx` | dettaglio di un comune: KPI, confronto, grafici, alert |
 | `components/ranking/RankingPanel.tsx` | classifiche per fascia e regione |
+| `components/drawer/SpesaPerCategoria.tsx` | tab "Spese": aree funzionali vs mediana dei simili, nature, voci più pesanti |
+| `lib/categorie.ts` | etichette e tipi delle categorie (le chiavi sono testate contro `etl/categorie_spesa.py`) |
 | `lib/dati.ts` | **unico** posto che conosce i percorsi dei file di dati |
 | `db/migrations/` | schema e funzioni del database dell'officina |
 | `tests/fixtures/` | tabelle condivise con l'ETL: stessi slug, stessi nomi di file |
