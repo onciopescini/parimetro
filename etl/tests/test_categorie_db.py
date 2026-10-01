@@ -225,3 +225,44 @@ class TestIntegrita:
                 "insert into budget_items (budget_id, codice, importo) values (%s, 'U0000000000', 1)",
                 (bid,),
             )
+
+
+class TestRangoAlNettoDeiPrestiti:
+    def _bilancio(self, k, surplus, loans_in, loans_out=0):
+        istat = k.comune(2000)
+        k.c.execute(
+            "update budget_records set revenue_total = 1000, expenditure_total = %s, surplus_deficit = %s, "
+            "loans_in = %s, loans_out = %s where municipality_id = (select id from municipalities where istat_code = %s)",
+            (1000 - surplus, surplus, loans_in, loans_out, istat),
+        )
+        return istat
+
+    def _punteggio(self, k, istat):
+        return k.c.execute(
+            "select financial_health_score from budget_records b join municipalities m on m.id = b.municipality_id "
+            "where m.istat_code = %s and b.year = %s", (istat, ANNO)
+        ).fetchone()[0]
+
+    def test_un_mutuo_acceso_non_fa_salire_il_rango(self, cantiere):
+        a = self._bilancio(cantiere, 100, 0)
+        b = self._bilancio(cantiere, 150, 100)  # il saldo di cassa e' alto solo per il mutuo
+        c = self._bilancio(cantiere, 120, 0)
+        cantiere.c.execute("select refresh_fhi(%s)", (ANNO,))
+        # Al netto del prestito B vale 50/900: ultimo. In cassa sarebbe primo.
+        assert self._punteggio(cantiere, b) == 0
+        assert self._punteggio(cantiere, c) == 100
+        assert self._punteggio(cantiere, a) == 50
+
+    def test_il_rimborso_non_fa_scendere_il_rango(self, cantiere):
+        a = self._bilancio(cantiere, 100, 0)
+        b = self._bilancio(cantiere, 60, 0, loans_out=80)  # gestione: 60+80 = 140
+        cantiere.c.execute("select refresh_fhi(%s)", (ANNO,))
+        assert self._punteggio(cantiere, b) == 100
+        assert self._punteggio(cantiere, a) == 0
+
+    def test_senza_prestiti_noti_si_ricade_sul_saldo_di_cassa(self, cantiere):
+        a = self._bilancio(cantiere, 100, None)
+        b = self._bilancio(cantiere, 150, None)
+        cantiere.c.execute("select refresh_fhi(%s)", (ANNO,))
+        assert self._punteggio(cantiere, b) == 100
+        assert self._punteggio(cantiere, a) == 0

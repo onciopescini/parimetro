@@ -226,7 +226,42 @@ def totali_comune(entrate: dict, spese: dict) -> dict:
         "capitale": sum(v for t, v in entrate.items() if t in TITOLI_CAPITALE),
         "proprie": sum(v for t, v in entrate.items() if t in TITOLI_PROPRIE),
         "saldo": incassi - pagamenti,
+        # Movimenti finanziari, non di gestione: tenuti a parte per il saldo del rango
+        "prestiti_in": entrate.get("6", 0.0),    # accensione di prestiti
+        "prestiti_out": spese.get("4", 0.0),     # rimborso di prestiti
     }
+
+
+def solo_prestiti(f_ent: list, anno: int) -> None:
+    """Riempie loans_in dalle entrate e loans_out dal dettaglio gia' in budget_items.
+
+    Per riparare gli anni importati prima che esistessero le due colonne senza
+    riscaricare le spese (2,8 GB l'anno): il rimborso e' la somma delle voci del
+    titolo 4, che il dettaglio ha gia' per intero.
+    """
+    ent = ultimo_mese(aggrega(f_ent))
+    load_dotenv()
+    url = os.getenv("DATABASE_URL")
+    if not url:
+        sys.exit("DATABASE_URL mancante.")
+    with psycopg.connect(url) as conn, conn.cursor() as cur:
+        cur.executemany(
+            """update budget_records b set loans_in = %s
+               from municipalities m
+               where m.id = b.municipality_id and m.istat_code = %s and b.year = %s""",
+            [(round(t.get("6", 0.0), 2), ist, anno) for ist, t in ent.items()],
+        )
+        cur.execute(
+            """update budget_records b set loans_out = coalesce(r.s, 0)
+               from budget_records x
+               left join (select i.budget_id, sum(i.importo) s from budget_items i
+                          where substring(i.codice, 2, 1) = '4' group by 1) r on r.budget_id = x.id
+               where b.id = x.id and b.year = %s and b.loans_in is not null""",
+            (anno,),
+        )
+        cur.execute("select refresh_fhi(%s)", (anno,))
+        print(f"{anno}: prestiti riempiti, indice ricalcolato su {cur.fetchone()[0]} righe")
+        conn.commit()
 
 
 def main() -> None:
@@ -234,6 +269,8 @@ def main() -> None:
     ap.add_argument("--dir", help="Cartella con entrate_*.csv e spese_*.csv")
     ap.add_argument("--year", type=int, help="Esercizio di riferimento")
     ap.add_argument("--inspect", metavar="CSV", help="Stampa header e prime righe")
+    ap.add_argument("--solo-prestiti", action="store_true",
+                    help="Riempie loans_in/loans_out di un anno gia' importato: servono solo le entrate")
     ap.add_argument("--senza-voci", action="store_true",
                     help="Salta il dettaglio per voce (solo i totali, piu' veloce)")
     a = ap.parse_args()
@@ -246,6 +283,11 @@ def main() -> None:
 
     f_ent = sorted(glob.glob(os.path.join(a.dir, "entrate_*.csv")))
     f_spe = sorted(glob.glob(os.path.join(a.dir, "spese_*.csv")))
+    if a.solo_prestiti:
+        if not f_ent:
+            sys.exit(f"In {a.dir} servono gli entrate_*.csv.")
+        solo_prestiti(f_ent, a.year)
+        return
     if not f_ent or not f_spe:
         sys.exit(f"In {a.dir} servono sia entrate_*.csv sia spese_*.csv.")
 
@@ -298,6 +340,8 @@ def main() -> None:
                 round(incassi - pagamenti, 2),   # surplus_deficit = saldo di CASSA
                 round(pagamenti, 2),             # payments_made
                 None,                            # commitments: SIOPE non li ha
+                round(tot["prestiti_in"], 2),
+                round(tot["prestiti_out"], 2),
             ))
 
         cur.executemany(
@@ -305,8 +349,8 @@ def main() -> None:
             insert into budget_records
                 (municipality_id, year, population, revenue_total, expenditure_total,
                  revenue_current, revenue_capital, own_revenue, debt_total,
-                 surplus_deficit, payments_made, commitments)
-            values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                 surplus_deficit, payments_made, commitments, loans_in, loans_out)
+            values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             on conflict on constraint unique_muni_year do update set
                 population        = excluded.population,
                 revenue_total     = excluded.revenue_total,
@@ -316,7 +360,9 @@ def main() -> None:
                 own_revenue       = excluded.own_revenue,
                 surplus_deficit   = excluded.surplus_deficit,
                 payments_made     = excluded.payments_made,
-                commitments       = excluded.commitments
+                commitments       = excluded.commitments,
+                loans_in          = excluded.loans_in,
+                loans_out         = excluded.loans_out
             """,
             righe,
         )

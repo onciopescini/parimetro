@@ -152,6 +152,16 @@ class TestTotaliComune:
         t = siope.totali_comune(self.ENTRATE, self.SPESE)
         assert t["saldo"] == t["incassi"] - t["pagamenti"] == 195 - 170
 
+    def test_i_prestiti_sono_tenuti_a_parte_senza_toccare_i_totali(self, siope):
+        t = siope.totali_comune({"1": 100, "6": 40}, {"1": 70, "4": 25})
+        assert (t["prestiti_in"], t["prestiti_out"]) == (40, 25)
+        # restano dentro incassi e pagamenti: sono movimenti di cassa veri
+        assert (t["incassi"], t["pagamenti"]) == (140, 95)
+
+    def test_senza_prestiti_sono_zero(self, siope):
+        t = siope.totali_comune({"1": 100}, {"1": 70})
+        assert (t["prestiti_in"], t["prestiti_out"]) == (0, 0)
+
     def test_senza_spese_il_saldo_e_tutti_gli_incassi(self, siope):
         t = siope.totali_comune({"1": 100}, {})
         assert (t["incassi"], t["pagamenti"], t["saldo"]) == (100, 0, 100)
