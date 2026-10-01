@@ -49,9 +49,11 @@ def risorse(anno: int) -> list[tuple[str, str, str]]:
 
 def scarica(url: str, dest: str) -> int:
     req = urllib.request.Request(url, headers={"User-Agent": "mappa-bilanci-etl/1.0"})
-    with urllib.request.urlopen(req, timeout=1800) as r, open(dest, "wb") as f:
+    # Su un file .part e poi rinomina: un download interrotto non deve sembrare completo
+    with urllib.request.urlopen(req, timeout=1800) as r, open(dest + ".part", "wb") as f:
         while chunk := r.read(1 << 20):
             f.write(chunk)
+    os.replace(dest + ".part", dest)
     return os.path.getsize(dest)
 
 

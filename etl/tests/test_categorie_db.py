@@ -14,6 +14,10 @@ import categorie_spesa as cs
 URL = os.environ.get("TEST_DATABASE_URL")
 pytestmark = pytest.mark.skipif(not URL, reason="serve TEST_DATABASE_URL")
 
+# Un esercizio che nessun dato vero usa: le mediane si calcolano per anno, quindi i
+# comuni di prova restano soli anche se il database contiene l'Italia intera.
+ANNO = 2099
+
 POLIGONO = "MULTIPOLYGON(((0 0,1 0,1 1,0 1,0 0)))"
 
 
@@ -43,7 +47,7 @@ class Cantiere:
             (codice, descrizione or f"voce {codice}", natura, area),
         )
 
-    def comune(self, popolazione, voci=None, anno=2024):
+    def comune(self, popolazione, voci=None, anno=ANNO):
         """Crea comune + bilancio + importi {codice: importo}. Ritorna il codice ISTAT."""
         self.n += 1
         istat = f"T{self.n:05d}"
@@ -66,7 +70,7 @@ class Cantiere:
     def ricalcola(self):
         self.c.execute("select refresh_aree()")
 
-    def scheda(self, istat, anno=2024):
+    def scheda(self, istat, anno=ANNO):
         return self.c.execute("select get_categorie_comune(%s, %s)", (istat, anno)).fetchone()[0]
 
 
@@ -130,9 +134,9 @@ class TestConfrontoTraPari:
         zero, altri = self._fascia_con_sei(cantiere)
         # Stesso comune, anno diverso, spesa molto diversa: nell'anno precedente e' solo
         k = cantiere
-        vecchio = k.comune(2000, {RIFIUTI: 999_000}, anno=2023)
+        vecchio = k.comune(2000, {RIFIUTI: 999_000}, anno=ANNO - 1)
         k.ricalcola()
-        assert area_di(k.scheda(vecchio, 2023), "rifiuti")["n_simili"] == 1
+        assert area_di(k.scheda(vecchio, ANNO - 1), "rifiuti")["n_simili"] == 1
         assert area_di(k.scheda(altri[0]), "rifiuti")["n_simili"] == 6
 
 
