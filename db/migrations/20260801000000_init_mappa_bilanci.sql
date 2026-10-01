@@ -256,54 +256,5 @@ begin
   end if;
 end $$;
 
--- ------------------------------------------------------------
--- 10 · SEED DEMO (facoltativo ma consigliato)
---     3 comuni fittizi con poligoni quadrati e bilanci 2020–2025:
---     permette di testare mappa + drawer end-to-end PRIMA
---     dell'import dei dati reali ISTAT/BDAP.
--- ------------------------------------------------------------
-insert into municipalities (istat_code, name, region, province, population, area_sqkm, geom) values
-  ('DEMO001', 'Borgo Tevere',  'Lazio',     'Roma',   12400, 35.2,
-    ST_Multi(ST_GeomFromText('POLYGON((12.35 41.85, 12.55 41.85, 12.55 42.00, 12.35 42.00, 12.35 41.85))', 4326))),
-  ('DEMO002', 'Pieve Naviglio','Lombardia', 'Milano', 48200, 22.8,
-    ST_Multi(ST_GeomFromText('POLYGON((9.05 45.40, 9.25 45.40, 9.25 45.55, 9.05 45.55, 9.05 45.40))', 4326))),
-  ('DEMO003', 'Marina Vesuvio','Campania',  'Napoli',  8600, 18.4,
-    ST_Multi(ST_GeomFromText('POLYGON((14.15 40.78, 14.35 40.78, 14.35 40.92, 14.15 40.92, 14.15 40.78))', 4326)))
-on conflict (istat_code) do nothing;
-
-update municipalities
-set geom_simplified = ST_Multi(ST_SimplifyPreserveTopology(geom, 0.004))
-where geom_simplified is null;
-
-with base as (
-  select m.id as municipality_id,
-         y    as year,
-         m.population,
-         m.population * (950 + 60 * random()) * (1 + (y - 2020) * 0.03) as rt,
-         0.45 + 0.30 * random() as own_ratio,
-         0.92 + 0.12 * random() as spend_ratio,
-         m.population * (300 + 900 * random()) as debt
-  from municipalities m
-  cross join generate_series(2020, 2025) as y
-  where m.istat_code like 'DEMO%'
-)
-insert into budget_records
-  (municipality_id, year, population, revenue_total, expenditure_total,
-   revenue_current, revenue_capital, own_revenue, debt_total,
-   surplus_deficit, payments_made, commitments)
-select municipality_id, year, population,
-       round(rt::numeric, 2),
-       round((rt * spend_ratio)::numeric, 2),
-       round((rt * 0.78)::numeric, 2),
-       round((rt * 0.22)::numeric, 2),
-       round((rt * own_ratio)::numeric, 2),
-       round(debt::numeric, 2),
-       round((rt - rt * spend_ratio)::numeric, 2),
-       round((rt * spend_ratio * (0.75 + 0.20 * random()))::numeric, 2),
-       round((rt * spend_ratio)::numeric, 2)
-from base
-on conflict on constraint unique_muni_year do nothing;
-
--- Verifica rapida:
--- select name, year, financial_health_score, debt_per_capita from budget_records b
---   join municipalities m on m.id = b.municipality_id order by name, year;
+-- (Il vecchio seed demo con tre comuni fittizi e' stato tolto: finiva nei dati
+-- pubblicati. Per provare il sito senza database: npm run fixture.)
