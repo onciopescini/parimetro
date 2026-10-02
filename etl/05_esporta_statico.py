@@ -24,7 +24,9 @@ import psycopg
 from dotenv import load_dotenv
 
 METRICHE = ("fhi", "autonomia", "expenditure_pc", "revenue_pc")
-LIMITE_CLASSIFICA = 20
+# Se ne esportano piu' di quelle mostrate (20): chi nasconde i comuni con spesa
+# concentrata deve comunque trovarne venti, e il filtro lo applica il sito
+LIMITE_CLASSIFICA = 50
 
 
 def senza_accenti(s: str) -> str:

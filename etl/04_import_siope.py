@@ -387,6 +387,7 @@ def main() -> None:
             esito = importa_voci(cur, per_comune, descr, a.year)
             conn.commit()
             cur.execute("select refresh_aree()")
+            cur.execute("select refresh_concentrazione(%s)", (a.year,))
             conn.commit()
             print(f"  {esito['righe']:,} importi in {esito['comuni']} comuni · {len(descr)} voci distinte"
                   .replace(",", "."))

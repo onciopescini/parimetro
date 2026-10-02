@@ -266,3 +266,35 @@ class TestRangoAlNettoDeiPrestiti:
         cantiere.c.execute("select refresh_fhi(%s)", (ANNO,))
         assert self._punteggio(cantiere, b) == 100
         assert self._punteggio(cantiere, a) == 0
+
+
+class TestSpesaConcentrata:
+    def test_la_quota_e_la_voce_piu_grande_sul_totale(self, cantiere):
+        c = cantiere.comune(2000, {RIFIUTI: 90_000, STRADE: 10_000})
+        cantiere.c.execute(
+            "update budget_records set expenditure_total = 100000 where year = %s and municipality_id = "
+            "(select id from municipalities where istat_code = %s)", (ANNO, c))
+        cantiere.c.execute("select refresh_concentrazione(%s)", (ANNO,))
+        q = cantiere.c.execute(
+            "select b.quota_voce_max from budget_records b join municipalities m on m.id = b.municipality_id "
+            "where m.istat_code = %s and b.year = %s", (c, ANNO)).fetchone()[0]
+        assert float(q) == 90.0
+
+    def test_senza_dettaglio_la_quota_resta_null(self, cantiere):
+        c = cantiere.comune(2000)
+        cantiere.c.execute("select refresh_concentrazione(%s)", (ANNO,))
+        q = cantiere.c.execute(
+            "select b.quota_voce_max from budget_records b join municipalities m on m.id = b.municipality_id "
+            "where m.istat_code = %s and b.year = %s", (c, ANNO)).fetchone()[0]
+        assert q is None
+
+    def test_la_classifica_porta_la_quota(self, cantiere):
+        c = cantiere.comune(2000, {RIFIUTI: 80_000, STRADE: 20_000})
+        cantiere.c.execute(
+            "update budget_records set expenditure_total = 100000 where year = %s and municipality_id = "
+            "(select id from municipalities where istat_code = %s)", (ANNO, c))
+        cantiere.c.execute("select refresh_concentrazione(%s)", (ANNO,))
+        righe = cantiere.c.execute(
+            "select istat, concentrata from get_ranking(%s, 'expenditure_pc', null, 'Prova', true, 5)", (ANNO,)
+        ).fetchall()
+        assert (c, 80.0) in [(i, float(q)) for i, q in righe]
