@@ -31,10 +31,36 @@ python 05_esporta_statico.py --dest ../../mappa-bilanci/public/dati
 Poi `selfhost/pubblica.sh` fa export, build e deploy su Cloudflare Pages. Come montare il
 database dell'officina: `selfhost/README.md`.
 
+## La chat (OpenRouter)
+
+`functions/api/chat.ts` e' una Pages Function: l'unico pezzo del sito che non e' statico.
+Il flusso e' deliberatamente stretto: **il modello AI non produce numeri**.
+
+1. Il modello traduce la domanda in una di 5 domande previste (`lib/chat/intento.ts`): scheda
+   di un comune, confronto, classifica, spesa per area, storico. Il suo JSON e' validato contro
+   un elenco chiuso; ogni altra cosa viene scartata.
+2. Il codice calcola la risposta leggendo i JSON del sito (`lib/chat/motore.ts`): qui nascono
+   tutti i numeri, e finiscono nella tabella.
+3. Il modello racconta il risultato usando segnaposto (`[[spesa_pc]]`); il codice li riempie.
+   Una cifra scritta dal modello, o un segnaposto inventato, scarta il testo e si usa il
+   riassunto scritto dal codice (`lib/chat/narrazione.ts`).
+
+Attivazione (una volta): la chiave sta nei segreti del progetto Pages, mai nel repository.
+
+```bash
+npx wrangler pages secret put OPENROUTER_API_KEY --project-name parimetro
+npx wrangler pages deploy out --project-name parimetro --branch main
+```
+
+Senza chiave `GET /api/chat` risponde `{"attiva":false}` e il pulsante non compare. I modelli
+(gratuiti, quindi instabili) si cambiano senza toccare il codice con la variabile
+`CHAT_MODELLI` (elenco separato da virgole). Limite: 15 domande/ora per indirizzo.
+Per provare in locale: `npx wrangler pages dev out --binding OPENROUTER_API_KEY=...`.
+
 ## Sviluppo
 
 ```bash
-npm test          # 38 test (vitest)
+npm test          # 96 test (vitest)
 npm run lint
 npx tsc --noEmit
 npm run build     # produce out/

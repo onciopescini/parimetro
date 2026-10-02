@@ -19,6 +19,7 @@ import Map3D, {
   type MunicipalityProps,
 } from "@/components/map/Map3D";
 import type { CategorieComune } from "@/lib/categorie";
+import ChatPanel from "@/components/chat/ChatPanel";
 import Fonti from "@/components/Fonti";
 import BudgetDrawer, {
   type MunicipalityDetail,
@@ -204,6 +205,15 @@ function Mappa() {
       handleSelect(r);
     },
     [handleSelect],
+  );
+
+  // Dalla chat: apre un comune dato il codice ISTAT, come se fosse stato cercato
+  const apriDaChat = useCallback(
+    async (istat: string) => {
+      const [voce] = await cercaIndice(istat);
+      if (voce) vaiA(voce);
+    },
+    [vaiA],
   );
 
   // Comune indicato nella URL: lo apro appena la sorgente è pronta.
@@ -461,6 +471,12 @@ function Mappa() {
           dettaglio. In modalità province il passaggio ai comuni scatta a zoom 6.3.
         </p>
       </div>
+
+      <ChatPanel
+        contesto={detail ? { istat: detail.istat, nome: detail.name, anno: annoMappa ?? year } : null}
+        spostaDaDestra={open}
+        onApri={apriDaChat}
+      />
 
       <Fonti />
 

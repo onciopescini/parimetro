@@ -50,3 +50,7 @@ next-env.d.ts
 
 # copiati da node_modules a ogni dev/build (scripts/copia-worker-maplibre.mjs)
 /public/maplibre/
+
+# wrangler (cache locale e file temporanei)
+.wrangler/
+.dev.vars

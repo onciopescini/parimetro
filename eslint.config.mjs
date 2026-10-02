@@ -16,6 +16,7 @@ const eslintConfig = defineConfig([
     // (minificato: oltre mille avvisi) e i dati prodotti dall'ETL
     "public/maplibre/**",
     "public/dati/**",
+    ".wrangler/**",
   ]),
 ]);
 
