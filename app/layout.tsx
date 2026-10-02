@@ -13,8 +13,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mappa Bilanci",
-  description: "Mappa 3D dei bilanci dei comuni italiani",
+  title: "Parimetro · i bilanci dei comuni italiani",
+  description:
+    "Mappa 3D interattiva di entrate e spese di quasi 8.000 comuni italiani, 2020-2024: in cosa spende ogni comune e come si colloca rispetto ai comuni simili. Dati aperti ISTAT e SIOPE.",
+  openGraph: {
+    title: "Parimetro · i bilanci dei comuni italiani",
+    description: "In cosa spende il tuo comune, e come si colloca rispetto ai comuni simili.",
+    type: "website",
+    locale: "it_IT",
+  },
 };
 
 export default function RootLayout({
@@ -24,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="it"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

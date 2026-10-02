@@ -19,6 +19,7 @@ import Map3D, {
   type MunicipalityProps,
 } from "@/components/map/Map3D";
 import type { CategorieComune } from "@/lib/categorie";
+import Fonti from "@/components/Fonti";
 import BudgetDrawer, {
   type MunicipalityDetail,
   type NationalAverages,
@@ -310,7 +311,7 @@ function Mappa() {
         }`}
       >
         <div className="flex items-baseline justify-between">
-          <h1 className="text-sm font-semibold">Bilanci dei comuni</h1>
+          <h1 className="text-sm font-semibold">Parimetro</h1>
           <span className="text-[10px] uppercase tracking-wider text-slate-500">3D</span>
         </div>
 
@@ -460,6 +461,8 @@ function Mappa() {
           dettaglio. In modalità province il passaggio ai comuni scatta a zoom 6.3.
         </p>
       </div>
+
+      <Fonti />
 
       <BudgetDrawer
         data={detail}
