@@ -15,7 +15,6 @@ export const METRICHE_STORICO = [
   "surplus_deficit",
   "revenue_total",
   "expenditure_total",
-  "population",
 ] as const;
 export type MetricaStorico = (typeof METRICHE_STORICO)[number];
 

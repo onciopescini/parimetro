@@ -60,7 +60,8 @@ export async function rispondi(
       { role: "system", content: system },
       { role: "user", content: user },
     ],
-    { ...llm, maxToken: 350 },
+    // La narrazione e' facoltativa (c'e' il riassunto del codice): niente secondo giro, pochi modelli, poca attesa
+    { ...llm, modelli: llm.modelli.slice(0, 3), giri: 1, timeoutMs: 9000, maxToken: 350 },
     (testo) => {
       const v = validaNarrazione(testo, risultato.fatti, anni);
       return v.ok ? v.testo : null;

@@ -200,6 +200,10 @@ describe("eseguiIntento", () => {
     expect(r.righe.find((x) => x.indicatore === "Spesa pro capite")).toMatchObject({ c0: "920 €", c1: "930 €", c2: "910 €" });
     expect(r.note.join(" ")).toContain("taglie diverse");
   });
+  it("confronto: gli abitanti vengono dall'anagrafica (la serie storica non li ha)", async () => {
+    const r = await eseguiIntento({ tipo: "confronta_comuni", comuni: [{ comune: "Roma" }, { comune: "Milano" }] }, leggi);
+    expect(r.righe[0]).toEqual({ indicatore: "Abitanti (ultimo dato)", c0: "2.750.000", c1: "1.370.000" });
+  });
   it("confronto dello stesso comune due volte non e' un confronto", async () => {
     const r = await eseguiIntento({ tipo: "confronta_comuni", comuni: [{ comune: "Roma" }, { comune: "roma" }] }, leggi);
     expect(r.ok).toBe(false);
@@ -326,6 +330,21 @@ describe("rispondi", () => {
     expect(r.risultato.candidati).toHaveLength(2);
     expect(r.narrato).toBe(false);
     expect(richieste).toHaveLength(1); // solo la chiamata dell'intento
+  });
+  it("la narrazione e' facoltativa: se i modelli sono saturi non insiste", async () => {
+    // 6 modelli: 1 chiamata per l'intento (risponde il primo), poi la narrazione ne prova al massimo 3, un solo giro
+    const chiamate: string[] = [];
+    let n = 0;
+    const fetcher = (async (_u: unknown, init: { body: string }) => {
+      chiamate.push(JSON.parse(init.body).model);
+      return n++ === 0
+        ? new Response(JSON.stringify({ choices: [{ message: { content: '{"tipo":"scheda_comune","comune":"Roma"}' } }] }))
+        : new Response("saturo", { status: 429 });
+    }) as unknown as typeof fetch;
+    const r = await rispondi("Roma", undefined, leggi, { chiave: "k", modelli: ["a", "b", "c", "d", "e", "f"], fetcher, attesa: 0 });
+    if ("errore" in r) throw new Error(r.errore);
+    expect(r.narrato).toBe(false);
+    expect(chiamate.slice(1)).toEqual(["a", "b", "c"]);
   });
   it("la domanda troppo corta o vuota non chiama il modello", async () => {
     const { fetcher, richieste } = modelloFinto(["{}"]);

@@ -30,6 +30,10 @@ export interface OpzioniLlm {
   referer?: string;
   /** Pausa prima del secondo giro sui modelli saturi, in ms (0 nei test) */
   attesa?: number;
+  /** Quanti giri sui modelli (2 = riprova i saturi). Per la parte facoltativa basta 1 */
+  giri?: number;
+  /** Tetto per ogni chiamata, in ms */
+  timeoutMs?: number;
 }
 
 type Esito<T> = { tipo: "ok"; valore: T } | { tipo: "saturo" } | { tipo: "no" };
@@ -59,7 +63,7 @@ async function provaModello<T>(
         "X-Title": "Parimetro",
       },
       body: JSON.stringify(corpo),
-      signal: AbortSignal.timeout(25_000),
+      signal: AbortSignal.timeout(o.timeoutMs ?? 25_000),
     });
     if (!r.ok) {
       // Solo stato e inizio del messaggio d'errore del fornitore: niente della domanda
@@ -101,7 +105,7 @@ export async function chiediModello<T>(
   accetta: (testo: string) => T | null,
 ): Promise<{ valore: T; modello: string } | null> {
   let daRiprovare = o.modelli;
-  for (let giro = 0; giro < 2 && daRiprovare.length; giro++) {
+  for (let giro = 0; giro < (o.giri ?? 2) && daRiprovare.length; giro++) {
     if (giro === 1) await new Promise((r) => setTimeout(r, o.attesa ?? 1500));
     const saturi: string[] = [];
     for (const modello of daRiprovare) {

@@ -152,7 +152,7 @@ async function schedaComune(
     comune: { label: "Comune", valore: voce.name },
     provincia: { label: "Provincia", valore: voce.province },
     anno: { label: "Anno", valore: String(anno) },
-    abitanti: { label: "Abitanti", valore: fNum(b.population ?? voce.population) },
+    abitanti: { label: "Abitanti", valore: fNum(voce.population) },
     spesa_pc: { label: "Spesa pro capite", valore: fEur(b.expenditure_pc) },
     entrate_pc: { label: "Entrate pro capite", valore: fEur(b.revenue_pc) },
     rango: { label: "Rango nella fascia", valore: fNum(b.fhi) },
@@ -166,7 +166,7 @@ async function schedaComune(
     );
   }
   const riassunto =
-    `${voce.name} (${voce.province}), ${fNum(b.population ?? voce.population)} abitanti, ${anno}: ` +
+    `${voce.name} (${voce.province}), ${fNum(voce.population)} abitanti, ${anno}: ` +
     `spesa pro capite ${fEur(b.expenditure_pc)}` +
     (peers?.expenditure_pc != null ? ` (mediana dei comuni simili ${fEur(peers.expenditure_pc)})` : "") +
     (b.fhi != null ? `, rango ${fNum(b.fhi)} su 100 nella sua fascia` : "") +
@@ -221,7 +221,17 @@ async function confrontaComuni(
     righe.push(r);
     grezze.push(g);
   };
-  aggiungi("Abitanti", "population", fNum);
+  // La popolazione non e' nella serie storica: si usa l'ultimo dato dell'anagrafica
+  {
+    const r: Record<string, string> = { indicatore: "Abitanti (ultimo dato)" };
+    const g: Record<string, Cella> = { indicatore: "Abitanti (ultimo dato)" };
+    dati.forEach(({ v }, n) => {
+      r[`c${n}`] = fNum(v.population);
+      g[`c${n}`] = v.population;
+    });
+    righe.push(r);
+    grezze.push(g);
+  }
   aggiungi("Entrate pro capite", "revenue_pc", fEur);
   aggiungi("Spesa pro capite", "expenditure_pc", fEur);
   aggiungi("Rango nella fascia (0-100)", "fhi", fNum);
