@@ -106,8 +106,8 @@ export default function Fonti() {
               <li>Un dato anomalo non è per forza un errore: può essere un anno eccezionale.</li>
               <li>
                 <strong className="text-slate-100">Chat:</strong> le domande sono elaborate da modelli AI
-                di terzi tramite OpenRouter e, con alcuni modelli gratuiti, possono essere registrate
-                dal fornitore. Il sito non conserva le domande e non chiede dati personali.
+                di terzi tramite OpenRouter. Il sito non le conserva e non chiede dati personali: non
+                scriverne nelle domande.
               </li>
             </ul>
           </div>

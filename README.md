@@ -53,7 +53,7 @@ npx wrangler pages deploy out --project-name parimetro --branch main
 ```
 
 Senza chiave `GET /api/chat` risponde `{"attiva":false}` e il pulsante non compare. I modelli
-(gratuiti, quindi instabili) si cambiano senza toccare il codice con la variabile
+si cambiano senza toccare il codice con la variabile
 `CHAT_MODELLI` (elenco separato da virgole). Limite: 15 domande/ora per indirizzo.
 Per provare in locale: `npx wrangler pages dev out --binding OPENROUTER_API_KEY=...`.
 

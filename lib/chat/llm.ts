@@ -1,15 +1,14 @@
 // Client OpenRouter. Gira nel Worker (functions/api/chat.ts): la chiave sta nei
 // segreti di Cloudflare e non arriva mai al browser.
 
-// Gratuiti e con risposta JSON: cambiano spesso e sono spesso saturi (429), quindi
-// sono tanti e si provano in ordine. Si possono cambiare con la variabile CHAT_MODELLI.
+// A pagamento ma quasi gratuiti (circa un centesimo ogni cento domande) e SENZA la
+// roba dei modelli ":free": quelli sono quasi sempre saturi (429), a volte rispondono
+// vuoti o vanno in timeout, e conservano i prompt. Provati dal vivo il 2026-10-02.
+// Si possono cambiare senza toccare il codice con la variabile CHAT_MODELLI.
 export const MODELLI_PREDEFINITI = [
-  "google/gemma-4-31b-it:free",
-  "google/gemma-4-26b-a4b-it:free",
-  "qwen/qwen3.8-27b:free",
-  "nvidia/nemotron-3-super-120b-a12b:free",
-  "poolside/laguna-s-2.1:free",
-  "openrouter/free",
+  "mistralai/mistral-small-24b-instruct-2501",
+  "mistralai/mistral-nemo",
+  "meta-llama/llama-3.1-8b-instruct",
 ];
 
 export interface Messaggio {
