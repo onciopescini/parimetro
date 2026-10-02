@@ -67,7 +67,7 @@ async function provaModello<T>(
     });
     if (!r.ok) {
       // Solo stato e inizio del messaggio d'errore del fornitore: niente della domanda
-      const dettaglio = (await r.text().catch(() => "")).slice(0, 200);
+      const dettaglio = (await r.text().catch(() => "")).slice(0, 900);
       console.warn("openrouter", modello, r.status, dettaglio);
       // Alcuni modelli non accettano response_format: stesso modello, senza
       if (conJson && (r.status === 400 || r.status === 422)) {
