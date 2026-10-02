@@ -81,6 +81,21 @@ begin
   refresh materialized view area_mediane;
 end $$;
 
+-- Quota della voce piu' grande sul totale, per i bilanci con dettaglio.
+-- Da lanciare dopo ogni import del dettaglio (04_import_siope.py lo fa da solo).
+create or replace function refresh_concentrazione(p_year int default null) returns int
+language plpgsql volatile as $$
+declare n int;
+begin
+  update budget_records b
+     set quota_voce_max = round(100 * t.m / nullif(b.expenditure_total, 0), 1)
+    from (select budget_id, max(importo) m from budget_items group by 1) t
+   where t.budget_id = b.id
+     and (p_year is null or b.year = p_year);
+  get diagnostics n = row_count;
+  return n;
+end $$;
+
 -- ------------------------------------------------------------
 -- La scheda di un comune: aree col confronto, nature, e le voci che pesano.
 -- Null se per quel comune e anno il dettaglio non e' stato caricato.

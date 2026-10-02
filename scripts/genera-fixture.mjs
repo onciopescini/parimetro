@@ -134,6 +134,8 @@ for (const a of ANNI) {
               posizione: i + 1, istat: c.istat, name: c.name, region: c.region,
               province: c.province, population: c.population, valore: valore(b, m),
               fhi: b.fhi, autonomia: b.autonomia, fascia: fascia(c.population),
+              // Il primo comune finto ha una voce enorme: prova l'etichetta e il filtro
+              concentrata: c.istat === "990004" ? 72.5 : +(5 + rnd() * 30).toFixed(1),
               lon: c.lon, lat: c.lat,
             }));
           // "/dati/" in testa al percorso del sito: qui si scrive relativo a public/dati

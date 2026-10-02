@@ -51,6 +51,25 @@ export default function SpesaPerCategoria({
           vanno letti con cautela.
         </p>
       )}
+      {/* Indice di spesa non classificata: quanto di cio' che il comune ha pagato si
+          riesce a ricondurre a un servizio e quanto no. Dice quanto fidarsi delle
+          barre qui sotto, e vale per tutti i comuni, non solo per i casi estremi. */}
+      <section className="rounded-xl border border-white/10 bg-white/5 p-3">
+        <div className="flex items-baseline justify-between text-[11px]">
+          <span className="text-slate-300">Spesa riconducibile a un servizio</span>
+          <span className="font-semibold text-slate-100">{(100 - quotaNa).toFixed(0)}%</span>
+        </div>
+        <div className="mt-1.5 flex h-1.5 overflow-hidden rounded-full bg-slate-700/60">
+          <div className="h-full bg-emerald-400/70" style={{ width: `${100 - quotaNa}%` }} />
+        </div>
+        <p className="mt-1.5 text-[10px] leading-snug text-slate-500">
+          {quotaNa < 1
+            ? "Quasi tutta la spesa ha una voce che dice a cosa serve."
+            : `Il ${quotaNa.toFixed(0)}% (${eur(na!.importo, true)}) è registrato con voci generiche: non si può dire a quale servizio sia andato.`}{" "}
+          Più il numero è basso, meno le aree qui sotto raccontano il comune.
+        </p>
+      </section>
+
       <section>
         <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
           In cosa spende · pagamenti {year}
@@ -92,13 +111,6 @@ export default function SpesaPerCategoria({
             );
           })}
         </ul>
-        {quotaNa >= 1 && (
-          <p className="mt-2 text-[10px] leading-snug text-slate-500">
-            Il {quotaNa.toFixed(0)}% della spesa ({eur(na!.importo, true)}) è registrato con voci
-            generiche (&ldquo;altri servizi&rdquo;, &ldquo;altre spese&rdquo;) che non permettono di
-            dire a quale servizio vada.
-          </p>
-        )}
       </section>
 
       <section>

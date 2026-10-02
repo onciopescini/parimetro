@@ -12,6 +12,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import type { MunicipalityProps } from "@/components/map/Map3D";
+import { eConcentrata, righeVisibili } from "@/lib/classifica";
 
 export interface RankingRow extends MunicipalityProps {
   posizione: number;
@@ -19,6 +20,8 @@ export interface RankingRow extends MunicipalityProps {
   fhi: number | null;
   autonomia: number | null;
   fascia: string;
+  /** % della spesa dell'anno in una sola voce (null se manca il dettaglio) */
+  concentrata?: number | string | null;
   lon: number;
   lat: number;
 }
@@ -90,8 +93,10 @@ export default function RankingPanel({
     righe: RankingRow[];
     errore: string | null;
   } | null>(null);
+  // Chi vuole il confronto fra gestioni ordinarie toglie gli anni a spesa concentrata
+  const [nascondiConcentrate, setNascondi] = useState(false);
   const caricando = esito?.chiave !== chiave;
-  const righe = esito?.chiave === chiave ? esito.righe : [];
+  const righe = righeVisibili(esito?.chiave === chiave ? esito.righe : [], nascondiConcentrate);
   const errore = esito?.chiave === chiave ? esito.errore : null;
 
   useEffect(() => {
@@ -202,6 +207,21 @@ export default function RankingPanel({
         ))}
       </select>
 
+      <label className="mt-3 flex cursor-pointer items-start gap-2 text-[11px] leading-snug text-slate-300">
+        <input
+          type="checkbox"
+          checked={nascondiConcentrate}
+          onChange={(e) => setNascondi(e.target.checked)}
+          className="mt-0.5"
+        />
+        <span>
+          Nascondi i comuni con spesa concentrata
+          <span className="block text-[10px] text-slate-500">
+            quelli in cui una sola voce supera il 40% dell&apos;anno (un immobile, una ricostruzione)
+          </span>
+        </span>
+      </label>
+
       <div className="mt-3 min-h-0 flex-1 overflow-y-auto">
         {(errore ?? erroreFiltri) && (
           <p className="text-[11px] text-red-300">
@@ -230,7 +250,17 @@ export default function RankingPanel({
                 {r.posizione}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[11px] text-slate-100">{r.name}</span>
+                <span className="block truncate text-[11px] text-slate-100">
+                  {r.name}
+                  {eConcentrata(r.concentrata) && (
+                    <span
+                      title={`Il ${Math.round(Number(r.concentrata ?? 0))}% della spesa dell'anno è una sola voce: il pro capite non è confrontabile con i vicini.`}
+                      className="ml-1.5 rounded bg-amber-500/20 px-1 py-px text-[9px] font-medium text-amber-200"
+                    >
+                      spesa concentrata
+                    </span>
+                  )}
+                </span>
                 <span className="block truncate text-[10px] text-slate-400">
                   {r.province} · {num(r.population)} ab
                   {/* Con il rango il valore è uguale per decine di comuni:

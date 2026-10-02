@@ -30,6 +30,9 @@ returns jsonb language sql stable as $$
   )
 $$;
 
+-- Il tipo di ritorno e' cambiato (colonna 'concentrata'): create or replace non basta
+drop function if exists get_ranking(int, text, text, text, boolean, int);
+
 create or replace function get_ranking(
   p_year   int,
   p_metric text default 'fhi',      -- fhi | revenue_pc | expenditure_pc | autonomia
@@ -49,6 +52,7 @@ returns table (
   fhi        int,
   autonomia  numeric,   -- mostrata in elenco: è lo spareggio, va reso visibile
   fascia     text,
+  concentrata numeric,  -- % della spesa in una sola voce: il pro capite di quest'anno e' anomalo
   lon        double precision,
   lat        double precision
 )
@@ -68,7 +72,8 @@ language sql stable as $$
            -- più autonomia finanziaria, che è una delle due componenti del
            -- rango: molto meglio che ordinare per popolazione.
            b.own_revenue / nullif(b.revenue_current, 0) as autonomia_ordinamento,
-           fascia_demografica(b.population) as fascia
+           fascia_demografica(b.population) as fascia,
+           b.quota_voce_max as concentrata
     from budget_records b
     join municipalities m on m.id = b.municipality_id
     where b.year = p_year
@@ -95,6 +100,7 @@ language sql stable as $$
          t.valore, t.fhi,
          round(100 * t.autonomia_ordinamento, 1) as autonomia,
          t.fascia,
+         t.concentrata,
          ST_X(ST_PointOnSurface(m.geom))::double precision,
          ST_Y(ST_PointOnSurface(m.geom))::double precision
   from tagliati t
