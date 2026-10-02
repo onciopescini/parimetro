@@ -55,18 +55,25 @@ export async function rispondi(
 
   // 3 · risultato -> parole, con controllo
   const { system, user } = promptNarrazione(risultato);
-  const narrato = await chiediModello(
-    [
-      { role: "system", content: system },
-      { role: "user", content: user },
-    ],
-    // La narrazione e' facoltativa (c'e' il riassunto del codice): niente secondo giro, pochi modelli, poca attesa
-    { ...llm, modelli: llm.modelli.slice(0, 3), giri: 1, timeoutMs: 9000, maxToken: 350 },
-    (testo) => {
-      const v = validaNarrazione(testo, risultato.fatti, anni);
-      return v.ok ? v.testo : null;
-    },
-  );
+  const base = [
+    { role: "system" as const, content: system },
+    { role: "user" as const, content: user },
+  ];
+  // La narrazione e' facoltativa (c'e' il riassunto del codice): un giro, pochi modelli, poca attesa
+  const opzioni = { ...llm, giri: 1, timeoutMs: 9000, maxToken: 350 };
+  const accetta = (testo: string) => {
+    const v = validaNarrazione(testo, risultato.fatti, anni);
+    return v.ok ? v.testo : null;
+  };
+  let narrato = await chiediModello(base, { ...opzioni, modelli: llm.modelli.slice(0, 3) }, accetta);
+  if (!narrato) {
+    // Il modello a pagamento sbaglia di rado e costa pochissimo: un secondo tentativo, col promemoria
+    narrato = await chiediModello(
+      [...base, { role: "user", content: "Riscrivi senza alcuna cifra: ogni valore va scritto solo come segnaposto [[chiave]], con le chiavi dell'elenco." }],
+      { ...opzioni, modelli: llm.modelli.slice(0, 1) },
+      accetta,
+    );
+  }
   return {
     testo: narrato ? narrato.valore : risultato.riassunto,
     risultato,

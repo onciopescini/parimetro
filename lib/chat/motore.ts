@@ -155,7 +155,7 @@ async function schedaComune(
     abitanti: { label: "Abitanti", valore: fNum(voce.population) },
     spesa_pc: { label: "Spesa pro capite", valore: fEur(b.expenditure_pc) },
     entrate_pc: { label: "Entrate pro capite", valore: fEur(b.revenue_pc) },
-    rango: { label: "Rango nella fascia", valore: fNum(b.fhi) },
+    rango: { label: "Rango nella fascia (punteggio, non posizione)", valore: b.fhi == null ? "n.d." : `${fNum(b.fhi)} su 100 nella sua fascia` },
     n_simili: { label: "Comuni nella fascia", valore: fNum(peers?.n) },
     spesa_simili: { label: "Spesa pro capite mediana dei simili", valore: fEur(peers?.expenditure_pc) },
   };
@@ -242,7 +242,7 @@ async function confrontaComuni(
   dati.forEach(({ v, b }, n) => {
     fatti[`nome${n}`] = { label: `Comune ${n + 1}`, valore: v.name };
     fatti[`spesa${n}`] = { label: `Spesa pro capite di ${v.name}`, valore: fEur(b?.expenditure_pc) };
-    fatti[`rango${n}`] = { label: `Rango di ${v.name}`, valore: fNum(b?.fhi) };
+    fatti[`rango${n}`] = { label: `Rango di ${v.name} (punteggio, non posizione)`, valore: b?.fhi == null ? "n.d." : `${fNum(b.fhi)} su 100 nella sua fascia` };
   });
   const note = [nota].filter(Boolean) as string[];
   if (new Set(trovati.map((v) => fasciaDi(v.population))).size > 1) {

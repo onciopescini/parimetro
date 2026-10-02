@@ -344,7 +344,26 @@ describe("rispondi", () => {
     const r = await rispondi("Roma", undefined, leggi, { chiave: "k", modelli: ["a", "b", "c", "d", "e", "f"], fetcher, attesa: 0 });
     if ("errore" in r) throw new Error(r.errore);
     expect(r.narrato).toBe(false);
-    expect(chiamate.slice(1)).toEqual(["a", "b", "c"]);
+    // tre modelli, poi un solo secondo tentativo sul primo (mai sugli altri tre)
+    expect(chiamate.slice(1)).toEqual(["a", "b", "c", "a"]);
+  });
+  it("se il testo viene scartato, un secondo tentativo con il promemoria puo' salvarlo", async () => {
+    const { fetcher, richieste } = modelloFinto([
+      '{"tipo":"scheda_comune","comune":"Roma"}',
+      "Roma spende 920 euro a persona.", // cifre: scartato
+      "Nel [[anno]] Roma spende [[spesa_pc]] a persona.", // dopo il promemoria
+    ]);
+    const r = await rispondi("Roma?", undefined, leggi, { chiave: "k", modelli: ["m1"], fetcher });
+    if ("errore" in r) throw new Error(r.errore);
+    expect(r.narrato).toBe(true);
+    expect(r.testo).toBe("Nel 2024 Roma spende 920 € a persona.");
+    const ultima = (richieste[2] as { messages: { content: string }[] }).messages.at(-1)!.content;
+    expect(ultima).toContain("senza alcuna cifra");
+  });
+  it("il rango non viene presentato come posizione in classifica", async () => {
+    const r = await eseguiIntento({ tipo: "scheda_comune", comune: "Roma" }, leggi);
+    expect(r.fatti.rango.valore).toBe("42 su 100 nella sua fascia");
+    expect(r.fatti.rango.label).toContain("non posizione");
   });
   it("la domanda troppo corta o vuota non chiama il modello", async () => {
     const { fetcher, richieste } = modelloFinto(["{}"]);
