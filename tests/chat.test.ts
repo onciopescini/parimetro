@@ -4,6 +4,7 @@ import { toCsv } from "../lib/chat/csv";
 import { estraiJson, promptIntento, validaIntento } from "../lib/chat/intento";
 import { eseguiIntento } from "../lib/chat/motore";
 import { promptNarrazione, validaNarrazione } from "../lib/chat/narrazione";
+import { chiediModello } from "../lib/chat/llm";
 import { rispondi } from "../lib/chat/rispondi";
 import { normalizzaFascia, normalizzaRegione } from "../lib/chat/fasce";
 import type { Leggi } from "../lib/chat/tipi";
@@ -342,6 +343,53 @@ describe("rispondi", () => {
     const { fetcher, richieste } = modelloFinto(['{"tipo":"fuori_ambito"}']);
     await rispondi("ciao", undefined, leggi, { chiave: "SEGRETO-123", modelli: ["m1"], fetcher });
     expect(JSON.stringify(richieste)).not.toContain("SEGRETO-123");
+  });
+});
+
+// ---- modelli gratuiti: saturi, instabili ----------------------------------------------
+describe("chiediModello", () => {
+  const msg = [{ role: "user" as const, content: "x" }];
+  const risp = (status: number, testo = "ok") =>
+    new Response(status === 200 ? JSON.stringify({ choices: [{ message: { content: testo } }] }) : "errore", { status });
+  const finto = (passi: Response[]) => {
+    const chiamate: { model: string; json: boolean }[] = [];
+    let n = 0;
+    const fetcher = (async (_u: unknown, init: { body: string }) => {
+      const b = JSON.parse(init.body);
+      chiamate.push({ model: b.model, json: !!b.response_format });
+      return passi[Math.min(n++, passi.length - 1)].clone();
+    }) as unknown as typeof fetch;
+    return { fetcher, chiamate };
+  };
+
+  it("un modello saturo (429) fa passare al successivo", async () => {
+    const { fetcher, chiamate } = finto([risp(429), risp(200, "ciao")]);
+    const r = await chiediModello(msg, { chiave: "k", modelli: ["a", "b"], fetcher, attesa: 0 }, (t) => t);
+    expect(r).toEqual({ valore: "ciao", modello: "b" });
+    expect(chiamate.map((c) => c.model)).toEqual(["a", "b"]);
+  });
+  it("se tutti sono saturi li riprova una volta dopo una pausa", async () => {
+    const { fetcher, chiamate } = finto([risp(429), risp(429), risp(200, "ecco")]);
+    const r = await chiediModello(msg, { chiave: "k", modelli: ["a", "b"], fetcher, attesa: 0 }, (t) => t);
+    expect(r?.valore).toBe("ecco");
+    expect(chiamate.map((c) => c.model)).toEqual(["a", "b", "a"]);
+  });
+  it("un errore diverso da 429 non viene riprovato (la chiave sbagliata non va martellata)", async () => {
+    const { fetcher, chiamate } = finto([risp(401)]);
+    const r = await chiediModello(msg, { chiave: "k", modelli: ["a", "b"], fetcher, attesa: 0 }, (t) => t);
+    expect(r).toBeNull();
+    expect(chiamate).toHaveLength(2);
+  });
+  it("un modello che non accetta response_format viene riprovato senza", async () => {
+    const { fetcher, chiamate } = finto([risp(400), risp(200, "{}")]);
+    const r = await chiediModello(msg, { chiave: "k", modelli: ["a"], fetcher, json: true, attesa: 0 }, (t) => t);
+    expect(r?.modello).toBe("a");
+    expect(chiamate).toEqual([{ model: "a", json: true }, { model: "a", json: false }]);
+  });
+  it("una risposta che il chiamante rifiuta passa al modello successivo", async () => {
+    const { fetcher } = finto([risp(200, "no"), risp(200, "si")]);
+    const r = await chiediModello(msg, { chiave: "k", modelli: ["a", "b"], fetcher, attesa: 0 }, (t) => (t === "si" ? t : null));
+    expect(r?.modello).toBe("b");
   });
 });
 
