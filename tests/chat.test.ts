@@ -3,7 +3,7 @@ import { risolviComune } from "../lib/chat/comuni";
 import { toCsv } from "../lib/chat/csv";
 import { estraiJson, promptIntento, validaIntento } from "../lib/chat/intento";
 import { eseguiIntento } from "../lib/chat/motore";
-import { promptNarrazione, validaNarrazione } from "../lib/chat/narrazione";
+import { promptNarrazione, ripulisci, validaNarrazione } from "../lib/chat/narrazione";
 import { chiediModello } from "../lib/chat/llm";
 import { rispondi } from "../lib/chat/rispondi";
 import { normalizzaFascia, normalizzaRegione } from "../lib/chat/fasce";
@@ -268,10 +268,22 @@ describe("validaNarrazione", () => {
     expect(validaNarrazione("   ", fatti).ok).toBe(false);
     expect(validaNarrazione("a".repeat(1000), fatti).ok).toBe(false);
   });
+  it("toglie le unita' ripetute dopo un segnaposto che le contiene gia'", () => {
+    expect(ripulisci("spende 2.008 € € a persona")).toBe("spende 2.008 € a persona");
+    expect(ripulisci("spende 2.008 € euro e il 5% %")).toBe("spende 2.008 € e il 5%");
+    expect(ripulisci("sta nella sua fascia nella sua fascia di popolazione")).toBe("sta nella sua fascia di popolazione");
+  });
+  it("la rifinitura non altera le cifre", () => {
+    expect(ripulisci("da 1.597 € a 56.474 €, cioe' 35 volte")).toBe("da 1.597 € a 56.474 €, cioe' 35 volte");
+  });
+  it("il testo finale passa dalla rifinitura", () => {
+    const f = { spesa_pc: { label: "Spesa", valore: "920 €" } };
+    expect(validaNarrazione("Spende [[spesa_pc]] euro.", f)).toEqual({ ok: true, testo: "Spende 920 €." });
+  });
   it("il prompt non contiene i dati grezzi, solo fatti con segnaposto", async () => {
     const r = await eseguiIntento({ tipo: "scheda_comune", comune: "Roma" }, leggi);
     const { user } = promptNarrazione(r);
-    expect(user).toContain("[[spesa_pc]] = Spesa pro capite: 920 €");
+    expect(user).toContain("[[spesa_pc]] → spesa pro capite (valore, solo per capire i confronti: 920 €)");
   });
 });
 
@@ -362,8 +374,8 @@ describe("rispondi", () => {
   });
   it("il rango non viene presentato come posizione in classifica", async () => {
     const r = await eseguiIntento({ tipo: "scheda_comune", comune: "Roma" }, leggi);
-    expect(r.fatti.rango.valore).toBe("42 su 100 nella sua fascia");
-    expect(r.fatti.rango.label).toContain("non posizione");
+    expect(r.fatti.rango.valore).toBe("42 su 100");
+    expect(r.fatti.rango.label).toContain("non è una posizione");
   });
   it("la domanda troppo corta o vuota non chiama il modello", async () => {
     const { fetcher, richieste } = modelloFinto(["{}"]);
