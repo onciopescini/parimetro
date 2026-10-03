@@ -107,6 +107,22 @@ describe("pagina di un comune", () => {
   it("rimanda alla mappa interattiva", () => {
     expect(p.html).toContain(`href="${O}/?comune=070006"`);
   });
+  it("avverte quando una sola voce pesa piu' del 40% della spesa (investimento isolato)", () => {
+    const concentrata = paginaComune(
+      VOCE,
+      { ...DATI, categorie: { "2024": { totale: 10_000_000, aree: [], voci: [{ descrizione: "Costruzione edifici scolastici", importo: 6_000_000 }] } } },
+      O,
+    );
+    expect(concentrata.html).toContain("Attenzione:");
+    expect(concentrata.html).toContain("60%");
+    expect(concentrata.html).toContain("Costruzione edifici scolastici");
+    const normale = paginaComune(
+      VOCE,
+      { ...DATI, categorie: { "2024": { totale: 10_000_000, aree: [], voci: [{ descrizione: "Stipendi", importo: 2_000_000 }] } } },
+      O,
+    );
+    expect(normale.html).not.toContain("Attenzione:");
+  });
   it("con pochi contribuenti avverte che la media e' instabile", () => {
     const poche = paginaComune(VOCE, { ...DATI, reddito: { "2024": { ...DATI.reddito!["2024"], contribuenti: 40 } } }, O);
     expect(poche.html).toContain("la media è instabile");

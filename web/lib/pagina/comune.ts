@@ -11,6 +11,7 @@ import { senzaAccenti } from "../dati";
 import type { Appalti, Concorrenza } from "../appalti";
 import type { Investimenti } from "../investimenti";
 import type { NotizieComune } from "../notizie";
+import { eConcentrata } from "../classifica";
 import { pochiContribuenti, type RedditoAnno } from "../reddito";
 
 export interface VoceComune {
@@ -49,7 +50,7 @@ interface AreaDati {
 export interface DatiComune {
   history: RigaStorico[];
   peers?: Record<string, Simili | null>;
-  categorie?: Record<string, { aree: AreaDati[] } | null>;
+  categorie?: Record<string, { totale?: number; aree: AreaDati[]; voci?: { descrizione: string; importo: number }[] } | null>;
   reddito?: Record<string, RedditoAnno> | null;
   investimenti?: Investimenti | null;
   appalti?: Appalti | null;
@@ -148,6 +149,16 @@ export function paginaComune(v: VoceComune, d: DatiComune, origine: string): Pag
       if (c) {
         righe.push(`<p>La spesa per abitante è ${c} dei comuni simili (${eur(simili.expenditure_pc)}).${posiz}</p>`);
       }
+    }
+    // Una sola voce enorme (un investimento isolato) rende il pro capite di quell'anno inconfrontabile: la mappa lo
+    // segnala, e una pagina letta da sola non puo' essere da meno.
+    const cat = d.categorie?.[String(ult.year)];
+    const prima = cat?.voci?.[0];
+    if (cat?.totale && prima && eConcentrata((100 * prima.importo) / cat.totale)) {
+      righe.push(
+        `<p class="avviso"><strong>Attenzione:</strong> il ${n0((100 * prima.importo) / cat.totale)}% della spesa del ${ult.year} è una sola voce ` +
+          `(«${esc(prima.descrizione)}», ${mln(prima.importo)}): di solito un investimento isolato. Il pro capite di quell'anno non è confrontabile con quello dei comuni simili.</p>`,
+      );
     }
     if (ult.autonomia != null) {
       righe.push(`<p>L'autonomia finanziaria, cioè la quota delle entrate correnti che il comune raccoglie da sé, è ${pct(ult.autonomia)}.</p>`);
@@ -318,7 +329,7 @@ main,header,footer{max-width:46rem;margin:0 auto;padding:0 1rem}
 header{padding-top:1rem}a{color:var(--link)}h1{font-size:1.6rem;line-height:1.25}h2{font-size:1.2rem;margin-top:2rem}
 table{border-collapse:collapse;width:100%;font-size:.92rem;margin:1rem 0}caption{text-align:left;color:var(--mut);padding-bottom:.4rem}
 th,td{border-bottom:1px solid var(--line);padding:.35rem .5rem;text-align:right}th[scope=row],thead th:first-child{text-align:left}
-.nota{color:var(--mut);font-size:.88rem}.cta{display:inline-block;margin:.5rem 0 1rem;padding:.5rem 1rem;border:1px solid var(--link);border-radius:.5rem;text-decoration:none}
+.avviso{border-left:4px solid #d97706;background:rgba(217,119,6,.12);padding:.5rem .8rem;border-radius:.3rem}.nota{color:var(--mut);font-size:.88rem}.cta{display:inline-block;margin:.5rem 0 1rem;padding:.5rem 1rem;border:1px solid var(--link);border-radius:.5rem;text-decoration:none}
 footer{padding-bottom:3rem;color:var(--mut);font-size:.88rem}
 </style>
 </head>
