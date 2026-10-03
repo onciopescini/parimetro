@@ -1,0 +1,20 @@
+[
+  {
+    "anno": 2024, "metric": "fhi", "desc": true, "fascia": null, "region": null,
+    "expected": "classifiche/2024/fhi-disc-tutte-italia.json"
+  },
+  {
+    "anno": 2023, "metric": "autonomia", "desc": false,
+    "fascia": "da 1.000 a 5.000 abitanti", "region": "Valle D'Aosta",
+    "expected": "classifiche/2023/autonomia-cresc-da-1-000-a-5-000-abitanti-valle-d-aosta.json"
+  },
+  {
+    "anno": 2020, "metric": "expenditure_pc", "desc": true,
+    "fascia": "oltre 250.000 abitanti", "region": null,
+    "expected": "classifiche/2020/expenditure_pc-disc-oltre-250-000-abitanti-italia.json"
+  },
+  {
+    "anno": 2022, "metric": "revenue_pc", "desc": false, "fascia": null, "region": "Friuli-Venezia Giulia",
+    "expected": "classifiche/2022/revenue_pc-cresc-tutte-friuli-venezia-giulia.json"
+  }
+]
