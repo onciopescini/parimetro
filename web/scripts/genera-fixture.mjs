@@ -20,7 +20,7 @@ import { AREE, NATURE } from "../lib/categorie.ts";
 
 const DEST = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "dati");
 const ANNI = [2022, 2023, 2024];
-const METRICHE = ["fhi", "autonomia", "expenditure_pc", "revenue_pc"];
+const METRICHE = ["fhi", "autonomia", "expenditure_pc", "revenue_pc", "reddito_medio"];
 
 // Generatore pseudo-casuale con seme: due esecuzioni danno gli stessi file
 let seme = 42;
@@ -76,6 +76,27 @@ const bilancio = (c, anno) => {
 rmSync(DEST, { recursive: true, force: true });
 const storico = Object.fromEntries(COMUNI.map((c) => [c.istat, ANNI.map((a) => bilancio(c, a))]));
 
+// Reddito IRPEF finto, con la forma di get_reddito_comune(). Alpe Nera (78 abitanti) ha pochi
+// contribuenti, Valle Finta l'addizionale oscurata: servono a provare gli avvisi dell'interfaccia.
+const redditi = {};
+const redditoDi = new Map();
+for (const c of COMUNI) {
+  redditi[c.istat] = {};
+  for (const b of storico[c.istat]) {
+    const medio = Math.round(14000 + rnd() * 18000);
+    redditi[c.istat][b.year] = {
+      contribuenti: Math.round(c.population * 0.7),
+      medio,
+      pc: Math.round(medio * 0.6),
+      addizionale_media: c.istat === "990007" ? null : Math.round(100 + rnd() * 150),
+      rango: [0, 50, 100][Math.floor(rnd() * 3)],
+      mediana_simili: Math.round(medio * (0.8 + rnd() * 0.4)),
+      n_simili: 3,
+    };
+    redditoDi.set(b, medio);
+  }
+}
+
 scrivi("anni.json", ANNI);
 scrivi("nazionale.json", Object.fromEntries(ANNI.map((a) => [a,
   { revenue_pc: 1500 + (a - 2022) * 60, expenditure_pc: 1480 + (a - 2022) * 60, debt_pc: null, fhi: 50 }])));
@@ -122,7 +143,8 @@ for (const a of ANNI) {
     regioni,
   });
   const valore = (b, m) =>
-    m === "fhi" ? b.fhi : m === "autonomia" ? b.autonomia : m === "expenditure_pc" ? b.expenditure_pc : b.revenue_pc;
+    m === "fhi" ? b.fhi : m === "autonomia" ? b.autonomia : m === "expenditure_pc" ? b.expenditure_pc
+    : m === "reddito_medio" ? redditoDi.get(b) : b.revenue_pc;
   for (const m of METRICHE)
     for (const desc of [true, false])
       for (const fa of [null, ...fasce])
@@ -171,6 +193,7 @@ for (const c of COMUNI) {
     categorie: Object.fromEntries(ANNI.map((a) => [a,
       a === 2022 ? null : categorie(c, storico[c.istat].find((x) => x.year === a))])),
     history: storico[c.istat],
+    reddito: redditi[c.istat],
     peers: Object.fromEntries(ANNI.map((a) => [a, {
       fascia: fascia(c.population), n: 3, revenue_pc: 1500, expenditure_pc: 1480,
       debt_pc: null, fhi: 50, pct_revenue: 40, pct_expenditure: 55, pct_fhi: 60,

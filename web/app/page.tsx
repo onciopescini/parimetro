@@ -19,6 +19,7 @@ import Map3D, {
   type MunicipalityProps,
 } from "@/components/map/Map3D";
 import type { CategorieComune } from "@/lib/categorie";
+import type { RedditoAnno } from "@/lib/reddito";
 import ChatPanel from "@/components/chat/ChatPanel";
 import Fonti from "@/components/Fonti";
 import BudgetDrawer, {
@@ -79,6 +80,7 @@ function Mappa() {
   const [avg, setAvg] = useState<NationalAverages | null>(null);
   const [peers, setPeers] = useState<PeerComparison | null>(null);
   const [categorie, setCategorie] = useState<CategorieComune | null>(null);
+  const [reddito, setReddito] = useState<RedditoAnno | null>(null);
   const [open, setOpen] = useState(false);
   const [flyTo, setFlyTo] = useState<{ lon: number; lat: number; nonce: number } | null>(null);
 
@@ -128,6 +130,7 @@ function Mappa() {
           history: MunicipalityDetail["history"];
           peers: Record<string, PeerComparison | null>;
           categorie?: Record<string, CategorieComune | null>;
+          reddito?: Record<string, RedditoAnno> | null;
         }>(`${URL_DATI}/comune/${p.istat}.json`),
         leggi<Record<string, NationalAverages>>(`${URL_DATI}/nazionale.json`),
       ]);
@@ -146,6 +149,7 @@ function Mappa() {
       setAvg(nat);
       setPeers(pari ?? null);
       setCategorie(scheda.categorie?.[String(anno)] ?? null);
+      setReddito(scheda.reddito?.[String(anno)] ?? null);
       setOpen(true);
     },
     [year, annoMappa],
@@ -486,6 +490,7 @@ function Mappa() {
         nationalAvg={avg}
         peerAvg={peers}
         categorie={categorie}
+        reddito={reddito}
         open={open}
         onClose={() => setOpen(false)}
       />

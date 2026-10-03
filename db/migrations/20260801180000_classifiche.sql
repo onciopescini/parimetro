@@ -35,7 +35,7 @@ drop function if exists get_ranking(int, text, text, text, boolean, int);
 
 create or replace function get_ranking(
   p_year   int,
-  p_metric text default 'fhi',      -- fhi | revenue_pc | expenditure_pc | autonomia
+  p_metric text default 'fhi',      -- fhi | revenue_pc | expenditure_pc | autonomia | reddito_medio
   p_fascia text default null,       -- null = tutte le fasce
   p_region text default null,       -- null = tutta Italia
   p_desc   boolean default true,    -- true = dal migliore/più alto
@@ -64,6 +64,7 @@ language sql stable as $$
              when 'revenue_pc'     then b.revenue_per_capita
              when 'expenditure_pc' then b.expenditure_per_capita
              when 'autonomia'      then round(100 * b.own_revenue / nullif(b.revenue_current, 0), 1)
+             when 'reddito_medio'  then (select r.medio from reddito_pc r where r.istat = m.istat_code and r.year = p_year)
              else b.financial_health_score::numeric
            end as valore,
            b.financial_health_score as fhi,

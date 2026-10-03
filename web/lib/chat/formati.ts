@@ -36,6 +36,7 @@ export function formattaMetrica(metrica: string, v: unknown): string {
       return fNum(v);
     case "revenue_pc":
     case "expenditure_pc":
+    case "reddito_medio":
       return fEur(v);
     case "surplus_deficit":
     case "revenue_total":
@@ -51,6 +52,7 @@ export const ETICHETTE_METRICA: Record<string, string> = {
   autonomia: "Autonomia finanziaria",
   expenditure_pc: "Spesa pro capite",
   revenue_pc: "Entrate pro capite",
+  reddito_medio: "Reddito imponibile medio",
   surplus_deficit: "Avanzo/disavanzo di cassa",
   revenue_total: "Entrate totali",
   expenditure_total: "Spesa totale",

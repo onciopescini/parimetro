@@ -43,6 +43,7 @@ const METRICHE: [string, string][] = [
   ["autonomia", "Autonomia finanziaria"],
   ["expenditure_pc", "Spesa pro capite"],
   ["revenue_pc", "Entrate pro capite"],
+  ["reddito_medio", "Reddito imponibile medio"],
 ];
 
 const eur = (v: number) =>

@@ -124,3 +124,47 @@ def inspect_csv(path: str, rows: int = 3) -> None:
                 print(df.head(rows).to_string(index=False)[:2000])
                 return
     print("Non riesco a leggere il file: formato o encoding non riconosciuti.")
+
+
+# ---------- MEF · Dichiarazioni IRPEF per comune (Dipartimento delle Finanze) ----------
+# Un CSV (in zip) per anno d'imposta. Le intestazioni cambiano un po' da un anno
+# all'altro (2020-22 non hanno "Reddito complessivo"; qualche intestazione ha uno
+# spazio in fondo): si leggono per NOME, mai per posizione, dopo aver normalizzato
+# gli spazi. Le celle con pochi contribuenti sono VUOTE (segreto statistico): NULL, non zero.
+IRPEF = {
+    "sep": ";",
+    "encoding": "utf-8",
+    "col_istat": "Codice Istat Comune",
+    "col_contribuenti": "Numero contribuenti",
+    # nome della voce -> (colonna frequenza, colonna ammontare)
+    "voci": {
+        "imponibile": ("Reddito imponibile - Frequenza", "Reddito imponibile - Ammontare in euro"),
+        "complessivo": ("Reddito complessivo - Frequenza", "Reddito complessivo - Ammontare in euro"),
+        "addizionale": ("Addizionale comunale dovuta - Frequenza", "Addizionale comunale dovuta - Ammontare in euro"),
+    },
+    # solo l'ammontare
+    "ammontari": {
+        "dipendente": "Reddito da lavoro dipendente e assimilati - Ammontare in euro",
+        "pensione": "Reddito da pensione - Ammontare in euro",
+        "fabbricati": "Reddito da fabbricati - Ammontare in euro",
+        "autonomo": "Reddito da lavoro autonomo (comprensivo dei valori nulli) - Ammontare in euro",
+        "partecipazione": "Reddito da partecipazione (comprensivo dei valori nulli) - Ammontare in euro",
+    },
+    # impresa = ordinaria + semplificata: se una delle due e' oscurata, la somma e' ignota
+    "impresa": [
+        "Reddito di spettanza dell'imprenditore in contabilita' ordinaria (comprensivo dei valori nulli) - Ammontare in euro",
+        "Reddito di spettanza dell'imprenditore in contabilita' semplificata (comprensivo dei valori nulli) - Ammontare in euro",
+    ],
+    "fasce": [
+        ("minore_zero", "Reddito complessivo minore o uguale a zero euro"),
+        ("0_10", "Reddito complessivo da 0 a 10000 euro"),
+        ("10_15", "Reddito complessivo da 10000 a 15000 euro"),
+        ("15_26", "Reddito complessivo da 15000 a 26000 euro"),
+        ("26_55", "Reddito complessivo da 26000 a 55000 euro"),
+        ("55_75", "Reddito complessivo da 55000 a 75000 euro"),
+        ("75_120", "Reddito complessivo da 75000 a 120000 euro"),
+        ("oltre_120", "Reddito complessivo oltre 120000 euro"),
+    ],
+    # riga di riepilogo "contribuenti senza comune": non e' un comune
+    "codice_senza_comune": "000000",
+}

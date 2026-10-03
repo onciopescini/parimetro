@@ -12,6 +12,8 @@
 
 import { useMemo, useState } from "react";
 import SpesaPerCategoria from "./SpesaPerCategoria";
+import RedditoResidenti from "./RedditoResidenti";
+import type { RedditoAnno } from "@/lib/reddito";
 import type { CategorieComune } from "@/lib/categorie";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -95,6 +97,8 @@ interface BudgetDrawerProps {
   nationalAvg?: NationalAverages | null;
   peerAvg?: PeerComparison | null;
   categorie?: CategorieComune | null;
+  /** Reddito IRPEF dei residenti nell'anno mostrato */
+  reddito?: RedditoAnno | null;
   open: boolean;
   onClose: () => void;
 }
@@ -183,6 +187,7 @@ export default function BudgetDrawer({
   nationalAvg,
   peerAvg,
   categorie,
+  reddito,
   open,
   onClose,
 }: BudgetDrawerProps) {
@@ -481,6 +486,11 @@ export default function BudgetDrawer({
                     rango non sono calcolabili: non sono zero, sono dati mancanti.
                   </p>
                 )}
+                <RedditoResidenti
+                  reddito={reddito ?? null}
+                  anno={current.year}
+                  spesaPc={current.expenditure_pc}
+                />
                 <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs leading-relaxed text-slate-300">
                   Totali {current.year}: entrate {eur(current.revenue_total, true)} · spese{" "}
                   {eur(current.expenditure_total, true)}

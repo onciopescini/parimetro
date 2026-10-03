@@ -12,6 +12,8 @@ Online: <https://parimetro.pages.dev> · 🇬🇧 [Read in English](README.md)
   e **spesa per categoria** (rifiuti, strade, scuole, sociale…) fino alla singola voce.
 - Un **indice relativo** (0–100): dove sta il comune fra quelli della sua taglia. Non è un voto
   alla gestione.
+- Il **reddito di chi ci vive** (IRPEF, dal Ministero delle Finanze) accanto alla spesa del comune,
+  con lo stesso confronto con i simili.
 - Classifiche, ricerca, link condivisibili.
 - Una **chat AI** in cui il modello non produce mai numeri: sceglie una di cinque domande
   previste e racconta un risultato calcolato dal codice ([come](docs/chat.md)). Ogni risposta

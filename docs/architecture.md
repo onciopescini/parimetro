@@ -23,7 +23,8 @@ region instead of one file per entity, or move bulky detail to object storage.
 | 3 | `etl/04_import_siope.py` | SIOPE cash flows per municipality, all line items |
 | – | `etl/categorie_spesa.py` | hand-written mapping line item → spending area / nature |
 | – | `etl/fusioni.py` | municipal mergers: predecessors summed into the successor |
-| 4 | `etl/05_esporta_statico.py` | writes `web/public/dati/**` |
+| 4 | `etl/06_import_irpef.py` | MEF IRPEF income per municipality and tax year (`scarica_irpef.py` downloads it) |
+| 5 | `etl/05_esporta_statico.py` | writes `web/public/dati/**` |
 | – | `db/migrations/*.sql` | schema, `refresh_fhi()`, spending-by-category, rankings |
 
 `etl/03_import_bdap.py` is an alternative importer for accrual-basis (competenza) data, kept
@@ -43,6 +44,11 @@ for when a source becomes available.
   not zero.
 - A single item above 40% of a year's payments is flagged as *concentrated spending*
   (typically a one-off investment): its per-capita figure is not comparable.
+- **Income (IRPEF).** The headline figure is the *taxable income per taxpayer*. Cells with few
+  taxpayers are hidden by the publisher (statistical secrecy), mostly the high income brackets and
+  some income categories in small towns, so a "total income" rebuilt from brackets would be
+  systematically too low there. Taxable income and the taxpayer count are never hidden. Where a town
+  has fewer than 100 taxpayers the site warns that its average is unstable.
 - Spending areas are an editorial classification (`etl/categorie_spesa.py`). Generic items
   stay in "not attributable" and the share is shown for every town.
 
@@ -62,5 +68,5 @@ dati/comuni-{year}.json             GeoJSON for the map
 dati/province-{year}.json           province aggregates
 dati/classifiche/filtri-{year}.json filters for the rankings
 dati/classifiche/{year}/...json     one file per ranking combination
-dati/comune/{istat}.json            history + peers + spending categories, per year
+dati/comune/{istat}.json            history + peers + spending categories + income, per year
 ```

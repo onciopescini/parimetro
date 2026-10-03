@@ -22,7 +22,7 @@ Domande possibili ("tipo"):
 1. scheda_comune: {"tipo":"scheda_comune","comune":"Nome","provincia":"opzionale","anno":opzionale}
 2. confronta_comuni: {"tipo":"confronta_comuni","comuni":[{"comune":"A"},{"comune":"B"}],"anno":opzionale}  (da 2 a 4 comuni)
 3. classifica: {"tipo":"classifica","metrica":M,"ordine":"alto"|"basso","fascia":opzionale,"regione":opzionale,"anno":opzionale,"senza_concentrate":opzionale true/false}
-   M tra: ${METRICHE.join(", ")}   (fhi = rango nella fascia; autonomia = autonomia finanziaria; expenditure_pc = spesa pro capite; revenue_pc = entrate pro capite)
+   M tra: ${METRICHE.join(", ")}   (fhi = rango nella fascia; autonomia = autonomia finanziaria; expenditure_pc = spesa pro capite; revenue_pc = entrate pro capite; reddito_medio = reddito imponibile medio dei residenti, cioè quanto guadagnano le persone che vivono nel comune)
    fascia, se indicata, una tra: ${FASCE.join(" | ")}
    "senza_concentrate": true se l'utente chiede di escludere i comuni con investimenti isolati / spesa concentrata.
 4. spesa_area: {"tipo":"spesa_area","comune":"Nome","area":A}

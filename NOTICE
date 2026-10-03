@@ -18,6 +18,15 @@ Data
   Attribution (CC BY) in the BDAP open data catalogue.
   https://bdap-opendata.rgs.mef.gov.it
 
+- MEF - Dipartimento delle Finanze (Ministry of Economy and Finance, Department of Finance):
+  "Redditi e principali variabili IRPEF su base comunale", tax declarations aggregated by
+  municipality and tax year (taxable income, number of taxpayers, municipal surtax).
+  https://www1.finanze.gov.it/finanze/analisi_stat/public/index.php?opendata=yes
+  The portal's "license type" field is empty. Under art. 52 of the Italian Digital Administration
+  Code (CAD), public data published without an explicit license are open data by default; we cite the
+  source on the site. Cells with few taxpayers are hidden by the publisher for statistical secrecy:
+  they are kept as NULL, never as zero.
+
 These are CASH accounting figures (money actually collected and paid), not accrual
 accounting (accertamenti / impegni). They do not match a municipality's official
 rendiconto.

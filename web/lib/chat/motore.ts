@@ -3,6 +3,7 @@
 import { percorsoClassifica, URL_DATI, type VoceIndice } from "../dati";
 import { AREE, type AreaSpesa, type CategorieComune } from "../categorie";
 import { eConcentrata, righeVisibili } from "../classifica";
+import { pochiContribuenti } from "../reddito";
 import { risolviComune } from "./comuni";
 import { normalizzaFascia, normalizzaRegione } from "./fasce";
 import {
@@ -14,6 +15,7 @@ import {
   formattaMetrica,
   numero,
 } from "./formati";
+import type { RedditoAnno } from "../reddito";
 import type { Colonna, Contesto, Fatto, Intento, Leggi, RifComune, Risultato } from "./tipi";
 
 interface RigaStorico {
@@ -24,6 +26,7 @@ interface SchedaComune {
   history: RigaStorico[];
   peers: Record<string, Record<string, unknown> | null>;
   categorie?: Record<string, CategorieComune | null>;
+  reddito?: Record<string, RedditoAnno> | null;
 }
 
 type Cella = string | number | null;
@@ -144,6 +147,11 @@ async function schedaComune(
   aggiungi("Rango nella fascia (0-100)", b.fhi, peers?.fhi, fNum);
   aggiungi("Autonomia finanziaria", b.autonomia, null, fPct);
   aggiungi("Avanzo/disavanzo di cassa", b.surplus_deficit, null, fEurBreve);
+  const red = s.reddito?.[String(anno)] ?? null;
+  if (red?.medio != null) {
+    aggiungi("Reddito imponibile medio", red.medio, red.mediana_simili, fEur);
+    aggiungi("Addizionale comunale media", red.addizionale_media, null, fEur);
+  }
   for (const a of (cat?.aree ?? []).filter((x) => x.importo > 0).slice(0, 5)) {
     aggiungi(`Spesa: ${AREE[a.area] ?? a.area} (€/ab)`, a.pc, a.n_simili > 1 ? a.mediana_pc : null, fEur);
   }
@@ -158,6 +166,12 @@ async function schedaComune(
     rango: { label: "punteggio del rango (da 0 a 100, rispetto ai comuni della stessa fascia di popolazione; non è una posizione in classifica)", valore: b.fhi == null ? "n.d." : `${fNum(b.fhi)} su 100` },
     n_simili: { label: "Comuni nella fascia", valore: fNum(peers?.n) },
     spesa_simili: { label: "Spesa pro capite mediana dei simili", valore: fEur(peers?.expenditure_pc) },
+    ...(red?.medio != null
+      ? {
+          reddito_medio: { label: "reddito imponibile medio dei residenti", valore: fEur(red.medio) },
+          reddito_simili: { label: "reddito imponibile medio mediano dei comuni simili", valore: fEur(red.mediana_simili) },
+        }
+      : {}),
   };
   const note = [nota, notaConcentrazione(cat)].filter(Boolean) as string[];
   if (b.revenue_total == null) {
@@ -202,7 +216,10 @@ async function confrontaComuni(
   }
   const { anno, nota } = await scegliAnno(leggi, i.anno, contesto);
   const dati = await Promise.all(
-    trovati.map(async (v) => ({ v, b: trovaAnno(await leggiScheda(leggi, v.istat), anno) })),
+    trovati.map(async (v) => {
+      const s = await leggiScheda(leggi, v.istat);
+      return { v, b: trovaAnno(s, anno), red: s.reddito?.[String(anno)] ?? null };
+    }),
   );
 
   const colonne: Colonna[] = [
@@ -237,6 +254,16 @@ async function confrontaComuni(
   aggiungi("Rango nella fascia (0-100)", "fhi", fNum);
   aggiungi("Autonomia finanziaria", "autonomia", fPct);
   aggiungi("Avanzo/disavanzo di cassa", "surplus_deficit", fEurBreve);
+  {
+    const r: Record<string, string> = { indicatore: "Reddito imponibile medio" };
+    const g: Record<string, Cella> = { indicatore: "Reddito imponibile medio" };
+    dati.forEach(({ red }, n) => {
+      r[`c${n}`] = fEur(red?.medio);
+      g[`c${n}`] = numero(red?.medio);
+    });
+    righe.push(r);
+    grezze.push(g);
+  }
 
   const fatti: Record<string, Fatto> = { anno: { label: "Anno", valore: String(anno) } };
   dati.forEach(({ v, b }, n) => {
@@ -452,6 +479,42 @@ async function spesaArea(
 }
 
 // ------------------------------------------------------------------ storico
+/** Il reddito IRPEF vive nel suo blocco (anno d'imposta -> valori), non nella serie dei bilanci. */
+function storicoReddito(voce: VoceIndice, s: SchedaComune, etichetta: string): Risultato {
+  const anni = Object.keys(s.reddito ?? {}).sort();
+  const serie = anni.filter((a) => s.reddito![a].medio != null);
+  if (!serie.length) {
+    return vuoto(voce.name, `Per ${voce.name} non ho dati sui redditi.`, { apri: voce.istat });
+  }
+  const prima = s.reddito![serie[0]];
+  const ultima = s.reddito![serie[serie.length - 1]];
+  const note: string[] = [];
+  if (pochiContribuenti(ultima.contribuenti)) {
+    note.push(`Ci sono solo ${fNum(ultima.contribuenti)} contribuenti: la media dipende da poche persone ed è poco stabile.`);
+  }
+  return {
+    ok: true,
+    titolo: `${voce.name} · ${etichetta}`,
+    colonne: [
+      { k: "anno", label: "Anno d'imposta" },
+      { k: "valore", label: etichetta, dx: true },
+      { k: "contribuenti", label: "Contribuenti", dx: true },
+    ],
+    righe: serie.map((a) => ({ anno: a, valore: fEur(s.reddito![a].medio), contribuenti: fNum(s.reddito![a].contribuenti) })),
+    grezze: serie.map((a) => ({ anno: Number(a), valore: numero(s.reddito![a].medio), contribuenti: s.reddito![a].contribuenti })),
+    fatti: {
+      comune: { label: "Comune", valore: voce.name },
+      anno_inizio: { label: "Primo anno d'imposta", valore: serie[0] },
+      anno_fine: { label: "Ultimo anno d'imposta", valore: serie[serie.length - 1] },
+      valore_inizio: { label: "reddito imponibile medio all'inizio", valore: fEur(prima.medio) },
+      valore_fine: { label: "reddito imponibile medio alla fine", valore: fEur(ultima.medio) },
+    },
+    riassunto: `${voce.name}, reddito imponibile medio: ${fEur(prima.medio)} nel ${serie[0]}, ${fEur(ultima.medio)} nel ${serie[serie.length - 1]}.`,
+    note,
+    apri: voce.istat,
+  };
+}
+
 async function storico(
   leggi: Leggi,
   indice: VoceIndice[],
@@ -463,6 +526,7 @@ async function storico(
   const { voce } = t;
   const s = await leggiScheda(leggi, voce.istat);
   const etichetta = ETICHETTE_METRICA[i.metrica];
+  if (i.metrica === "reddito_medio") return storicoReddito(voce, s, etichetta);
   if (!s.history.length) {
     return vuoto(voce.name, `Per ${voce.name} non ho serie storiche.`, { apri: voce.istat });
   }

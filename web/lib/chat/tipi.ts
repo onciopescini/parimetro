@@ -3,7 +3,7 @@
 // dal codice (Risultato). Tutto quello che passa dal modello e' validato contro
 // questi tipi prima di essere usato.
 
-export const METRICHE = ["fhi", "autonomia", "expenditure_pc", "revenue_pc"] as const;
+export const METRICHE = ["fhi", "autonomia", "expenditure_pc", "revenue_pc", "reddito_medio"] as const;
 export type Metrica = (typeof METRICHE)[number];
 
 /** Metriche leggibili in una serie storica (quelle di `history` nel file del comune). */
@@ -15,6 +15,7 @@ export const METRICHE_STORICO = [
   "surplus_deficit",
   "revenue_total",
   "expenditure_total",
+  "reddito_medio",
 ] as const;
 export type MetricaStorico = (typeof METRICHE_STORICO)[number];
 

@@ -379,6 +379,9 @@ def main() -> None:
         cur.execute("select refresh_fhi(%s)", (a.year,))
         print(f"→ indice ricalcolato su {cur.fetchone()[0]} righe")
         conn.commit()
+        # La vista dei redditi prende la fascia dalla popolazione del bilancio: va rifatta
+        cur.execute("select refresh_reddito()")
+        conn.commit()
 
         if not a.senza_voci:
             print("→ dettaglio per voce (secondo passaggio sulle spese)…")

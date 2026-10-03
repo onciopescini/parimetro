@@ -45,7 +45,11 @@ python 02_import_population.py POSAS_2024_it_Comuni.csv --year 2024
 python scarica_siope.py --anno 2024 --dest ./siope_2024
 python 04_import_siope.py --dir ./siope_2024 --year 2024
 
-# 4 · Esporta per il sito
+# 4 · Redditi IRPEF per comune (MEF, un file da ~1 MB per anno d'imposta)
+python scarica_irpef.py --dest ../../etl-data/irpef --da 2020 --a 2024
+python 06_import_irpef.py --dir ../../etl-data/irpef
+
+# 5 · Esporta per il sito
 python 05_esporta_statico.py --dest ../web/public/dati
 ```
 

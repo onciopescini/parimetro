@@ -23,7 +23,7 @@ from concurrent.futures import ThreadPoolExecutor
 import psycopg
 from dotenv import load_dotenv
 
-METRICHE = ("fhi", "autonomia", "expenditure_pc", "revenue_pc")
+METRICHE = ("fhi", "autonomia", "expenditure_pc", "revenue_pc", "reddito_medio")
 # Se ne esportano piu' di quelle mostrate (20): chi nasconde i comuni con spesa
 # concentrata deve comunque trovarne venti, e il filtro lo applica il sito
 LIMITE_CLASSIFICA = 50
@@ -143,6 +143,8 @@ def main() -> None:
                 "peers": {str(y): scalare(k, "get_peer_comparison", istat, y) for y in anni},
                 # Spesa per area/natura/voce; null per gli anni senza dettaglio
                 "categorie": {str(y): scalare(k, "get_categorie_comune", istat, y) for y in anni},
+                # Reddito IRPEF per anno d'imposta (null se il comune non ha dati)
+                "reddito": scalare(k, "get_reddito_comune", istat),
             })
 
     codici = [v["istat"] for v in indice]

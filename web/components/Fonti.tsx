@@ -56,6 +56,11 @@ export default function Fonti() {
                 residente (licenza CC BY 4.0).
               </li>
               <li>
+                <strong className="text-slate-100">MEF, Dipartimento delle Finanze</strong>: dichiarazioni
+                IRPEF per comune (reddito imponibile, contribuenti, addizionale comunale). Dati aperti: le
+                celle con pochi contribuenti sono oscurate dal segreto statistico e qui risultano mancanti.
+              </li>
+              <li>
                 <strong className="text-slate-100">BDAP / SIOPE</strong>, Ragioneria Generale dello
                 Stato: incassi e pagamenti mensili di ogni comune, voce per voce (dati aperti, CC BY).
               </li>
@@ -102,6 +107,11 @@ export default function Fonti() {
                 Se un comune ha pagamenti ma nessun incasso in un anno, le entrate sono{" "}
                 <em>dato mancante</em>, non zero. Mancano del tutto Caines/Kuens (non presente in
                 SIOPE) e Misiliscemi per il 2020-21.
+              </li>
+              <li>
+                Il <strong className="text-slate-100">reddito imponibile medio</strong> è per contribuente
+                (chi presenta la dichiarazione): non è il tenore di vita e in un paese con pochi
+                contribuenti la media è instabile.
               </li>
               <li>Un dato anomalo non è per forza un errore: può essere un anno eccezionale.</li>
               <li>

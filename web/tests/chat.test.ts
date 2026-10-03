@@ -47,6 +47,10 @@ const scheda = (k: number, concentrata = false) => ({
     "2024": { fascia: "x", n: 12, revenue_pc: 1000, expenditure_pc: 880, debt_pc: null, fhi: 50, pct_revenue: 50, pct_expenditure: 50, pct_fhi: 50 },
   },
   categorie: { "2023": null, "2024": categorie(concentrata) },
+  reddito: {
+    "2023": { contribuenti: concentrata ? 50 : 700 * k, medio: 19000 + k * 500, pc: 12000, addizionale_media: 150, rango: 40, mediana_simili: 20000, n_simili: 12 },
+    "2024": { contribuenti: concentrata ? 50 : 700 * k, medio: 20000 + k * 1000, pc: 13000, addizionale_media: null, rango: 60, mediana_simili: 21000, n_simili: 12 },
+  },
 });
 const riga = (posizione: number, name: string, concentrata: number | string | null) => ({
   posizione, istat: "00000" + posizione, name, province: "XX", population: 500, valore: "50000.5", fhi: 90, autonomia: "80", fascia: "f", concentrata, lon: 1, lat: 1,
@@ -242,6 +246,46 @@ describe("eseguiIntento", () => {
     const r = await eseguiIntento({ tipo: "fuori_ambito" }, leggi);
     expect(r.ok).toBe(false);
     expect(r.riassunto).toContain("Non faccio previsioni");
+  });
+});
+
+describe("reddito IRPEF nella chat", () => {
+  it("la scheda mostra il reddito imponibile medio col confronto coi simili", async () => {
+    const r = await eseguiIntento({ tipo: "scheda_comune", comune: "Roma" }, leggi);
+    expect(r.righe.find((x) => x.indicatore === "Reddito imponibile medio")).toMatchObject({ comune: "22.000 €", simili: "21.000 €" });
+    expect(r.fatti.reddito_medio.valore).toBe("22.000 €");
+  });
+  it("addizionale oscurata: n.d., non zero", async () => {
+    const r = await eseguiIntento({ tipo: "scheda_comune", comune: "Roma" }, leggi);
+    expect(r.righe.find((x) => x.indicatore === "Addizionale comunale media")?.comune).toBe("n.d.");
+  });
+  it("il confronto ha la riga del reddito, una cella per comune", async () => {
+    const r = await eseguiIntento({ tipo: "confronta_comuni", comuni: [{ comune: "Roma" }, { comune: "Milano" }] }, leggi);
+    expect(r.righe.find((x) => x.indicatore === "Reddito imponibile medio")).toMatchObject({ c0: "22.000 €", c1: "23.000 €" });
+  });
+  it("lo storico del reddito e' per anno d'imposta, con i contribuenti", async () => {
+    const r = await eseguiIntento({ tipo: "storico_comune", comune: "Roma", metrica: "reddito_medio" }, leggi);
+    expect(r.colonne[0].label).toBe("Anno d'imposta");
+    expect(r.righe).toEqual([
+      { anno: "2023", valore: "20.000 €", contribuenti: "1400" },
+      { anno: "2024", valore: "22.000 €", contribuenti: "1400" },
+    ]);
+  });
+  it("pochi contribuenti: lo dice (la media di un paese da 50 dichiaranti e' instabile)", async () => {
+    const r = await eseguiIntento({ tipo: "storico_comune", comune: "Elva", metrica: "reddito_medio" }, leggi);
+    expect(r.note.join(" ")).toContain("poco stabile");
+  });
+  it("comune senza dati sui redditi: lo dice", async () => {
+    FILE["/dati/comune/075099.json"] = { history: [], peers: {}, categorie: {} };
+    const r = await eseguiIntento({ tipo: "storico_comune", comune: "Castro", provincia: "Lecce", metrica: "reddito_medio" }, leggi);
+    expect(r.ok).toBe(false);
+    expect(r.riassunto).toContain("non ho dati sui redditi");
+    delete FILE["/dati/comune/075099.json"];
+  });
+  it("il modello puo' chiedere classifica e storico per reddito, e solo per metriche vere", () => {
+    expect(validaIntento({ tipo: "classifica", metrica: "reddito_medio", ordine: "alto" }).ok).toBe(true);
+    expect(validaIntento({ tipo: "storico_comune", comune: "Roma", metrica: "reddito_medio" }).ok).toBe(true);
+    expect(validaIntento({ tipo: "classifica", metrica: "reddito_totale", ordine: "alto" }).ok).toBe(false);
   });
 });
 

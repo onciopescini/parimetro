@@ -13,6 +13,8 @@ Live: <https://parimetro.pages.dev> · 🇮🇹 [Leggi in italiano](README.it.md
   individual line item.
 - A **relative index** (0–100): where a town stands among towns of its own size — not a
   grade of its management.
+- The **income of the people who live there** (IRPEF, from the Ministry of Finance), next to the
+  town's spending, with the same peer comparison.
 - Rankings, search, shareable deep links.
 - An **AI chat** where the model never produces numbers: it only picks one of five
   pre-defined questions and narrates a result that this code computed
