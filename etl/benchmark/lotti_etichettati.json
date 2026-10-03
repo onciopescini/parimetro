@@ -1,0 +1,1502 @@
+[
+ {
+  "cig": "987138194B",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI PULIZIA E IGIENE AMBIENTALE, DISINFEZIONE, AUSILIARIATO E SANIFICAZIONE A CHIAMATA PRESSO LE SEDI DELLE SCUOLE D'INFANZIA E DEGLI ASILI NIDO COMUNALI",
+  "cpv": "90919300-5",
+  "cpv_descr": "SERVIZI DI PULIZIA DI SCUOLE",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "B7958A7E54",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "RINNOVAMENTO PARCO GIOCHI BIBLIOTECA ANNINA LANZA E MANUTENZIONE ORDINARIA AREA GIOCHI SAN PIETROORI E IMPIANTI ANTINCENDIO",
+  "cpv": "37535200-9",
+  "cpv_descr": "ATTREZZATURA PER PARCO GIOCHI",
+  "area": "ambiente_territorio",
+  "dubbio": true
+ },
+ {
+  "cig": "B4ABA91C99",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI ALLESTIMENTO MUNICIPIO 1",
+  "cpv": "51100000-3",
+  "cpv_descr": "SERVIZI DI INSTALLAZIONE DI ATTREZZATURE ELETTRICHE E MECCANICHE",
+  "area": "funzionamento",
+  "dubbio": true
+ },
+ {
+  "cig": "B34059235C",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "Interventi tecnici, importazione e manutenzione sulle telecamere di videosorveglianza, lettura targa e ztl",
+  "cpv": "32240000-7",
+  "cpv_descr": "TELECAMERE",
+  "area": "funzionamento",
+  "dubbio": true
+ },
+ {
+  "cig": "B682E1E226",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "INCARICO DI SUPPORTO AL RUP PER LA PREDISPOSIZIONE DI CONTENUTI TECNICI INERENTI LE RELAZIONI DI CUI AGLI ARTT. 14 E 17 DEL D.LGS. 201/2022 PER L'AFFIDAMENTO DEL SERVIZIO DI GESTIONE DELLA SOSTA.",
+  "cpv": "71240000-2",
+  "cpv_descr": "SERVIZI ARCHITETTONICI, DI INGEGNERIA E PIANIFICAZIONE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B7FFFFAEFF",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "ENERGIA ELETTRICA",
+  "cpv": "65310000-9",
+  "cpv_descr": "EROGAZIONE DI ENERGIA ELETTRICA",
+  "area": "utenze",
+  "dubbio": false
+ },
+ {
+  "cig": "9881314E42",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "OPERAZIONI CIMITERIALI ESUMAZIONI / ESTUMULAZIONI",
+  "cpv": "98371110-8",
+  "cpv_descr": "SERVIZI CIMITERIALI",
+  "area": "patrimonio",
+  "dubbio": false
+ },
+ {
+  "cig": "B86D921E40",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "RINNOVO POLIZZA M11972432 INCENDIO CIVITAS PRO CONVERSIONE",
+  "cpv": "66510000",
+  "cpv_descr": null,
+  "area": "funzionamento",
+  "dubbio": true
+ },
+ {
+  "cig": "B6A07FEFF6",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "FORNITURA E POSA IN OPERA DI VERDE PUBBLICO CON RELATIVA INSTALLAZIONE DI IMPIANTO DI IRRIGAZIONE E SERVIZIO DI MANUTENZIONE E GARANZIA PER UN ANNO, NELL'AMBITO DEL PROGETTO DI RIGENERAZIONE URBANA DEL CENTRO STORICO",
+  "cpv": "77311000-3",
+  "cpv_descr": "SERVIZI DI MANUTENZIONE DI GIARDINI ORNAMENTALI O RICREATIVI",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B56DAE740C",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZI INDAGINE GEOGNOSTICA REALIZZAZIONE PALAZZETTO DELLO SPORT",
+  "cpv": "45111250-5",
+  "cpv_descr": "LAVORI DI INDAGINE DEI TERRENI",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "B9CB8B0528",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "REALIZZAZIONE NUOVO TRATTO DI RETE FOGNARIA PRIVATA PER PREDISPOSIZIONE E ALLACCIO NUOVO PREFABBRICATO PER ESTERNO SEDE E MAGAZZINO PER L'ASSOCIAZIONE PROLOCO E COLLEGAMENTO SCARICO BAGNO CIRCOLO ESISTENTE IN VIA ALBA CORTEMILIA N° 150 - FRAZIONE RICCA",
+  "cpv": "45112000-5",
+  "cpv_descr": "LAVORI DI SCAVO E MOVIMENTO TERRA",
+  "area": "patrimonio",
+  "dubbio": true
+ },
+ {
+  "cig": "B9815B6EFD",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZI STRAORDINARI DI TRASLAZIONE SALMA, TRASLAZIONERESTI, RACCOLTA RESTI E MATERIALI RESIDUALI E ATTIVITA' CONNESSE CIMITERO C.DA PANTANO- AFFIDAMENTO SERVIZI SUPPLEMENTARI-",
+  "cpv": "98370000-7",
+  "cpv_descr": "SERVIZI FUNERARI E SERVIZI AFFINI",
+  "area": "patrimonio",
+  "dubbio": false
+ },
+ {
+  "cig": "B224AB5CB3",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "RINNOVO LICENZE DROPBOX 2024-2025",
+  "cpv": "72267100-0",
+  "cpv_descr": "MANUTENZIONE DI SOFTWARE DI TECNOLOGIA DELL'INFORMAZIONE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "97223110D9",
+  "anno": 2023,
+  "tipo": "LAVORI",
+  "oggetto": "AFFIDAMENTO DIRETTO, AI SENSI DELL'ART. 36 COMMA 2 LETT. A) DEL D.LGS. N. 50/2016, DEI LAVORI RELATIVI ALL' 'INTERVENTO DI COMPLETAMENTO DELLA MANUTENZIONE STRAORDINARIA DELLA STRADA COMUNALE CARATTERIZZANTE LOCALITÀ SCALA, COMUNE DI SAN PIETRO IN AMANTEA - INTERVENTO FINANZIATO AI SENSI DELL'ART. 3",
+  "cpv": "45230000-8",
+  "cpv_descr": "LAVORI DI COSTRUZIONE DI CONDUTTURE, LINEE DI COMUNICAZIONE E LINEE ELETTRICHE, ",
+  "area": "ambiente_territorio",
+  "dubbio": true
+ },
+ {
+  "cig": "B1F99E714B",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "RICHIESTA DI OFFERTA PER IL SERVIZIO DI TRASPORTO URBANO-TURISTICO IN VALLE DI PEIO PER LA STAGIONE ESTIVA 2024.",
+  "cpv": "60172000",
+  "cpv_descr": null,
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B75EC47935",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SUPPORTO AMMINISTRATIVO PER 6 IMPIANTI FOTOVOLTAICI E PER LA CENTRALE ELETTRICA DI RAMINI PER IL PERIODO 2024-2025",
+  "cpv": "71700000-5",
+  "cpv_descr": "SERVIZI DI MONITORAGGIO E CONTROLLO",
+  "area": "utenze",
+  "dubbio": true
+ },
+ {
+  "cig": "B439D9C913",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "NOLEGGIO FOTOCOPIATORI MULTIFUNZIONE CANON",
+  "cpv": "30121100-4",
+  "cpv_descr": "FOTOCOPIATRICI",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B90948000D",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "LOTTO C - LOCALIZZAZIONE AREA: MATINELLA – SP 314 AREA ADIACENTE CHIESA",
+  "cpv": "55900000-9",
+  "cpv_descr": "SERVIZI DI VENDITA AL DETTAGLIO",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B7FFD11836",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI PER INTERVENTI DI RISANAMENTO E MANUTENZIONE DELLA CHIESA DI SAN NICOLO' L'ARENA",
+  "cpv": "45212360-7",
+  "cpv_descr": "LAVORI DI COSTRUZIONE DI EDIFICI RELIGIOSI",
+  "area": "cultura_sport_turismo",
+  "dubbio": true
+ },
+ {
+  "cig": "B62ADD2853",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI PFTE, PE, DL, CSP E CSE PER I LAVORI DI ADEGUAMENTO IMPIANTO SPORTIVO E CONTENIMENTO DEI CONSUMI ENERGETICI DEL PALAZZETTO DELLO SPORT DI SA RODIA",
+  "cpv": "71340000-3",
+  "cpv_descr": "SERVIZI DI INGEGNERIA INTEGRATI",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "B020CC7100",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO RISCOSSIONE COATTIVA",
+  "cpv": "99999999",
+  "cpv_descr": "Cpv prevalente non disponibile",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "A01AE1C0D2",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "COLLAUDO STATICO MENSA PNRR",
+  "cpv": "71330000-0",
+  "cpv_descr": "VARI SERVIZI DI INGEGNERIA",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "9932844A2A",
+  "anno": 2023,
+  "tipo": "LAVORI",
+  "oggetto": "PROGETTO AQ0826/2023: ACCORDO QUADRO PER INTERVENTI MANUTENZIONE ORDINARIA EDILE AGLI EDIFICI AD USO SCOLASTICO, UFFICI E SERVIZI ED ASILI NIDO DEL Q4",
+  "cpv": "45262522-6",
+  "cpv_descr": "LAVORI EDILI",
+  "area": "patrimonio",
+  "dubbio": true
+ },
+ {
+  "cig": "991614668B",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "PNRR MISURA 1.4.1 ESPERIENZA DEL CITTADINO NEI SERVIZI PUBBLICI",
+  "cpv": "72263000-6",
+  "cpv_descr": "SERVIZI DI IMPLEMENTAZIONE DI SOFTWARE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B6EDD5341F",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI ASSISTENZA INFORMATICA DEL SOFTWARE IN DOTAZIONE AL SETTORE ENTRATE E TRIBUTI, NONCHÈ PER LE ATTIVITÀ DI SUPPORTO INFORMATICO ALLO STESSO SETTORE PER L'ANNO 2025",
+  "cpv": "72253100-4",
+  "cpv_descr": "SERVIZI DI ASSISTENZA INFORMATICA",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B561642D54",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "RIBASSO PERCENTUALE BASE ASTA",
+  "cpv": "77310000",
+  "cpv_descr": null,
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B5040FC38E",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI MANUTENZIONE STRAORDINARIA DEL PATRIMONIO ARBOREO COMUNALE",
+  "cpv": "77341000-2",
+  "cpv_descr": "POTATURA DI ALBERI",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "A0212F6A7F",
+  "anno": 2023,
+  "tipo": "LAVORI",
+  "oggetto": "INTERVENTO DI FORESTAZIONE URBANA IN AREA CICLODROMO - LOCALITA' VILLAMARINA",
+  "cpv": "77231600-4",
+  "cpv_descr": "SERVIZI DI AFFORESTAZIONE",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B2D2D60E46",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "INTERVENTI DI POTATURA SU ALBERATURE DI COMPETENZA COMUNALE ANNO 2024",
+  "cpv": "77340000-5",
+  "cpv_descr": "POTATURA DI ALBERI E SIEPI",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B6D5A44AEF",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "PRODOTTI E SERVIZI PER LA GESTIONE DELLE PROCEDURE SANZIONATORIE DI COMPETENZA DELLA POLIZIA MUNICIPALE",
+  "cpv": "79940000-5",
+  "cpv_descr": "SERVIZI DI ORGANISMI DI RISCOSSIONE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B4C865BAAA",
+  "anno": 2024,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA HARDWARE",
+  "cpv": "30210000-4",
+  "cpv_descr": "MACCHINE PER L'ELABORAZIONE DI DATI (HARDWARE)",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B4ADC5168F",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI DI RIQUALIFICAZIONE ENERGETICA DEL PALAZZETTO DELLO SPORT DI VIA G. VERDI N. 5, NUOVA POMPA DI CALORE A SERVIZIO DEGLI SPOGLIATOI E PER LA PRODUZIONE DI ACQUA CALDA SANITARIA",
+  "cpv": "45331000-6",
+  "cpv_descr": "LAVORI DI INSTALLAZIONE DI IMPIANTI DI RISCALDAMENTO, VENTILAZIONE E CLIMATIZZAZ",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "A0244F6D63",
+  "anno": 2023,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI DI CONSOLIDAMENTO AREE A RISCHIO FRANE ED A DISSESTO IDROGEOLOGICO IN LOC. FICONERA (COMPENSAZIONE AUMENTO MATERIALI LEGGE N. 106/2021 E S.M.I.)",
+  "cpv": "45262300-4",
+  "cpv_descr": "STRUTTURE IN CALCESTRUZZO",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B01BA76302",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "MANUTENZIONE ORDINARIA DEGLI IMPIANTI TECNOLOGICI DEGLI ISTITUTI SCOLASTICI DEL COMUNE DI MONTE DI PROCIDA E DELLA CASA COMUNALE",
+  "cpv": "99999999",
+  "cpv_descr": "Cpv prevalente non disponibile",
+  "area": "patrimonio",
+  "dubbio": true
+ },
+ {
+  "cig": "B83AB136CA",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI PULIZIA STRAORDINARIA DEI POZZETTI, CADITOIE STRADALI E GRIGLIE PER LA RACCOLTA DELLE ACQUE PIOVANE ED OSTURAZIONE CONDOTTE PRESENTI NEL TERRITORIO COMUNALE",
+  "cpv": "90470000-2",
+  "cpv_descr": "SERVIZI DI PULIZIA DELLE FOGNATURE",
+  "area": "ambiente_territorio",
+  "dubbio": true
+ },
+ {
+  "cig": "B9B7E9A407",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "ASSISTENZA ALL'AUTONOMIA",
+  "cpv": "85320000-8",
+  "cpv_descr": "SERVIZI SOCIALI",
+  "area": "sociale_sanita",
+  "dubbio": false
+ },
+ {
+  "cig": "B8B76E5790",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "INTERVENTO ER-URVI-001704 LOTTO 1 - AFFIDAMENTO INCARICO PROFESSIONALE PER SORVEGLIANZA ARCHEOLOGICA IN CORSO D'OPERA RIPRISTINO E RIQUALIFICAZIONE PIAZZA MAZZINI - PIAZZA DON MINZONI",
+  "cpv": "71250000",
+  "cpv_descr": null,
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B7E3A74C99",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "CONTRATTO OPERATIVO SPECIFICO PER INTERVENTI DI MANUTENZIONE STRAORDINARIA SU VARI IMPIANTI ELETTRICI PRESSO LE SCUOLE RINALDINI-CADUTI CAVE-CHIARI IN ATTUAZIONE DELL'ACCORDO QUADRO PER LAVORI DI MANUTENZIONE ELETTRICI PRESSO I BENI IMMOBILI DI PROPRIETÀ O IN DISPONIBILITÀ DEL COMUNE DI BOTTICINO CI",
+  "cpv": "50711000-2",
+  "cpv_descr": "SERVIZI DI RIPARAZIONE E MANUTENZIONE DI IMPIANTI ELETTRICI DI EDIFICI",
+  "area": "istruzione",
+  "dubbio": true
+ },
+ {
+  "cig": "B4E3BE4B6A",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI DI REALIZZAZIONE DI BOSCO URBANO IN VIA BORA IN COMUNE DI TRAVERSETOLO",
+  "cpv": "45236250-7",
+  "cpv_descr": "LAVORI DI SUPERFICIE PER PARCHI",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B599C9B166",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI TESORERIA COMUNALE PERIODO 2025-2027",
+  "cpv": "66110000-4",
+  "cpv_descr": "SERVIZI BANCARI",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B634DED7DE",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "AFFIDAMENTO AI SENSI DELL'ART. 50, COMMA 1, LETTERA B) DEL D.LGS. N. 36/2023 DEL SERVIZIO DI DIRETTORE DEI LAVORI PER L'ESECUZIONE DELLO STRALCIO PROGETTUALE N° 1 DEL SUB-INTERVENTO N. 1 - COMPLESSO DI SAN LORENZO MAGGIORE - RICOMPRESO NELL'INTERVENTO GRANDE PROGETTO CENTRO STORICO DI NAPOLI - VALOR",
+  "cpv": "71251000-2",
+  "cpv_descr": "SERVIZI ARCHITETTONICI E DI MISURAZIONE",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B6EBD0D21B",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "INCARICO PROFESSIONALE PER PROGETTAZIONE ESECUTIVA PER L'INTERVENTO DI MANUTENZIONE STRAORDINARIA DELL'INVOLUCRO E DEI LOCALI INTERRATI DELLA PISCINA COMUNALE",
+  "cpv": "71322000-1",
+  "cpv_descr": "SERVIZI DI PROGETTAZIONE TECNICA PER LA COSTRUZIONE DI OPERE DI INGEGNERIA CIVIL",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B4CDC8FDC0",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "RICOSTRUZIONE MURETTO INCIDENTATO E FORNITURA SASSI",
+  "cpv": "44110000-4",
+  "cpv_descr": "MATERIALI PER COSTRUZIONE",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B49EF663C6",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "INTERVENTI DI MANUTENZIONE ORDINARIA IMPIANTI TERMICI",
+  "cpv": "45259300-0",
+  "cpv_descr": "RIPARAZIONE E MANUTENZIONE DI CENTRALI TERMICHE",
+  "area": "patrimonio",
+  "dubbio": false
+ },
+ {
+  "cig": "B6555F8F09",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "PROGETTAZIONE E REALIZZAZIONE DI PRODOTTI MULTIMEDIALI PER LA FRUIZIONE DEL COMPLESSO ARCHEOLOGICO SITO NEI SOTTERRANEI DEL MUSEO DI SCULTURA ANTICA GIOVANNI BARRACCO",
+  "cpv": "48500000-3",
+  "cpv_descr": "PACCHETTI SOFTWARE DI COMUNICAZIONE E MULTIMEDIA",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "9727977493",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "P.N.R.R. M1.C1-1.4.5 PIATTAFORMA NOTOFICHE DIGITALI - ATTIVAZIONE SERVIZIO NOTIFICHE VIOLAZIONI CODICE DELLE STRADA",
+  "cpv": "72212200-1",
+  "cpv_descr": "SERVIZI DI PROGRAMMAZIONE DI SOFTWARE PER RETI, INTERNET E INTRANET",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B6DA4DC974",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "OSCURANTI 625",
+  "cpv": "44115900-8",
+  "cpv_descr": "DISPOSITIVI DI PROTEZIONE SOLARE",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B57B1EE644",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "STAMPA DIGITALE, POSTALIZZAZIONE, RENDICONTAZIONE DEI PAGAMENTI",
+  "cpv": "79811000-2",
+  "cpv_descr": "SERVIZI DI STAMPA DIGITALE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B69D1DB32B",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "RISTRUTTURAZIONE CON ADEGUAMENTO NORMATIVO DEL BLOCCO SERVIZI DEL PALAZZETTO DELLO SPORT DI VITTORIO",
+  "cpv": "45000000-7",
+  "cpv_descr": "LAVORI DI COSTRUZIONE",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "B7A25FE201",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI DI REALIZZAZIONE ATTRAVERSAMENTO PEDONALE IN LOCALITA' PONTE DI MOSSANO LUNGO LA SP N. 247",
+  "cpv": "45233140-2",
+  "cpv_descr": "LAVORI STRADALI",
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B9D72BBC31",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SUPPORTO OPERATIVO SULLE MATERIE ATTINENTI ALLA CONTABILITÀ ARMONIZZATA – BILANCIO DI PREVISIONE 2026/2028 E RENDICONTO 2025",
+  "cpv": "66170000-2",
+  "cpv_descr": "SERVIZI DI CONSULENZA FINANZIARIA, DI GESTIONE DELLE TRANSAZIONI FINANZIARIE E D",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "A03932DAE9",
+  "anno": 2023,
+  "tipo": "LAVORI",
+  "oggetto": "CODICE OPERA 21019 - MANUTENZIONE STRAORDINARIA DELLE ALBERATURE DEI GIARDINI E DEI VIALI CITTADINI - ANNO 2023",
+  "cpv": "45112710-5",
+  "cpv_descr": "LAVORI DI ARCHITETTURA PAESAGGISTICA PER AREE VERDI",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B57DBB5011",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "AFFIDAMENTO DEL SERVIZIO PER LA GESTIONE DEL CANTIERE FORESTAS 2024",
+  "cpv": "77310000-6",
+  "cpv_descr": "SERVIZI DI PIANTAGIONE E MANUTENZIONE DI ZONE VERDI",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "9958715F95",
+  "anno": 2023,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA DI PASSERELLE IN PVC IN ROTOLI",
+  "cpv": "39531400-7",
+  "cpv_descr": "RIVESTIMENTI DI SUOLI TESSILI",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "9829849801",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI TRASPORTO SCOLASTICO PER LE SCUOLE DELL'INFANZIA, PRIMARIA E SECONDARIA DI I GRADO ED ALTRI SERVIZI DI TRASPORTO",
+  "cpv": "60130000-8",
+  "cpv_descr": "SERVIZI SPECIALI DI TRASPORTO PASSEGGERI SU STRADA",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "B6DDAB15E6",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "SOSTITUZIONE INFISSI",
+  "cpv": "44221111-6",
+  "cpv_descr": "INFISSI A DOPPI VETRI",
+  "area": "patrimonio",
+  "dubbio": false
+ },
+ {
+  "cig": "B530E58F5D",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA DI GASOLIO ARTICO",
+  "cpv": "09135100-5",
+  "cpv_descr": "GASOLIO PER RISCALDAMENTO",
+  "area": "utenze",
+  "dubbio": false
+ },
+ {
+  "cig": "B318B2256F",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SUPPORTO AL R.U.P.  PER PROCEDURA DI AFFIDAMENTO CAMPO POPOLLA",
+  "cpv": "71356000-8",
+  "cpv_descr": "SERVIZI TECNICI",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B672AAE9EC",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "PNRR 1.2 - ACQUISTO MICROSOFT 365 IN CLOUD",
+  "cpv": "64210000-1",
+  "cpv_descr": "SERVIZI TELEFONICI E DI TRASMISSIONE DATI",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B8D1E97C88",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI DI RIFACIMENTO IMPIANTO DI IRRIGAZIONE E DI VALORIZZAZIONE E RINATURALIZZAZIONE DELLE AIUOLE SITE NELLA BIO PIAZZA",
+  "cpv": "77310000-6",
+  "cpv_descr": "SERVIZI DI PIANTAGIONE E MANUTENZIONE DI ZONE VERDI",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B673464D6E",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "DETERMINAZIONE DI AFFIDAMENTO INCARICO PER ESECUZIONE INTERVENTO DI TAGLIO ERBA INFESTANTE DAI MARCIAPIEDI DEL CENTRO ABITATO. DITTA BARBERIO SAVERIO",
+  "cpv": "90611000-3",
+  "cpv_descr": "SERVIZI DI PULIZIA STRADALE",
+  "area": "ambiente_territorio",
+  "dubbio": true
+ },
+ {
+  "cig": "A05CEB5F63",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "UN ORDINATIVO SOMMINISTRAZIONE - UN OPERATORE ESPERTO PER SERVIZIO DI COORDINAMENTO",
+  "cpv": "79621000-3",
+  "cpv_descr": "SERVIZI DI FORNITURA DI PERSONALE D'UFFICIO",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B33F067B73",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "INCARICO PROFESSIONALE PER LA REDAZIONE DEL PIANO DELLA MOBILITÀ CICLISTICA COMUNALE",
+  "cpv": "71410000-5",
+  "cpv_descr": "SERVIZI DI URBANISTICA",
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B35E48C6EE",
+  "anno": 2024,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA ENERGIA ELETTRICA VOLTURA PER TUNNEL TANGENZIALE PORTO",
+  "cpv": "09300000-2",
+  "cpv_descr": "ELETTRICITÀ, RISCALDAMENTO, ENERGIA SOLARE E NUCLEARE",
+  "area": "utenze",
+  "dubbio": false
+ },
+ {
+  "cig": "B4CB9A6EB4",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "FORNITURA PASTI VEICOLATI PER SCUOLA PRIMARIA DI BUSSETO (PR)",
+  "cpv": "55524000",
+  "cpv_descr": null,
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "B6655A8F09",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI BONIFICA STRADARIO ED AGGIORNAMENTO SU ANNCSU",
+  "cpv": "72260000-5",
+  "cpv_descr": "SERVIZI CONNESSI AL SOFTWARE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B4C7CBB94F",
+  "anno": 2024,
+  "tipo": "FORNITURE",
+  "oggetto": "AFFIDAMENTO DELLA FORNITURA DI GAS NATURALE PER GLI IMMOBILI DI COMPETENZA DEL COMUNE DI VILLAR PEROSA PER 12 MESI",
+  "cpv": "98390000-3",
+  "cpv_descr": "ALTRI SERVIZI",
+  "area": "utenze",
+  "dubbio": false
+ },
+ {
+  "cig": "B371533F21",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "ADESIONE AQ SERVIZI ASSICURATIVI CONSORZIO DEI COMUNI TRENTINI",
+  "cpv": "66510000-8",
+  "cpv_descr": "SERVIZI ASSICURATIVI",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B24C38B849",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "REALIZZAZIONE IMPIANTO FV DA 10.5 KWH A SERVIZIO DELLA SCUOLA ELEMENTARE VALENTINA MATTEUCCI",
+  "cpv": "71315000-9",
+  "cpv_descr": "IMPIANTI TECNICI DI EDIFICI",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "A0082E5552",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "PNRR - MISSIONE 1 COMPONENTE 1 - INVESTIMENTO 1.4 'SERVIZI E CITTADINANZA DIGITALE' - MISURA 1.4.3 'PAGO PA' - RICHIESTA MIGLIORE OFFERTA PER LA REALIZZAZIONE DEGLI OBIETTIVI DI CUI ALLA CANDIDATURA PRESENTATA IN DATA 01/09/2022 E FINANZIATA CON DECRETO N. 23-5/2022 - PNRR - CUP H41F22002500006",
+  "cpv": "72416000-9",
+  "cpv_descr": "FORNITORI DI SERVIZI DI APPLICAZIONI",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "A03B75E8A2",
+  "anno": 2023,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI DI MANUTENZIONE DEGLI STABILI COMUNALI E INTERVENTI DI POLIZIA MORTUARIA ED INUMAZIONE PRESSO IL CIMITERO DEL COMUNE DI SAINT PIERRE. ACCORDO QUADRO CON UN UNICO OPERATORE ECONOMICO.",
+  "cpv": "45453100-8",
+  "cpv_descr": "LAVORI DI RIPARAZIONE",
+  "area": "patrimonio",
+  "dubbio": false
+ },
+ {
+  "cig": "B6E01EC5A5",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA CON POSA DI IMPIANTI SERVOSCALA PRESSO SCUOLA SECONDARIA DI PRIMO GRADO",
+  "cpv": "42416000-5",
+  "cpv_descr": "ASCENSORI, ELEVATORI A SKIP, IMPIANTI DI SOLLEVAMENTO, SCALE E MARCIAPIEDI MOBIL",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "9851670F41",
+  "anno": 2023,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI DI MESSA IN SICUREZZA DI UN PARCHEGGIO - INVESTIMENTI FINALIZZATI ALLA MANUTENZIONE STRAORDINARIA DELLE STRADE COMUNALI, DEI MARCIAPIEDI E DELL'ARREDO URBA-NO. FINANZIAMENTO: &#61630; LEGGE 30 DICEMBRE 2021, N. 234 (LEGGE DI BILANCIO 2022), ARTICOLO 1, COMMA 407; &#61630; DECRETO MINISTERIALE",
+  "cpv": "45340000-2",
+  "cpv_descr": "LAVORI DI INSTALLAZIONE DI RECINZIONI, RINGHIERE E DISPOSITIVI DI SICUREZZA",
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B44686B5FE",
+  "anno": 2024,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA DI CARBURANTE ALLA POMPA TRAMITE FUEL CARD IN ADESIONE AQ3",
+  "cpv": "09130000-9",
+  "cpv_descr": "PETROLIO E DISTILLATI",
+  "area": "utenze",
+  "dubbio": true
+ },
+ {
+  "cig": "A050D58DDF",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "LAVORI DI REALIZZAZIONE NUOVA INFRASTRUTTURA DA DESTINARE AD ASILO NIDO ALLA VIA ROCCO PECORARO (EX VIA STARZA) DELLA FRAZIONE BOLANO: AFFIDAMENTO INCARICO VERIFICA ARCHEOLOGICA",
+  "cpv": "71310000-4",
+  "cpv_descr": "SERVIZI DI CONSULENZA INGEGNERISTICA E DI COSTRUZIONE",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "B1F0988DBF",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZI DI SUPPORTO TECNICO NORMATIVO PER ADEGUAMENTO SISTEMA INFORMATIVO ALLA DIRETTIVE PADIGITALE 2026 - PNRR",
+  "cpv": "72600000-6",
+  "cpv_descr": "SERVIZI DI CONSULENZA E ASSISTENZA INFORMATICA",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "A0347FF09F",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "DIGITALIZZAZIONE PA - MISURA 1.4.5",
+  "cpv": "75110000-0",
+  "cpv_descr": "SERVIZI PUBBLICI GENERALI",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B919DB6BF0",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "ACQUISTO PC CON RELATIVI PROGRAMMI WINDOWS 11 E SCHERMI PER UFFICI COMUNALI",
+  "cpv": "30230000",
+  "cpv_descr": null,
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B2E134FD8F",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "1.4 - AFFIDAMENTO INDAGINI GEOLOGICHE PER IL PROGETTO DI RIFUNZIONALIZZAZIONE CON MESSA IN SICUREZZA CENTRO ABITATO CAPOLUOGO LOCALITA' ZONA EX CONVENTO",
+  "cpv": "45111250-5",
+  "cpv_descr": "LAVORI DI INDAGINE DEI TERRENI",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B7EAE4B4B0",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI TRASPORTO SOCIALE",
+  "cpv": "60100000-9",
+  "cpv_descr": "SERVIZI DI TRASPORTO TERRESTRE",
+  "area": "sociale_sanita",
+  "dubbio": false
+ },
+ {
+  "cig": "B43FD0DBD2",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "INCARICO TECNICO PER LA PROGETTAZIONE DI FATTIBILITÀ TECNICA ED ECONOMICA (PFTE) RELATIVA INTERVENTO MIGLIORAMENTO SISMICO DELL'EX EDIFICIO OSPITANTE LA CASERMA DEI CARABINIERI FORESTALI DI SILLANO GIUNCUGNANO",
+  "cpv": "71300000-1",
+  "cpv_descr": "SERVIZI DI INGEGNERIA",
+  "area": "patrimonio",
+  "dubbio": false
+ },
+ {
+  "cig": "B5A109023C",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "AFFIDAMENTO LAVORI DI PROSECUZIONE DELL'INTERVENTO DI EFFICIENTAMENTO ENERGETICO DELL'IMPIANTO DI PUBBLICA ILLUMINAZIONE DEL CENTRO STORICO DEL COMUNE DI FERRANDINA",
+  "cpv": "34928400-2",
+  "cpv_descr": "ARREDO URBANO",
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B404F5C01A",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "PROGETTO DI FATTIBILITÀ TECNICO-ECONOMICA PER REGIMAZIONE IDRAULICA, RIPRISTINO DEL DISSESTO IDROGEOLOGICO DI VALLE DEL MORANDI E MESSA IN SICUREZZA DI VIA PIANELLO",
+  "cpv": "71300000-1",
+  "cpv_descr": "SERVIZI DI INGEGNERIA",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B89F312CA2",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "RIFACIMENTO IMPIANTO ELETTRICO",
+  "cpv": "45231400-9",
+  "cpv_descr": "LAVORI GENERALI DI COSTRUZIONE DI LINEE ELETTRICHE",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B0150DF053",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI DI COMPLETAMENTO PARCO GIOCHI BIVIO DI COLLEVECCHIO.",
+  "cpv": "99999999",
+  "cpv_descr": "Cpv prevalente non disponibile",
+  "area": "ambiente_territorio",
+  "dubbio": true
+ },
+ {
+  "cig": "B774F9C3E8",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "ACQUISTO NUOVI PC",
+  "cpv": "30213000-5",
+  "cpv_descr": "COMPUTER PERSONALI",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B768851DAF",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "PNRR_M5-C2-I1.3.2 – APPALTO DI LAVORI DI REALIZZAZIONE DI UNA STAZIONE DI POSTA CENTRO SERVIZI PER IL CONTRASTO ALLA POVERTA' APERTI ALLA CITTADINANZA, DI NON GRANDI DIMENSIONI FINANZIAMENTO PARI A € 910.000,00 DI CUI AL D.D. 38 DEL 09.05.2022 DEL MINISTERO DEL LAVORO E DELLE POLITICHE SOCIALI CUP: ",
+  "cpv": "45454100-5",
+  "cpv_descr": "LAVORI DI RESTAURO",
+  "area": "sociale_sanita",
+  "dubbio": false
+ },
+ {
+  "cig": "B5BE6A5EC1",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA DI GASOLIO ARTICO PER RISCALDAMENTO SCUOLA PRIMARIA",
+  "cpv": "09134100-8",
+  "cpv_descr": "CARBURANTE DIESEL",
+  "area": "utenze",
+  "dubbio": false
+ },
+ {
+  "cig": "B5C8569342",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "PA DIGITALE 2026 - MISURA 1.4.3 ADOZIONE APP IO COMUNI (NOVEMBRE 2023)'",
+  "cpv": "72000000-5",
+  "cpv_descr": "SERVIZI INFORMATICI: CONSULENZA, SVILUPPO DI SOFTWARE, INTERNET E SUPPORTO",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B6F484010A",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "GESTIONE DEL SERVIZIO MENSA PRESSO LA „WIRTSCHAFTSFACHOBERSCHULE WFO ORA",
+  "cpv": "55524000-9",
+  "cpv_descr": "SERVIZI DI RISTORAZIONE SCOLASTICA",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "B26F11C696",
+  "anno": 2024,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA N°6 BARRIERE SCORREVOLI ED ACCESSORI",
+  "cpv": "34928000-8",
+  "cpv_descr": "ARREDO STRADALE",
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B3FCD92522",
+  "anno": 2024,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA DI ENERGIA ELETTRICA IMPIANTO POZZO TROCCHIA - AGOSTO 2024",
+  "cpv": "65310000-9",
+  "cpv_descr": "EROGAZIONE DI ENERGIA ELETTRICA",
+  "area": "utenze",
+  "dubbio": false
+ },
+ {
+  "cig": "B069300CA7",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "REALIZZAZIONE AREA ATTREZZATA PRESSO PARCO DELL'OLIVO, OPERE EDILI",
+  "cpv": "99999999",
+  "cpv_descr": "Cpv prevalente non disponibile",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B48396D698",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "CONTRATTO ATTUATIVO N.12 DISCENDENTE DA ACCORDO QUADRO N. 5 CON STC ENGINEERING SRL",
+  "cpv": "45332000-3",
+  "cpv_descr": "LAVORI DI INSTALLAZIONE DI IMPIANTI IDRAULICI E DI EVACUAZIONE DELLE ACQUE RESID",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B1E8632BFF",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "INTERVENTI ALL'ARCHIVIO DI DEPOSITO",
+  "cpv": "99999999",
+  "cpv_descr": "Cpv prevalente non disponibile",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "9831022001",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "PROCEDURA APERTA PER AFFIDAMENTO IN CONCESSIONE GESTIONE SERVIZI ALLA PRIMA INFANZIA - ASILO NIDO E ATTIGUO SPAZIO GIOCO COMUNE DI PAULLO (MI)",
+  "cpv": "80110000-8",
+  "cpv_descr": "SERVIZI DI ISTRUZIONE PRESCOLASTICA",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "B9690E84F2",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO TESORERIA COMUNE DI TALLA",
+  "cpv": "66600000-6",
+  "cpv_descr": "SERVIZI DI TESORERIA",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B167B2D3E6",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI SUPPORTO ALLÂEMISSIONE ED ALLA SIMULAZIONE TARIFFE TARI",
+  "cpv": "99999999",
+  "cpv_descr": "Cpv prevalente non disponibile",
+  "area": "funzionamento",
+  "dubbio": true
+ },
+ {
+  "cig": "B97FEB426C",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "INSTALAZIONE APPARECCHIATURE IMPIANTO DI TERMOREGOLAZIONE PRESSO IL TEATRO COMUNALE",
+  "cpv": "45317000-2",
+  "cpv_descr": "ALTRI LAVORI DI INSTALLAZIONE ELETTRICA",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "B01ACAD2C9",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO PER IL CONFERIMENTO DEI RIFIUTI EER 200110 ABBIGLIAMENT, PROVENIENTI DALLA RACCOLTA DIFFERENZIATA NEL COMUNE DI CASTELVETRANO",
+  "cpv": "99999999",
+  "cpv_descr": "Cpv prevalente non disponibile",
+  "area": "rifiuti",
+  "dubbio": false
+ },
+ {
+  "cig": "B424E27523",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZI DI ASSISTENZA SOFTWARE GESTIONALI, PROTEZIONE DATI E CONSERVAZIONE DIGITALE - ANNO 2024",
+  "cpv": "72267100-0",
+  "cpv_descr": "MANUTENZIONE DI SOFTWARE DI TECNOLOGIA DELL'INFORMAZIONE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B3F74728C5",
+  "anno": 2024,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA CARBURANTE (BENZINA SUPER SENZA PIOMBO E GASOLIO) PER DISTRIBUTORE DI CARBURANTI COMUNALE",
+  "cpv": "09134100-8",
+  "cpv_descr": "CARBURANTE DIESEL",
+  "area": "utenze",
+  "dubbio": true
+ },
+ {
+  "cig": "A000086F63",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "PROGETTAZIONE PFTE/ESECUTIVA, COORD SICUREZZA IN FASE PROGETTAZ, RELAZIONE GEOLOGICA, RISPOSTA SISMICA LOCALE RISANAMENTO E RESTAURO CONSERVATIVO TORRE SMEDUCCI ORD. 137/2023",
+  "cpv": "71330000-0",
+  "cpv_descr": "VARI SERVIZI DI INGEGNERIA",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B08A01F4A2",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "AFFIDAMENTO SERVIZIO DI RILIEVI, ACCERTAMENTI E INDAGINI DA ESEGUIRE AI DIVERSI LIVELLI DI PROGETTAZIONE PER MESSA IN SICUREZZA DEL TERRITORIO A RISCHIO IDROGEOLOGICO IN FRAZIONE VIGELLIO",
+  "cpv": "99999999",
+  "cpv_descr": "Cpv prevalente non disponibile",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "986944185B",
+  "anno": 2023,
+  "tipo": "LAVORI",
+  "oggetto": "SUA PER IL COMUNE DI SARNANO: APPALTO DEI LAVORI DI RIQUALIFICAZIONE, AMMODERNAMENTO ED ADEGUAMENTO IMPIANTISTICO DELLA PISCINA COMUNALE BANDO SPORT E PERIFERIE 2020",
+  "cpv": "45212212-5",
+  "cpv_descr": "LAVORI DI COSTRUZIONE PER PISCINE",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "B27F7744C6",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "LAVORI DI ESUMAZIONE DI UN SETTORE DEL CIMITERO DI RIVAMONTE AGORDINO",
+  "cpv": "98371110-8",
+  "cpv_descr": "SERVIZI CIMITERIALI",
+  "area": "patrimonio",
+  "dubbio": false
+ },
+ {
+  "cig": "B782DF509B",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "RINNOVO CONVENZIONI SOFTWARE 2025",
+  "cpv": "72261000-2",
+  "cpv_descr": "SERVIZI DI ASSISTENZA SOFTWARE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B077C7A86C",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "AFFIDAMENTO DIRETTO SERVIZIO ACCOGLIENZA MINORE ...OMISSIS...PER L'ANNO 2024",
+  "cpv": "85311000-2",
+  "cpv_descr": "SERVIZI DI ASSISTENZA SOCIALE CON ALLOGGIO",
+  "area": "sociale_sanita",
+  "dubbio": false
+ },
+ {
+  "cig": "B0A0580FBB",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI FACCHINAGGIO, DEPOSITO, CUSTODIA DI ARREDI SCOLASTICI PRESSO MAGAZZINO COOPSERVICE E SERVIZIO DI TRASPORTO BIANCHERIA",
+  "cpv": "98392000-7",
+  "cpv_descr": "SERVIZI DI TRASLOCO",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "B7DDE22D34",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "PROGETTO EUCF LA SIRENA",
+  "cpv": "79311100-8",
+  "cpv_descr": "SERVIZI DI PROGETTAZIONE DI INDAGINI",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B5CAF7FE3B",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "CARNEVALE 2025 NEL MUNICIPIO ROMA III MONTESACRO. AFFIDAMENTO AI SENSI DELL'ART. 50 COMMA 1, LETTERA B) DEL D.LGS. 36/2023 PER LA REALIZZAZIONE DI INIZIATIVE SOCIO - CULTURALI NEL MUNICIPIO ROMA III MONTESACRO PER IL PERIODO DI CARNEVALE 2025",
+  "cpv": "92300000-4",
+  "cpv_descr": "SERVIZI DI INTRATTENIMENTO",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "B078AD0CFF",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "OGGETTO: AVVISO SUL FONDO DI CUI ALL'ARTICOLO 1, COMMA 607 DELLA LEGGE 29 DICEMBRE 2022, N .197, DESTINATO A FINANZIARE PROGETTI DI VALORIZZAZIONE DEI COMUNI CON POPOLAZIONE INFERIORE A 5.000 ABITANTI, CLASSIFICATI DALL'ISTITUTO NAZIONALE DI STATISTICA COME COMUNI A VOCAZIONE TURISTICA, AL FINE DI I",
+  "cpv": "71300000-1",
+  "cpv_descr": "SERVIZI DI INGEGNERIA",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B5962CAB37",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI DI SOMMA URGENZA AI SENSI DELL'ART. 140 DEL D.LGS.36/2023",
+  "cpv": "45233220-7",
+  "cpv_descr": "LAVORI DI SUPERFICIE PER STRADE",
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B9D71C72D9",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA DI BUONI PASTO ELETTRONICI MEDIANTE ADESIONE ALL'ACCORDO QUADRO BUONI PASTO EDIZIONE 11 LOTTO 5 TOSCANA",
+  "cpv": "30199770-8",
+  "cpv_descr": "BUONI PASTO",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B10A6F3745",
+  "anno": 2024,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA ENERGIA ELETTRICA UTENZE COMUNALI",
+  "cpv": "99999999",
+  "cpv_descr": "Cpv prevalente non disponibile",
+  "area": "utenze",
+  "dubbio": false
+ },
+ {
+  "cig": "B43F9797EB",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI DI REALIZZAZIONE IMPIANTO DI ILLUMINAZIONE PUBBLICA ALIMENTATO DA FONTI RINNOVABILI SULLA LITORANEA S.P. 81",
+  "cpv": "45316110-9",
+  "cpv_descr": "INSTALLAZIONE DI IMPIANTI DI ILLUMINAZIONE STRADALE",
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B4941726CD",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "PROGETTAZIONE FATTIBILITA' TECNICA ED ECONOMICA ED ESECUTIVA, C.S.P., C.S.E., DIREZIONE LAVORI E C.R.E AFFERENTI L'INTERVENTO DENOMINATO LAVORI DI EFFICIENTAMENTO ENERGETICO DELLIMPIANTO DI PUBBLICA ILLUMINAZIONE - IV^ STRALCIO FUNZIONALE (ART. 1 COMMA 29 LEGGE N. 160/2019 - ANNUALITÀ 2024) CUP H92E",
+  "cpv": "71240000-2",
+  "cpv_descr": "SERVIZI ARCHITETTONICI, DI INGEGNERIA E PIANIFICAZIONE",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B8B50290A1",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "AFFIDAMENTO DIRETTO E IMPEGNO DI SPESA, AI SENSI DELL'ART.50, COMMA 1 LETT. B) DEL D.LGS.N. 36/2023 PER SERVIZIO MANUTENZIONE STRADE DI COMPETENZA COMUNALE – C.F.S. SOC. COOP.",
+  "cpv": "45233140",
+  "cpv_descr": null,
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B5B39B150E",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "SERVIZIO PER ACQUISTO TERMINALI IP VOIP",
+  "cpv": "32429000-6",
+  "cpv_descr": "APPARECCHIATURA DI RETE TELEFONICA",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B8CCC0AD07",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "RIPRISTINO MONTASCALE PIAZZA DELLA CITTADELLA CON FORNITURA E POSA DI SERVOSCALA RETTILINEO",
+  "cpv": "42400000-0",
+  "cpv_descr": "APPARECCHIATURE DI SOLLEVAMENTO E MOVIMENTAZIONE E LORO PARTI",
+  "area": "altro",
+  "dubbio": true
+ },
+ {
+  "cig": "B778A8A544",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI SUPPORTO ALL'UFFICIO TRIBUTI DAL 01/07/2025 FINO AL 31/12/2025 - AFFIDAMENTO DIRETTO DITTA MARZIALI GIAMPIERO (P.I. 01846990446)",
+  "cpv": "72600000-6",
+  "cpv_descr": "SERVIZI DI CONSULENZA E ASSISTENZA INFORMATICA",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B684F3831D",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "AFFIDAMENTO DIRETTO A TIM SPA PER TARIFFAZIONE FLAT SU ISDN BRA IMPIANTO MULTI NUMERO",
+  "cpv": "64200000-8",
+  "cpv_descr": "SERVIZI DI TELECOMUNICAZIONE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B946658140",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "AFFIDAMENTO ALLA SOCIETÀ MOLFETTA MULTISERVIZI SRL DEL SERVIZIO DI RECLUTAMENTO, GESTIONE E COORDINAMENTO GUIDE TURISTICHE PER VISITE GUIDATE",
+  "cpv": "92500000-6",
+  "cpv_descr": "SERVIZI DI BIBLIOTECHE, ARCHIVI, MUSEI E ALTRI SERVIZI CULTURALI",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "B1D8687023",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "CONSULTAZIONI ELETTORALI DI SABATO 8 E DOMENICA 9 GIUGNO 2024. ELEZIONI MEMBRI DEL PARLAMENTO EUROPEO SPETTANTI ALL'ITALIA. MONTAGGIO E SMONTAGGIO SEGGI ELETTORALI E FORNITURA MATERIALE ACCESSORIO.",
+  "cpv": "45262500-6",
+  "cpv_descr": "LAVORI EDILI E DI MURATURA",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B981318619",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "RIQUALIFICAZIONE DELL'AREA SPORTIVA DI VIA GERBI LAVORI DI COMPLETAMENTO SPOGLIATOIO CALCIO",
+  "cpv": "45212290-5",
+  "cpv_descr": "RIPARAZIONE E MANUTENZIONE DI IMPIANTI SPORTIVI",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "A02BF95E0F",
+  "anno": 2023,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI RELATIVI ALL'INTERVENTO PNRR - MISSIONE 2, COMPONENTE 2, INVESTIMENTO 4.1: RAFFORZAMENTO DELLA MOBILITÀ CICLISTICA, SUB-INVESTIMENTO: 'CICLOVIE URBANE'.",
+  "cpv": "45233162-2",
+  "cpv_descr": "LAVORI DI COSTRUZIONE DI PISTE CICLABILI",
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B855C40E94",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI ILLUMINAZIONE VOTIVA CIMITERIALE PER 6 ANNI (DAL 01/01/2026 AL 31/12/2031)",
+  "cpv": "98371111-5",
+  "cpv_descr": "SERVIZI DI MANUTENZIONE CIMITERIALE",
+  "area": "patrimonio",
+  "dubbio": false
+ },
+ {
+  "cig": "B204C3BA81",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO NOLEGGIO ED ISTALLAZIONE DI IMPANATI, LUMINARIE E DECORAZIONI IN OCCASIONE DI SAGRE, FIERE ED EVENTI IN OSTELLATO 2024",
+  "cpv": "79952000-2",
+  "cpv_descr": "SERVIZI DI ORGANIZZAZIONE DI EVENTI",
+  "area": "cultura_sport_turismo",
+  "dubbio": false
+ },
+ {
+  "cig": "B6133DC11B",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI TESORERIA COMUNALE TRIENNIO 2025-2027",
+  "cpv": "66600000-6",
+  "cpv_descr": "SERVIZI DI TESORERIA",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "A04244DDB5",
+  "anno": 2023,
+  "tipo": "FORNITURE",
+  "oggetto": "ACQUISIZIONE DELLA FORNITURA DI UN MEZZO PICK-UP 4X4 AD USO ESCLUSIVO DEL GRUPPO COMUNALE DI PROTEZIONE CIVILE DI SAN ZENO NAVIGLIO",
+  "cpv": "34131000-4",
+  "cpv_descr": "CAMIONCINO A PIANALE BASSO (PICK-UP)",
+  "area": "ambiente_territorio",
+  "dubbio": true
+ },
+ {
+  "cig": "B9319AA809",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "EQUIPE SOCIO-PSICO-PEDAGOGICA NEI COMUNI DI CHIARAMONTE GULFI, GIARRATANA, MONTEROSSO ALMO",
+  "cpv": "85300000-2",
+  "cpv_descr": "SERVIZI DI ASSISTENZA SOCIALE E SERVIZI AFFINI",
+  "area": "sociale_sanita",
+  "dubbio": false
+ },
+ {
+  "cig": "B8BBCEAFBB",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "AFFIDAMENTO DIRETTO DEI SERVIZI DI COORDINAMENTO DELLA SICUREZZA IN FASE DI PROGETTAZIONE E IN FASE DI ESECUZIONE RELATIVI AGLI INTERVENTI DENOMINATI REALIZZAZIONE DEL 1° LOTTO FUNZIONALE GREEN TOUR - TRATTA 1: DALLA STAZIONE FERROVIARIA DI OSTIGLIA AL PONTE SUL FIUME PO E REALIZZAZIONE DEL 1° LOTTO",
+  "cpv": "79417000-0",
+  "cpv_descr": "SERVIZI DI CONSULENZA IN MATERIA DI SICUREZZA",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B8A48AAEFC",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA GAS PDR 01611085001937 - PERIODO 01/01/2026 - 31/12/2027",
+  "cpv": "65200000-5",
+  "cpv_descr": "EROGAZIONE DI GAS E SERVIZI CONNESSI",
+  "area": "utenze",
+  "dubbio": false
+ },
+ {
+  "cig": "B4D75EDDC7",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI MANUTENZIONE ORDINARIA E STRAORDINARIA DEGLI IMPIANTI ELETTRICI, VOTIVI E DI PUBBLICA ILLUMINAZIONE DI PERTINENZA COMUNALE PER ANNI UNO",
+  "cpv": "45315600-4",
+  "cpv_descr": "IMPIANTI A BASSA TENSIONE",
+  "area": "strade_trasporti",
+  "dubbio": true
+ },
+ {
+  "cig": "B8324C410C",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA ENERGIA ELETTRICA TELECAMERE ROTONDA GARAGE VENEZIA",
+  "cpv": "65310000-9",
+  "cpv_descr": "EROGAZIONE DI ENERGIA ELETTRICA",
+  "area": "utenze",
+  "dubbio": false
+ },
+ {
+  "cig": "B49ABA8CB1",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "(24-9971) COMUNE DI FORNI DI SOTTO – COMPLETAMENTO VALLO PARAMASSI ESISTENTE MITIGAZIONE DEL RISCHIO IDROGEOLOGICO INDICATO DAL PAI. CODICE INTERVENTO: D4AGO22-D-FORSO-7284.",
+  "cpv": "34928100-9",
+  "cpv_descr": "BARRIERE DI PROTEZIONE",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B5AF57AA20",
+  "anno": 2025,
+  "tipo": "LAVORI",
+  "oggetto": "RIQUALIFICAZIONE PALESTRA SCUOLA SECONDARIA I GRADO COMUNE SANDIGLIANO",
+  "cpv": "45454000-4",
+  "cpv_descr": "LAVORI DI RISTRUTTURAZIONE",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "B489B071B3",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "INCARICO RELAZIONE GEOLOGICA A CORREDO DEL PROGETTO ESECUTIVO .FINANZIAMENTI PNRR - M2C4 INVESTIMENTO 4.2 - INTERVENTO DENOMINATO INTERVENTI PER LA RIDUZIONE DELLE PERDITE, RAZIONALIZZAZIONE, DIGITALIZZAZIONE E MONITORAGGIO DELLE RETI DI DISTRIBUZIONE DELL'ACQUA DESTINATA AL CONSUMO UMANO NEL COMUNE",
+  "cpv": "71351200",
+  "cpv_descr": null,
+  "area": "ambiente_territorio",
+  "dubbio": true
+ },
+ {
+  "cig": "B9A19DCF6A",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI SPEDIZIONE E RECAPITO DELLA CORRISPONDENZA IN PARTENZA DALL ENTE ANNO 2026",
+  "cpv": "64112000-4",
+  "cpv_descr": "SERVIZI POSTALI PER LA CORRISPONDENZA",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B15B6CD621",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI GESTIONE E MANUTENZIONE DEL VERDE PUBBLICO PER ANNI TRE.DELIBERA DI CONSIGLIO COMUNALE N.49/2023 E CONSEGUENTE AFFIDAMENTO IN HOUSE PROVIDING DEL SERVIZIO A PENISOLAVERDE S.P.A.AFFIDAMENTO OPERE COMPLEMENTARI, EX ART.120, COMMA 1, LETT. B) DEL D.LGS. 36/2023.",
+  "cpv": "77310000-6",
+  "cpv_descr": "SERVIZI DI PIANTAGIONE E MANUTENZIONE DI ZONE VERDI",
+  "area": "ambiente_territorio",
+  "dubbio": false
+ },
+ {
+  "cig": "B994A6BFC8",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO DI FRAZIONAMENTO DEL TRATTO SCALA CHIESA - BAIA DI SISTIANA",
+  "cpv": "71354300-7",
+  "cpv_descr": "SERVIZI CATASTALI",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "968929532E",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "PNRR MISSIONE 1 -COMPONENTE 1 INVESTIMENTO 1.4 'SERVIZI E CITTADINANZA DIGITALE' MISURA 1.4.3 ADOZIONE APP IO",
+  "cpv": "48510000-6",
+  "cpv_descr": "PACCHETTI SOFTWARE DI COMUNICAZIONE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B7C4A92574",
+  "anno": 2025,
+  "tipo": "SERVIZI",
+  "oggetto": "A.Q. NIDI - CONTRATTO ATTUATIVO N. 1A ANNO EDUCATIVO 2025/2026 LOTTO 5 – NIDI CAPITAN UNCINO, STELLA MARINA E GIARDINO DEI GRILLI",
+  "cpv": "80110000-8",
+  "cpv_descr": "SERVIZI DI ISTRUZIONE PRESCOLASTICA",
+  "area": "istruzione",
+  "dubbio": false
+ },
+ {
+  "cig": "B225794BD2",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "SOSTITUZIONE VENTOLA ASSIALE ARIA BATTERIA SU CHILLER RC GROUP",
+  "cpv": "45331200-8",
+  "cpv_descr": "LAVORI DI INSTALLAZIONE DI IMPIANTI DI VENTILAZIONE E CLIMATIZZAZIONE",
+  "area": "patrimonio",
+  "dubbio": true
+ },
+ {
+  "cig": "9875341D2F",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "INTEGRAZIONE CON PIATTAFORMA NAZIONALE NOTIFICHE - SERVIZIO TRIBUTI - SERVIZI DMEOGRAFICI - ORDIANANZE",
+  "cpv": "72268000-1",
+  "cpv_descr": "SERVIZI DI FORNITURA DI SOFTWARE",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B5E1119B5A",
+  "anno": 2025,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA PRODOTTI ALIMENTARI CIANO",
+  "cpv": "15800000-6",
+  "cpv_descr": "PRODOTTI ALIMENTARI VARI",
+  "area": "altro",
+  "dubbio": false
+ },
+ {
+  "cig": "B162EEA502",
+  "anno": 2024,
+  "tipo": "SERVIZI",
+  "oggetto": "SERVIZIO FASTMAIL",
+  "cpv": "99999999",
+  "cpv_descr": "Cpv prevalente non disponibile",
+  "area": "funzionamento",
+  "dubbio": false
+ },
+ {
+  "cig": "B05EA76774",
+  "anno": 2024,
+  "tipo": "LAVORI",
+  "oggetto": "LAVORI RELATIVI AGLI INTERVENTI DI MANUTENZIONE STRAORDINARIA DELLA STRADA PERIMETRALE VILLETTA A. MORO, MARCIAPIEDE SUD PIAZZETTA CADUTI DI NASSIRIYA",
+  "cpv": "45233140-2",
+  "cpv_descr": "LAVORI STRADALI",
+  "area": "strade_trasporti",
+  "dubbio": false
+ },
+ {
+  "cig": "B25B9A0B0D",
+  "anno": 2024,
+  "tipo": "FORNITURE",
+  "oggetto": "FORNITURA GASOLIO USO RISCALDAMENTO",
+  "cpv": "09135100-5",
+  "cpv_descr": "GASOLIO PER RISCALDAMENTO",
+  "area": "utenze",
+  "dubbio": false
+ },
+ {
+  "cig": "A0433063FF",
+  "anno": 2023,
+  "tipo": "SERVIZI",
+  "oggetto": "AFFIDAMENTO, TRAMITE PROCEDURE DI ACCREDITAMENTO A ENTI DEL TERZO SETTORE, DI SERVIZI DI ASSISTENZA DOMICILIARE INTEGRATA E NON INTEGRATA IN FAVORE DI ANZIANI NON AUTOSUFFICIENTI",
+  "cpv": "85312400-3",
+  "cpv_descr": "SERVIZI DI ASSISTENZA SOCIALE NON PRESTATI DA ISTITUTI RESIDENZIALI",
+  "area": "sociale_sanita",
+  "dubbio": false
+ }
+]
