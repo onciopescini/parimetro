@@ -62,7 +62,7 @@ python scarica_anac.py --dest ../../etl-data/anac/aggiudicazioni --dataset aggiu
 python 11_import_aggiudicazioni.py --zip ../../etl-data/anac/aggiudicazioni/aggiudicazioni_csv.zip
 
 # 7 · Notizie sui conti (Firecrawl, facoltativo). La chiave sta in FIRECRAWL_API_KEY, mai in un file del repo.
-python 10_raccogli_notizie.py                          # solo la stima dei crediti (~2 a comune, ~16.000 in tutto)
+python 10_raccogli_notizie.py                          # solo la stima dei crediti (~4 a comune: due ricerche; ~32.000 in tutto)
 python 10_raccogli_notizie.py --esegui --min-abitanti 20000 --limite 20   # una prova
 
 # 8 · Esporta per il sito

@@ -80,6 +80,12 @@ for when a source becomes available.
   title, source, date and link are stored and shown: no article text, no summaries. Towns with homonyms
   must also name the province. The tab appears only for towns already searched, and says the selection
   is automatic and not verified. The API key is an environment variable, never a file in the repo.
+  *Why keywords and not a decision model.* Laya (open-weight decision model, Apache 2.0) was tried zero-shot on
+  48 hand-labelled real results (`etl/benchmark/`): 60% accuracy and 26% recall at its default threshold,
+  against 77% / 57% for the first version of the keyword rules, which were then improved to 92% / 87% by
+  looking at the same examples (so that figure is optimistic). Laya may do better fine-tuned on a larger
+  labelled set; that is open. Note that the news search returns nothing for quoted phrases or three
+  keywords, so each town gets one plain search per topic.
 - Spending areas are an editorial classification (`etl/categorie_spesa.py`). Generic items
   stay in "not attributable" and the share is shown for every town.
 

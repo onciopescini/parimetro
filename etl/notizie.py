@@ -29,7 +29,8 @@ def forma(s: str) -> str:
 IDIOMI = re.compile(
     r"commissione bilancio|trace?\w* (un |il )?bilancio|tirare? (un |il )?bilancio|bilancio (positivo|negativo|"
     r"della stagione|delle festivita|del natale|dell estate|turistic\w*|delle presenze)|bilancio di (un|una) "
-    r"(stagione|anno|estate|mandato)|bilancio dell incidente|bilancio (dei|delle) (feriti|vittime)"
+    r"(stagione|anno|estate|mandato)|bilancio dell incidente|bilancio (dei|delle) (feriti|vittime)|"
+    r"bilancio (di )?(sostenibilita|sociale|ambientale|di genere|di mandato)"
 )
 
 # Parole che indicano conti, tributi, appalti o fondi pubblici del comune
@@ -39,7 +40,9 @@ PERTINENTI = re.compile(
     r"\briequilibrio finanziario|\bdisavanzo|\bavanzo (di|di amministrazione)|\b(imu|tari|tasi|irpef)\b|"
     r"\baddizionale (comunale|irpef)|\btribut|\bdebit[oi]\b|\bappalt|\bgara d appalto|\bgare\b|\baffidament|"
     r"\bpnrr\b|\bfondi europei|\bfinanziament|\bopere pubbliche|\brevisor\w* dei conti|\bcorte dei conti|"
-    r"\bconti (pubblici|del comune|in rosso)|\bmutu[oi]\b|\bcassa comunale|\bcontributi (statali|regionali)"
+    r"\bconti (pubblici|del comune|in rosso)|\bmutu[oi]\b|\bcassa comunale|\bcontributi (statali|regionali)|"
+    r"\bassestament\w*|\bmanovra\b|\bbilancio 20\d\d|\bstanziat\w+|\bavanzo\b|"
+    r"\bbilancio\b[^.]{0,80}\b(milion\w*|mld|miliard\w*)\b|\b(milion\w*|mld|miliard\w*)\b[^.]{0,80}\bbilancio\b"
 )
 
 
@@ -84,7 +87,7 @@ def leggi_data(testo: str | None, oggi: date | None = None) -> date | None:
     if not testo:
         return None
     oggi = oggi or date.today()
-    testo = testo.strip()
+    testo = re.sub(r"\bSept\b", "Sep", testo.strip())  # "23 Sept 2025"
     for fmt in ("%d %b %Y", "%b %d, %Y", "%Y-%m-%d", "%d/%m/%Y"):
         try:
             return datetime.strptime(testo, fmt).date()
@@ -107,12 +110,16 @@ def recente(d: date, oggi: date | None = None) -> bool:
     return oggi - timedelta(days=30 * MESI_MASSIMI) <= d <= oggi + timedelta(days=1)
 
 
-def interrogazione(nome: str, provincia: str | None, ambiguo: bool) -> str:
-    """Il testo da cercare. Il nome tra virgolette: senza, "Roma" trova di tutto."""
-    base = f'"Comune di {nome.split("/")[0]}"'
-    if ambiguo and provincia:
-        base += f" {provincia}"
-    return f"{base} bilancio tributi appalti"
+# Una ricerca per tema. La ricerca di notizie restituisce ZERO risultati con le virgolette e anche con tre
+# parole chiave insieme (verificato il 3 ottobre 2026); "Comune di X bilancio" e "Comune di X appalti"
+# funzionano. Il controllo che il comune sia davvero nominato lo fa poi cita_il_comune().
+TEMI = ("bilancio", "appalti")
+
+
+def interrogazioni(nome: str, provincia: str | None, ambiguo: bool) -> list[str]:
+    """I testi da cercare, uno per tema. Per i nomi con omonimi si aggiunge la provincia."""
+    base = f"Comune di {nome.split('/')[0]}" + (f" {provincia}" if ambiguo and provincia else "")
+    return [f"{base} {tema}" for tema in TEMI]
 
 
 def seleziona(risultati: list[dict], nome: str, provincia: str | None, ambiguo: bool,

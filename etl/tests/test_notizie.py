@@ -86,7 +86,43 @@ def test_stesso_link_una_volta_sola_e_massimo_otto():
     assert len(n.seleziona(r, "Elva", "Cuneo", False, OGGI)) == 8
 
 
-def test_l_interrogazione_ha_il_nome_tra_virgolette():
-    assert n.interrogazione("Roma", "Roma", False).startswith('"Comune di Roma"')
-    assert "Lecce" in n.interrogazione("Castro", "Lecce", True)
-    assert n.interrogazione("Chienes/Kiens", "Bolzano", False).startswith('"Comune di Chienes"')
+def test_le_interrogazioni_sono_semplici_senza_virgolette():
+    # con le virgolette, o con tre parole chiave insieme, la ricerca di notizie non restituisce nulla
+    q = n.interrogazioni("Roma", "Roma", False)
+    assert q == ["Comune di Roma bilancio", "Comune di Roma appalti"]
+    assert all('"' not in x for x in q)
+    assert all("Lecce" in x for x in n.interrogazioni("Castro", "Lecce", True))
+    assert n.interrogazioni("Chienes/Kiens", "Bolzano", False)[0] == "Comune di Chienes bilancio"
+
+
+def test_altre_forme_dei_conti_del_comune():
+    assert n.pertinente("Perugia, il Pd plaude all'assestamento di bilancio")
+    assert n.pertinente("Bilancio 2026, il Comune spinge su trasporti e casa")
+    assert n.pertinente("Manovra da 200 milioni per il Comune")
+    assert n.pertinente("Bilancio del Comune: aumentano i costi per 843 milioni")
+
+
+def test_i_bilanci_non_pubblici_non_contano():
+    assert not n.pertinente("A2A, presentato bilancio di sostenibilita: in 2025 interventi per 1,3 mld")
+    assert not n.pertinente("Presentazione del Bilancio sociale di Fondazione Progetto Arca")
+    assert not n.pertinente("Affitti brevi a Milano: il bilancio del 2026, dalle Olimpiadi")
+
+
+def test_la_data_con_sept():
+    assert n.leggi_data("23 Sept 2025", OGGI) == date(2025, 9, 23)
+    assert n.leggi_data("1 month ago", OGGI) == date(2026, 9, 3)
+
+
+def test_banco_di_prova_a_mano_le_regole_non_peggiorano():
+    """48 risultati veri etichettati a mano (benchmark/notizie_etichettate.py). Le regole sono state affinate
+    guardando questi stessi esempi, quindi i numeri sono ottimistici: la soglia serve a non peggiorarle."""
+    import sys
+    sys.path.insert(0, str(ETL))
+    from benchmark.notizie_etichettate import NOTIZIE
+
+    vero = [bool(x[4]) for x in NOTIZIE]
+    pred = [n.pertinente(x[2], x[3]) and n.cita_il_comune(x[2], x[3], x[0], x[1], False) for x in NOTIZIE]
+    giuste = sum(p == v for p, v in zip(pred, vero))
+    assert giuste / len(vero) >= 0.85
+    falsi_positivi = sum(p and not v for p, v in zip(pred, vero))
+    assert falsi_positivi <= 3  # meglio perdere una notizia che mostrarne una fuori tema

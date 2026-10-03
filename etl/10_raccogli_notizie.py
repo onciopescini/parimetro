@@ -29,10 +29,10 @@ from datetime import date
 import psycopg
 from dotenv import load_dotenv
 
-from notizie import forma, interrogazione, seleziona
+from notizie import TEMI, forma, interrogazioni, seleziona
 
 API = "https://api.firecrawl.dev/v2/search"
-CREDITI_A_RICERCA = 2
+CREDITI_A_RICERCA = 2 * len(TEMI)  # 2 crediti a ricerca, una ricerca per tema
 
 
 def cerca(chiave: str, testo: str, tentativi: int = 4) -> list[dict]:
@@ -97,7 +97,9 @@ def main() -> None:
     def lavora(c):
         istat, nome, provincia, _ = c
         ambiguo = omonimi[forma(nome.split("/")[0])] > 1
-        grezze = cerca(chiave, interrogazione(nome, provincia, ambiguo))
+        grezze: list[dict] = []
+        for testo in interrogazioni(nome, provincia, ambiguo):
+            grezze += cerca(chiave, testo)
         return istat, seleziona(grezze, nome, provincia, ambiguo)
 
     fatte = trovate = 0
