@@ -6,10 +6,10 @@
 # JSON pre-generati. Questo script chiama le stesse funzioni Postgres che
 # prima servivano le RPC e ne scrive il risultato su disco.
 #
-# Lo schema dei nomi DEVE restare identico a mappa-bilanci/lib/dati.ts.
+# Lo schema dei nomi DEVE restare identico a web/lib/dati.ts.
 #
 # Uso:
-#   python 05_esporta_statico.py --dest ../../mappa-bilanci/public/dati
+#   python 05_esporta_statico.py --dest ../web/public/dati
 # ============================================================
 import argparse
 import json

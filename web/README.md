@@ -1,12 +1,11 @@
-# mappa-bilanci
+# Parimetro · il sito (`web/`)
 
 Mappa 3D interattiva dei bilanci dei comuni italiani: altezza e colore di ogni comune
 seguono due metriche a scelta, e cliccando si apre il dettaglio con storico, confronto
 con i comuni della stessa fascia demografica e classifiche.
 
 Il sito è **interamente statico** (`output: "export"`): online non gira nessun server né
-database. Legge file JSON da `public/dati/`, prodotti dalla pipeline nell'altro repository
-(`mappa-3d-bilanci/etl`).
+database. Legge file JSON da `public/dati/`, prodotti dalla pipeline in `etl/`.
 
 ## Provarlo senza i dati veri
 
@@ -22,14 +21,14 @@ nomi di file che la pagina cerca.
 
 ## Con i dati veri
 
-Si prepara con la pipeline ETL (`mappa-3d-bilanci/etl/README.md`) e si esporta qui:
+Si prepara con la pipeline ETL (`etl/README.md`) e si esporta qui:
 
 ```bash
-python 05_esporta_statico.py --dest ../../mappa-bilanci/public/dati
+python 05_esporta_statico.py --dest ../web/public/dati
 ```
 
-Poi `selfhost/pubblica.sh` fa export, build e deploy su Cloudflare Pages. Come montare il
-database dell'officina: `selfhost/README.md`.
+Poi `../selfhost/pubblica.sh` fa export, build e deploy su Cloudflare Pages. Come montare il
+database dell'officina: `../selfhost/README.md`.
 
 ## La chat (OpenRouter)
 
@@ -60,7 +59,7 @@ Per provare in locale: `npx wrangler pages dev out --binding OPENROUTER_API_KEY=
 ## Sviluppo
 
 ```bash
-npm test          # 96 test (vitest)
+npm test          # vitest
 npm run lint
 npx tsc --noEmit
 npm run build     # produce out/

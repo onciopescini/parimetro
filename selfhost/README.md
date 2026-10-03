@@ -1,4 +1,4 @@
-# mappa-bilanci · officina dati
+# Parimetro · officina dati
 
 Il **sito e' statico** su Cloudflare Pages: online non gira nessun database ne'
 nessun server. Questa cartella serve solo alla macchina che prepara i dati —
@@ -53,9 +53,8 @@ sudo usermod -aG docker $USER   # poi esci e rientra
 ## 4 · Database
 
 ```bash
-git clone <repo-app> ~/mappa-bilanci
-git clone <repo-etl> ~/mappa-3d-bilanci
-cd ~/mappa-bilanci/selfhost
+git clone <questo-repository> ~/parimetro
+cd ~/parimetro/selfhost
 cp .env.example .env && openssl rand -base64 24   # incolla in .env
 docker compose up -d
 docker compose ps             # db "healthy"
@@ -65,7 +64,7 @@ docker compose ps             # db "healthy"
 ## 5 · Dati
 
 ```bash
-cd ~/mappa-3d-bilanci/etl
+cd ~/parimetro/etl
 python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
 cp .env.example .env          # DATABASE_URL con la password di sopra
 ```
@@ -75,15 +74,15 @@ Poi confini → popolazione → bilanci, come nel README dell'ETL.
 ## 6 · Pubblicare
 
 Una volta sola: `npm install -g wrangler && wrangler login`, poi
-`wrangler pages project create mappa-bilanci`.
+`wrangler pages project create parimetro`.
 
 Da li' in avanti, dopo ogni import:
 
 ```bash
-~/mappa-bilanci/selfhost/pubblica.sh
+~/parimetro/selfhost/pubblica.sh
 ```
 
-Il sito e' su `mappa-bilanci.pages.dev`. Un dominio proprio si aggiunge dal
+Il sito e' su `parimetro.pages.dev`. Un dominio proprio si aggiunge dal
 pannello Pages in un minuto, quando vorrai.
 
 ## Backup?

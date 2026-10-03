@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # ============================================================
-# Applica lo schema: le migrazioni di mappa-bilanci/db/migrations, in ordine.
+# Applica lo schema: le migrazioni di db/migrations, in ordine.
 #
 # Serve dove non ci sono ne' Docker ne' psql (selfhost/applica-migrazioni.sh
 # fa lo stesso dentro il container). Sono tutte idempotenti (create ... if not
@@ -8,7 +8,7 @@
 #
 # Uso:
 #   python applica_migrazioni.py
-#   python applica_migrazioni.py --dir ../../mappa-bilanci/db/migrations
+#   python applica_migrazioni.py --dir ../db/migrations
 # ============================================================
 import argparse
 import os
@@ -18,7 +18,7 @@ import sys
 import psycopg
 from dotenv import load_dotenv
 
-PREDEFINITA = pathlib.Path(__file__).resolve().parents[2] / "mappa-bilanci" / "db" / "migrations"
+PREDEFINITA = pathlib.Path(__file__).resolve().parents[1] / "db" / "migrations"
 
 
 def main() -> None:

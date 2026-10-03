@@ -2,15 +2,15 @@
 
 L'esportatore scrive i file, il sito li cerca per nome: se i due calcolano il
 nome in modo diverso la pagina resta vuota senza nessun errore evidente.
-Le stesse tabelle (tests/fixtures/*.json) esistono in copia identica nel
-repository dell'app, dove le verifica l'implementazione TypeScript.
+Le tabelle sono UNA sola copia, in web/tests/fixtures/*.json: le leggono sia questi
+test sia quelli TypeScript del sito, quindi non possono divergere.
 """
 import json
 import pathlib
 
 import pytest
 
-QUI = pathlib.Path(__file__).resolve().parent / "fixtures"
+QUI = pathlib.Path(__file__).resolve().parents[2] / "web" / "tests" / "fixtures"
 SLUG = json.loads((QUI / "slug-cases.json").read_text(encoding="utf-8"))
 CLASSIFICHE = json.loads((QUI / "classifica-cases.json").read_text(encoding="utf-8"))
 
@@ -45,17 +45,3 @@ def test_percorsi_diversi_non_collidono(esportatore):
                     percorsi.add(esportatore.percorso_classifica(2024, m, d, f, r))
                     n += 1
     assert len(percorsi) == n
-
-
-# Le due copie delle fixture devono restare identiche: se ne cambia una sola,
-# ciascun lato continuerebbe a passare i propri test e il contratto si
-# romperebbe senza che nessuno se ne accorga.
-APP = pathlib.Path(__file__).resolve().parents[3] / "mappa-bilanci" / "tests" / "fixtures"
-
-
-@pytest.mark.skipif(not APP.exists(), reason="il repository dell'app non e' accanto a questo")
-@pytest.mark.parametrize("nome", ["slug-cases.json", "classifica-cases.json"])
-def test_fixture_identiche_a_quelle_dell_app(nome):
-    mia = json.loads((QUI / nome).read_text(encoding="utf-8"))
-    sua = json.loads((APP / nome).read_text(encoding="utf-8"))
-    assert mia == sua, f"{nome} diverge dalla copia nel repository dell'app"

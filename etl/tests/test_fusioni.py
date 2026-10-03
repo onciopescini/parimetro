@@ -84,6 +84,8 @@ def test_ogni_comune_fuso_esiste_nell_anagrafica_istat():
         pytest.skip("serve TEST_DATABASE_URL")
     with psycopg.connect(url) as c:
         noti = {r[0] for r in c.execute("select istat_code from municipalities")}
+    if len(noti) < 1000:
+        pytest.skip("servono i confini ISTAT importati (database di prova vuoto)")
     assert set(f.FUSIONI) <= noti
     # e i vecchi codici NON ci sono piu': sono sciolti
     assert not ({v for vs, _ in f.FUSIONI.values() for v in vs} & noti)

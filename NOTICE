@@ -1,0 +1,41 @@
+Parimetro - third-party data and attributions
+=============================================
+
+The source code of this repository is released under the MIT License (see LICENSE).
+The DATA it processes and publishes is NOT covered by that license: it belongs to the
+institutions below and is reused under their own terms. If you publish a site built
+with this code, you must keep these attributions visible.
+
+Data
+----
+- ISTAT (Italian National Institute of Statistics): municipal boundaries and resident
+  population. License: Creative Commons Attribution 4.0 (CC BY 4.0).
+  https://www.istat.it
+
+- BDAP / SIOPE, Ragioneria Generale dello Stato (Ministero dell'Economia e delle
+  Finanze): monthly cumulative cash receipts and payments of every Italian municipality,
+  by item of the chart of accounts. Published as open data under Creative Commons
+  Attribution (CC BY) in the BDAP open data catalogue.
+  https://bdap-opendata.rgs.mef.gov.it
+
+These are CASH accounting figures (money actually collected and paid), not accrual
+accounting (accertamenti / impegni). They do not match a municipality's official
+rendiconto.
+
+Base map
+--------
+- Map tiles and style: (c) OpenStreetMap contributors, (c) CARTO. The default basemap
+  (CARTO Dark Matter) is a free service with its own terms of use; replace it with a
+  tile source licensed for your use if you deploy at scale or commercially.
+
+Software
+--------
+Runtime dependencies (Next.js, React, deck.gl, MapLibre GL, Recharts, framer-motion,
+lucide-react, pandas, psycopg, ...) are distributed under their own open source licenses;
+see package-lock.json and etl/requirements.txt.
+
+AI chat
+-------
+The optional chat sends the user's question to a third-party model provider through
+OpenRouter. The numbers shown in answers are always computed by this code from the
+published data files, never by the model.

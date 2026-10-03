@@ -1,5 +1,5 @@
 # ============================================================
-# mappa-bilanci · officina dati
+# Parimetro · officina dati
 #
 # Un servizio solo: Postgres + PostGIS. Non e' il sito — il sito e' statico
 # su Cloudflare Pages. Qui ci girano l'ETL e l'export dei JSON, poi la

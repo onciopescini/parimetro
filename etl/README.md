@@ -13,7 +13,7 @@ tutto come JSON statici. Panoramica e motivi delle scelte: `../README.md`.
   generato da pip, che un criterio di controllo delle applicazioni può bloccare
   (WinError 4551).
 - `pip install -r requirements.txt` (e `requirements-dev.txt` per i test)
-- Un Postgres con PostGIS: Docker (`mappa-bilanci/selfhost/`) oppure un cluster nella WSL
+- Un Postgres con PostGIS: Docker (`selfhost/`) oppure un cluster nella WSL
   (attenzione alle porte: su una macchina Windows con un PostgreSQL già installato la 5432
   è occupata, ne serve un'altra). Poi `cp .env.example .env`, compila `DATABASE_URL` e applica
   lo schema, senza bisogno di `psql`:
@@ -46,7 +46,7 @@ python scarica_siope.py --anno 2024 --dest ./siope_2024
 python 04_import_siope.py --dir ./siope_2024 --year 2024
 
 # 4 · Esporta per il sito
-python 05_esporta_statico.py --dest ../../mappa-bilanci/public/dati
+python 05_esporta_statico.py --dest ../web/public/dati
 ```
 
 ### Spesa per categoria e prestiti
@@ -113,5 +113,5 @@ python -m pytest
 | `test_contratto_con_il_sito.py` | che esportatore e sito calcolino gli stessi nomi di file |
 | `test_dati_db.py` | confini delle fasce e invarianti sui dati (richiede `TEST_DATABASE_URL`) |
 
-`tests/fixtures/*.json` esistono in copia identica in `mappa-bilanci/tests/fixtures/`; un test
-verifica che restino uguali.
+Le tabelle del contratto con il sito (`slug-cases.json`, `classifica-cases.json`) stanno in
+**una sola copia**, `web/tests/fixtures/`: le leggono sia questi test sia quelli TypeScript.

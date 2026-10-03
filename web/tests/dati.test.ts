@@ -203,7 +203,7 @@ describe("categorie", () => {
   it("AREE e NATURE coincidono con etl/categorie_spesa.py", async () => {
     const { readFileSync, existsSync } = await import("node:fs");
     const { AREE, NATURE } = await import("../lib/categorie");
-    const py = "../mappa-3d-bilanci/etl/categorie_spesa.py";
+    const py = "../etl/categorie_spesa.py";
     if (!existsSync(py)) return; // repo ETL non affiancato (CI del solo sito)
     const src = readFileSync(py, "utf-8");
     const chiavi = (nome: string) => {
