@@ -168,3 +168,43 @@ IRPEF = {
     # riga di riepilogo "contribuenti senza comune": non e' un comune
     "codice_senza_comune": "000000",
 }
+
+
+# ---------- PNRR · Progetti (Italia Domani, Sogei; CC BY 4.0) ----------
+# PNRR_Progetti.csv: un CSV con ";" e UTF-8 con BOM. NON ha il comune: solo il soggetto attuatore.
+PNRR = {
+    "sep": ";",
+    "encoding": "utf-8-sig",
+    "colonne": {
+        "cup": "CUP",
+        "misura": "ID Misura",
+        "missione": "Missione",
+        "descr_missione": "Descrizione Missione",
+        "descr_misura": "Descrizione Misura",
+        "titolo": "Titolo Progetto",
+        "settore": "CUP Descrizione Settore",
+        "attuatore": "Soggetto Attuatore",
+        "cf_attuatore": "Codice Fiscale Soggetto Attuatore",
+        "fin_pnrr": "Finanziamento PNRR",
+        "fin_totale": "Finanziamento Totale",
+        "stato": "Stato Avanzamento Progetto",
+        "data_inizio": "Data Inizio Progetto Effettiva",
+        "data_inizio_prevista": "Data Inizio Progetto Prevista",
+        "data_fine": "Data Fine Progetto Effettiva",
+        "data_fine_prevista": "Data Fine Progetto Prevista",
+    },
+}
+
+# ---------- OpenCoesione · progetti con tracciato esteso (CC BY 4.0) ----------
+# progetti_esteso.zip: ~4,3 GB di CSV (204 colonne), si legge a pezzi.
+COESIONE = {
+    "sep": ";",
+    "encoding": "utf-8",
+    "chunk": 250_000,
+    "colonne": [
+        "COD_LOCALE_PROGETTO", "CUP", "OC_TITOLO_PROGETTO", "OC_COD_CICLO", "OC_TEMA_SINTETICO",
+        "CUP_DESCR_NATURA", "CUP_DESCR_SETTORE", "OC_FINANZ_TOT_PUB_NETTO", "TOT_PAGAMENTI",
+        "OC_STATO_PROGETTO", "OC_DATA_INIZIO_PROGETTO", "OC_DATA_FINE_PROGETTO_EFFETTIVA",
+        "COD_COMUNE", "OC_LINK", "OC_FLAG_VISUALIZZAZIONE",
+    ],
+}

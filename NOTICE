@@ -27,6 +27,19 @@ Data
   source on the site. Cells with few taxpayers are hidden by the publisher for statistical secrecy:
   they are kept as NULL, never as zero.
 
+- Italia Domani (PNRR Mission Structure, via Sogei): "Progetti del PNRR", all projects of the national
+  recovery plan, CC BY 4.0. https://www.italiadomani.gov.it/content/sogei-ng/it/it/catalogo-open-data.html
+  The file does not locate projects: a project is attributed to a municipality only when the municipality
+  itself is the implementing body.
+
+- OpenCoesione (Italian Department for Cohesion Policy): all projects financed by cohesion policies
+  (2000-2027), CC BY 4.0. https://opencoesione.gov.it/it/opendata/
+  Only projects located in a single municipality are used. Names of private companies and persons
+  receiving incentives or grants are never published.
+
+- IPA - Indice delle Pubbliche Amministrazioni (AgID), CC BY 4.0: used only to match an implementing
+  body's fiscal code to its municipality; none of its content is republished.
+
 These are CASH accounting figures (money actually collected and paid), not accrual
 accounting (accertamenti / impegni). They do not match a municipality's official
 rendiconto.

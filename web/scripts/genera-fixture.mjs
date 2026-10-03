@@ -188,12 +188,47 @@ const categorie = (c, b) => {
     altre_voci: { n: 40, importo: totale - voci.reduce((s, v) => s + v.importo, 0) } };
 };
 
+// Investimenti finti (PNRR e coesione) con la forma di get_investimenti_comune(). Alpe Nera non ha
+// progetti PNRR; Forli' di Prova ha un'opera di coesione che pesa piu' di meta' del totale.
+const investimenti = (c) => {
+  const grande = c.population > 100000;
+  const nP = c.istat === "990006" ? 0 : Math.max(1, Math.round(c.population / 3000));
+  const finP = nP === 0 ? 0 : Math.round(c.population * (150 + rnd() * 600));
+  const nO = Math.max(1, Math.round(c.population / 5000));
+  const finO = Math.round(c.population * (300 + rnd() * 900));
+  return {
+    pnrr: {
+      n: nP, fin_pnrr: finP, fin_totale: Math.round(finP * 1.15), pc: nP ? Math.round(finP / c.population) : 0,
+      mediana_pc: 410, rango: nP ? [10, 55, 90][Math.floor(rnd() * 3)] : 0, n_simili: 3, conclusi: Math.floor(nP / 3),
+      missioni: nP ? [{ missione: "M4", descr: "Istruzione e ricerca", n: Math.ceil(nP / 2), fin_pnrr: Math.round(finP * 0.6) },
+        { missione: "M2", descr: "Rivoluzione verde e transizione ecologica", n: Math.floor(nP / 2), fin_pnrr: Math.round(finP * 0.4) }] : [],
+      progetti: Array.from({ length: Math.min(nP, 5) }, (_, i) => ({
+        cup: `J${c.istat}${i}`, titolo: `Progetto PNRR di prova ${i + 1}`, misura: "Asili nido", fin_pnrr: Math.round(finP / (i + 2)),
+        fin_totale: Math.round((finP / (i + 2)) * 1.2), stato: i % 2 ? "Concluso" : "In Corso", data_fine: "2026-03-31",
+      })),
+    },
+    coesione: {
+      opere: {
+        n: nO, fin: finO, pagamenti: Math.round(finO * 0.6), pc: Math.round(finO / c.population), mediana_pc: 720,
+        rango: [20, 60, 95][Math.floor(rnd() * 3)], n_simili: 3, stati: { Concluso: nO - 0, "In corso": grande ? 2 : 0 },
+        cicli: [{ ciclo: 1, n: Math.ceil(nO / 2), fin: Math.round(finO * 0.4) }, { ciclo: 2, n: Math.floor(nO / 2), fin: Math.round(finO * 0.6) }],
+        progetti: Array.from({ length: Math.min(nO, 5) }, (_, i) => ({
+          titolo: `Opera di prova ${i + 1}`, ciclo: 2, tema: "Trasporti e mobilita", fin: Math.round((c.istat === "990004" ? finO * 0.7 : finO) / (i + 1.5)),
+          pagamenti: 0, stato: "Concluso", inizio: 2016 + i, fine: 2019 + i, link: "https://opencoesione.gov.it/",
+        })),
+      },
+      altri: { incentivi: { n: 12, fin: 340000 }, contributi: { n: 40, fin: 90000 } },
+    },
+  };
+};
+
 for (const c of COMUNI) {
   scrivi(`comune/${c.istat}.json`, {
     categorie: Object.fromEntries(ANNI.map((a) => [a,
       a === 2022 ? null : categorie(c, storico[c.istat].find((x) => x.year === a))])),
     history: storico[c.istat],
     reddito: redditi[c.istat],
+    investimenti: investimenti(c),
     peers: Object.fromEntries(ANNI.map((a) => [a, {
       fascia: fascia(c.population), n: 3, revenue_pc: 1500, expenditure_pc: 1480,
       debt_pc: null, fhi: 50, pct_revenue: 40, pct_expenditure: 55, pct_fhi: 60,

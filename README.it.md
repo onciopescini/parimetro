@@ -14,8 +14,10 @@ Online: <https://parimetro.pages.dev> · 🇬🇧 [Read in English](README.md)
   alla gestione.
 - Il **reddito di chi ci vive** (IRPEF, dal Ministero delle Finanze) accanto alla spesa del comune,
   con lo stesso confronto con i simili.
+- **Opere pubbliche e PNRR**: quali progetti del PNRR gestisce il comune e quali opere di coesione sono
+  state fatte sul suo territorio, per abitante e rispetto ai simili.
 - Classifiche, ricerca, link condivisibili.
-- Una **chat AI** in cui il modello non produce mai numeri: sceglie una di cinque domande
+- Una **chat AI** in cui il modello non produce mai numeri: sceglie una di sei domande
   previste e racconta un risultato calcolato dal codice ([come](docs/chat.md)). Ogni risposta
   ha una tabella esportabile in CSV.
 

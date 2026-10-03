@@ -24,7 +24,9 @@ region instead of one file per entity, or move bulky detail to object storage.
 | – | `etl/categorie_spesa.py` | hand-written mapping line item → spending area / nature |
 | – | `etl/fusioni.py` | municipal mergers: predecessors summed into the successor |
 | 4 | `etl/06_import_irpef.py` | MEF IRPEF income per municipality and tax year (`scarica_irpef.py` downloads it) |
-| 5 | `etl/05_esporta_statico.py` | writes `web/public/dati/**` |
+| 5 | `etl/07_import_pnrr.py`, `etl/08_import_coesione.py` | PNRR and cohesion-policy projects per municipality (`scarica_investimenti.py` downloads them) |
+| – | `etl/investimenti.py` | links a PNRR implementing body to a municipality (fiscal code, then name; never guesses) |
+| 6 | `etl/05_esporta_statico.py` | writes `web/public/dati/**` |
 | – | `db/migrations/*.sql` | schema, `refresh_fhi()`, spending-by-category, rankings |
 
 `etl/03_import_bdap.py` is an alternative importer for accrual-basis (competenza) data, kept
@@ -49,6 +51,14 @@ for when a source becomes available.
   some income categories in small towns, so a "total income" rebuilt from brackets would be
   systematically too low there. Taxable income and the taxpayer count are never hidden. Where a town
   has fewer than 100 taxpayers the site warns that its average is unstable.
+- **Investments (PNRR, cohesion).** Two separate sources, never added together (they share 74 project codes
+  in total). *PNRR*: the file does not say where a project is, only who implements it, so a project is
+  attributed to a municipality only when the municipality itself is the implementing body
+  (about 84,000 projects, 24 of 171 billion euro); work by RFI, ministries, Regions or health authorities
+  on its territory cannot be attributed. *Cohesion*: only projects located in exactly one municipality;
+  multi-municipality, provincial and regional projects cannot be split and are left out (a 1.4 billion
+  "national" project must not land on a village of 60 people). Names of companies and individuals
+  receiving incentives or grants are never published, only counts and amounts.
 - Spending areas are an editorial classification (`etl/categorie_spesa.py`). Generic items
   stay in "not attributable" and the share is shown for every town.
 
@@ -68,5 +78,5 @@ dati/comuni-{year}.json             GeoJSON for the map
 dati/province-{year}.json           province aggregates
 dati/classifiche/filtri-{year}.json filters for the rankings
 dati/classifiche/{year}/...json     one file per ranking combination
-dati/comune/{istat}.json            history + peers + spending categories + income, per year
+dati/comune/{istat}.json            history + peers + spending categories + income + investments
 ```

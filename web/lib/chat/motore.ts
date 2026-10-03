@@ -16,6 +16,7 @@ import {
   numero,
 } from "./formati";
 import type { RedditoAnno } from "../reddito";
+import { CICLI, GENERI_ALTRI, ordinaCicli, quotaDelPrimo, type Investimenti } from "../investimenti";
 import type { Colonna, Contesto, Fatto, Intento, Leggi, RifComune, Risultato } from "./tipi";
 
 interface RigaStorico {
@@ -27,6 +28,7 @@ interface SchedaComune {
   peers: Record<string, Record<string, unknown> | null>;
   categorie?: Record<string, CategorieComune | null>;
   reddito?: Record<string, RedditoAnno> | null;
+  investimenti?: Investimenti | null;
 }
 
 type Cella = string | number | null;
@@ -46,7 +48,7 @@ const vuoto = (titolo: string, riassunto: string, extra: Partial<Risultato> = {}
 export const CAPACITA =
   "Posso mostrarti la scheda di un comune, confrontare fino a quattro comuni, " +
   "fare una classifica (rango, autonomia, spesa o entrate pro capite, anche per fascia di popolazione o regione), " +
-  "dirti quanto spende un comune in una certa area (rifiuti, strade, scuole…) e come sono andati i suoi conti negli anni. " +
+  "dirti quanto spende un comune in una certa area (rifiuti, strade, scuole…), come sono andati i suoi conti negli anni e quali progetti PNRR e opere pubbliche ha. " +
   "Non faccio previsioni, non do giudizi politici e non conosco dati che non sono sul sito.";
 
 /** Anno richiesto se esiste, altrimenti l'ultimo; con una nota se si e' dovuto cambiare. */
@@ -478,6 +480,86 @@ async function spesaArea(
   };
 }
 
+// ------------------------------------------------------------- investimenti
+async function investimentiComune(
+  leggi: Leggi,
+  indice: VoceIndice[],
+  i: Extract<Intento, { tipo: "investimenti_comune" }>,
+  contesto?: Contesto,
+): Promise<Risultato> {
+  const t = await trovaComune(indice, i, contesto);
+  if ("errore" in t) return t.errore;
+  const { voce } = t;
+  const s = await leggiScheda(leggi, voce.istat);
+  const inv = s.investimenti;
+  if (!inv) return vuoto(voce.name, `Per ${voce.name} non ho dati sugli investimenti.`, { apri: voce.istat });
+  const { pnrr, coesione } = inv;
+  const opere = coesione.opere;
+
+  const colonne: Colonna[] = [
+    { k: "indicatore", label: "Indicatore" },
+    { k: "comune", label: voce.name, dx: true },
+    { k: "simili", label: "Mediana dei simili", dx: true },
+  ];
+  const righe: Record<string, string>[] = [];
+  const grezze: Record<string, Cella>[] = [];
+  const aggiungi = (indicatore: string, v: string, grezzo: Cella, simili = "—", grezzoSimili: Cella = null) => {
+    righe.push({ indicatore, comune: v, simili });
+    grezze.push({ indicatore, comune: grezzo, simili: grezzoSimili });
+  };
+  aggiungi("PNRR: progetti gestiti dal comune", fNum(pnrr.n), pnrr.n);
+  aggiungi("PNRR: finanziamento", fEurBreve(pnrr.fin_pnrr), pnrr.fin_pnrr);
+  aggiungi("PNRR: euro per abitante", fEur(pnrr.pc), pnrr.pc, fEur(pnrr.mediana_pc), pnrr.mediana_pc);
+  aggiungi("PNRR: progetti conclusi", `${fNum(pnrr.conclusi)} su ${fNum(pnrr.n)}`, pnrr.conclusi);
+  aggiungi("Coesione: opere pubbliche", fNum(opere.n), opere.n);
+  aggiungi("Coesione: finanziamento pubblico", fEurBreve(opere.fin), opere.fin);
+  aggiungi("Coesione: pagato", fEurBreve(opere.pagamenti), opere.pagamenti);
+  aggiungi("Coesione: euro per abitante", fEur(opere.pc), opere.pc, fEur(opere.mediana_pc), opere.mediana_pc);
+  const maxP = pnrr.progetti[0];
+  if (maxP) aggiungi("Maggior progetto PNRR", `${maxP.titolo ?? "senza titolo"} (${fEurBreve(maxP.fin_pnrr)})`, maxP.fin_pnrr);
+  const maxO = opere.progetti[0];
+  if (maxO) aggiungi("Maggior opera di coesione", `${maxO.titolo ?? "senza titolo"} (${fEurBreve(maxO.fin)})`, maxO.fin);
+
+  const note = [
+    "Il PNRR qui sono i progetti di cui il comune è soggetto attuatore: gli interventi di RFI, ministeri, Regioni o ASL sul suo territorio non sono attribuibili a un comune.",
+    "Le opere di coesione sono quelle localizzate solo in questo comune; quelle su più comuni, una provincia o una regione non sono attribuite.",
+  ];
+  const qp = quotaDelPrimo(pnrr.progetti.map((p) => p.fin_pnrr), pnrr.fin_pnrr);
+  if (qp != null && qp >= 50) note.push(`Un solo progetto PNRR pesa il ${Math.round(qp)}% del totale: il valore per abitante dipende da quell'opera.`);
+  const qo = quotaDelPrimo(opere.progetti.map((p) => p.fin), opere.fin);
+  if (qo != null && qo >= 50) note.push(`Un'opera di coesione sola pesa il ${Math.round(qo)}% del totale.`);
+  const altri = Object.entries(coesione.altri).filter(([, v]) => v.n > 0);
+  if (altri.length) {
+    note.push(`Oltre alle opere ci sono ${altri.map(([g, v]) => `${fNum(v.n)} ${GENERI_ALTRI[g] ?? g}`).join(", ")}: non si mostrano i nomi (persone e imprese private).`);
+  }
+
+  const fatti: Record<string, Fatto> = {
+    comune: { label: "Comune", valore: voce.name },
+    pnrr_n: { label: "progetti PNRR gestiti dal comune", valore: fNum(pnrr.n) },
+    pnrr_fin: { label: "finanziamento PNRR", valore: fEurBreve(pnrr.fin_pnrr) },
+    pnrr_pc: { label: "PNRR per abitante", valore: fEur(pnrr.pc) },
+    pnrr_simili: { label: "PNRR per abitante mediano dei comuni simili", valore: fEur(pnrr.mediana_pc) },
+    opere_n: { label: "opere pubbliche di coesione", valore: fNum(opere.n) },
+    opere_fin: { label: "finanziamento pubblico delle opere di coesione", valore: fEurBreve(opere.fin) },
+    opere_pc: { label: "opere di coesione per abitante", valore: fEur(opere.pc) },
+    opere_simili: { label: "opere di coesione per abitante mediane dei simili", valore: fEur(opere.mediana_pc) },
+  };
+  const cicli = ordinaCicli(opere.cicli).map((c) => `${CICLI[c.ciclo] ?? c.ciclo}: ${fNum(c.n)}`).join(", ");
+  return {
+    ok: true,
+    titolo: `${voce.name} · investimenti`,
+    colonne,
+    righe,
+    grezze,
+    fatti,
+    riassunto:
+      `${voce.name}: ${fNum(pnrr.n)} progetti PNRR gestiti dal comune (${fEurBreve(pnrr.fin_pnrr)}, ${fEur(pnrr.pc)} per abitante); ` +
+      `${fNum(opere.n)} opere pubbliche di coesione (${fEurBreve(opere.fin)}${cicli ? `; ${cicli}` : ""}).`,
+    note,
+    apri: voce.istat,
+  };
+}
+
 // ------------------------------------------------------------------ storico
 /** Il reddito IRPEF vive nel suo blocco (anno d'imposta -> valori), non nella serie dei bilanci. */
 function storicoReddito(voce: VoceIndice, s: SchedaComune, etichetta: string): Risultato {
@@ -583,5 +665,7 @@ export async function eseguiIntento(
       return spesaArea(leggi, indice, intento, contesto);
     case "storico_comune":
       return storico(leggi, indice, intento, contesto);
+    case "investimenti_comune":
+      return investimentiComune(leggi, indice, intento, contesto);
   }
 }

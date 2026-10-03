@@ -56,6 +56,12 @@ export default function Fonti() {
                 residente (licenza CC BY 4.0).
               </li>
               <li>
+                <strong className="text-slate-100">Italia Domani</strong> (progetti del PNRR) e{" "}
+                <strong className="text-slate-100">OpenCoesione</strong> (opere finanziate dalle politiche di
+                coesione), entrambe CC BY 4.0. Il PNRR non indica il comune: i progetti sono attribuiti solo
+                quando il comune è il soggetto che li realizza.
+              </li>
+              <li>
                 <strong className="text-slate-100">MEF, Dipartimento delle Finanze</strong>: dichiarazioni
                 IRPEF per comune (reddito imponibile, contribuenti, addizionale comunale). Dati aperti: le
                 celle con pochi contribuenti sono oscurate dal segreto statistico e qui risultano mancanti.

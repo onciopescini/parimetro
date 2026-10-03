@@ -20,6 +20,7 @@ import Map3D, {
 } from "@/components/map/Map3D";
 import type { CategorieComune } from "@/lib/categorie";
 import type { RedditoAnno } from "@/lib/reddito";
+import type { Investimenti } from "@/lib/investimenti";
 import ChatPanel from "@/components/chat/ChatPanel";
 import Fonti from "@/components/Fonti";
 import BudgetDrawer, {
@@ -81,6 +82,7 @@ function Mappa() {
   const [peers, setPeers] = useState<PeerComparison | null>(null);
   const [categorie, setCategorie] = useState<CategorieComune | null>(null);
   const [reddito, setReddito] = useState<RedditoAnno | null>(null);
+  const [investimenti, setInvestimenti] = useState<Investimenti | null>(null);
   const [open, setOpen] = useState(false);
   const [flyTo, setFlyTo] = useState<{ lon: number; lat: number; nonce: number } | null>(null);
 
@@ -131,6 +133,7 @@ function Mappa() {
           peers: Record<string, PeerComparison | null>;
           categorie?: Record<string, CategorieComune | null>;
           reddito?: Record<string, RedditoAnno> | null;
+          investimenti?: Investimenti | null;
         }>(`${URL_DATI}/comune/${p.istat}.json`),
         leggi<Record<string, NationalAverages>>(`${URL_DATI}/nazionale.json`),
       ]);
@@ -150,6 +153,7 @@ function Mappa() {
       setPeers(pari ?? null);
       setCategorie(scheda.categorie?.[String(anno)] ?? null);
       setReddito(scheda.reddito?.[String(anno)] ?? null);
+      setInvestimenti(scheda.investimenti ?? null);
       setOpen(true);
     },
     [year, annoMappa],
@@ -491,6 +495,7 @@ function Mappa() {
         peerAvg={peers}
         categorie={categorie}
         reddito={reddito}
+        investimenti={investimenti}
         open={open}
         onClose={() => setOpen(false)}
       />

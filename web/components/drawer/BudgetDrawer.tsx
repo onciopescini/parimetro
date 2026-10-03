@@ -13,6 +13,8 @@
 import { useMemo, useState } from "react";
 import SpesaPerCategoria from "./SpesaPerCategoria";
 import RedditoResidenti from "./RedditoResidenti";
+import InvestimentiComune from "./InvestimentiComune";
+import type { Investimenti } from "@/lib/investimenti";
 import type { RedditoAnno } from "@/lib/reddito";
 import type { CategorieComune } from "@/lib/categorie";
 import { AnimatePresence, motion } from "framer-motion";
@@ -99,11 +101,13 @@ interface BudgetDrawerProps {
   categorie?: CategorieComune | null;
   /** Reddito IRPEF dei residenti nell'anno mostrato */
   reddito?: RedditoAnno | null;
+  /** PNRR e opere di coesione (non dipendono dall'anno: sono un quadro complessivo) */
+  investimenti?: Investimenti | null;
   open: boolean;
   onClose: () => void;
 }
 
-type Tab = "quadro" | "spese" | "grafici" | "debito";
+type Tab = "quadro" | "spese" | "opere" | "grafici" | "debito";
 
 // ---------------------------------------------------------- //
 // Utilità di formattazione (locale it-IT)
@@ -188,6 +192,7 @@ export default function BudgetDrawer({
   peerAvg,
   categorie,
   reddito,
+  investimenti,
   open,
   onClose,
 }: BudgetDrawerProps) {
@@ -354,6 +359,7 @@ export default function BudgetDrawer({
               [
                 ["quadro", "Quadro"],
                 ["spese", "Spese"],
+                ["opere", "Opere"],
                 ["grafici", "Grafici"],
                 ["debito", haDebito ? "Debito & Alert" : "Alert"],
               ] as [Tab, string][]
@@ -502,6 +508,8 @@ export default function BudgetDrawer({
             {tab === "spese" && (
               <SpesaPerCategoria categorie={categorie ?? null} year={current.year} />
             )}
+
+            {tab === "opere" && <InvestimentiComune inv={investimenti ?? null} />}
 
             {tab === "grafici" && (
               <>

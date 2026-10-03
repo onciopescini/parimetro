@@ -15,8 +15,10 @@ Live: <https://parimetro.pages.dev> · 🇮🇹 [Leggi in italiano](README.it.md
   grade of its management.
 - The **income of the people who live there** (IRPEF, from the Ministry of Finance), next to the
   town's spending, with the same peer comparison.
+- **Public works and the recovery plan (PNRR)**: which PNRR projects the town itself runs and which
+  cohesion-policy works were built there, per inhabitant and against peers.
 - Rankings, search, shareable deep links.
-- An **AI chat** where the model never produces numbers: it only picks one of five
+- An **AI chat** where the model never produces numbers: it only picks one of six
   pre-defined questions and narrates a result that this code computed
   ([how](docs/chat.md)). Every answer comes with a table you can export as CSV.
 

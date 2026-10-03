@@ -145,6 +145,8 @@ def main() -> None:
                 "categorie": {str(y): scalare(k, "get_categorie_comune", istat, y) for y in anni},
                 # Reddito IRPEF per anno d'imposta (null se il comune non ha dati)
                 "reddito": scalare(k, "get_reddito_comune", istat),
+                # PNRR (progetti di cui il comune e' attuatore) e opere di coesione sul suo territorio
+                "investimenti": scalare(k, "get_investimenti_comune", istat),
             })
 
     codici = [v["istat"] for v in indice]

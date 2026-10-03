@@ -47,6 +47,24 @@ const scheda = (k: number, concentrata = false) => ({
     "2024": { fascia: "x", n: 12, revenue_pc: 1000, expenditure_pc: 880, debt_pc: null, fhi: 50, pct_revenue: 50, pct_expenditure: 50, pct_fhi: 50 },
   },
   categorie: { "2023": null, "2024": categorie(concentrata) },
+  investimenti: {
+    pnrr: {
+      n: 10, fin_pnrr: concentrata ? 3_000_000 : 20_000_000, fin_totale: 25_000_000, pc: 500, mediana_pc: 300, rango: 80, n_simili: 12, conclusi: 4,
+      missioni: [{ missione: "M4", descr: "Istruzione", n: 6, fin_pnrr: 12_000_000 }],
+      progetti: [
+        { cup: "J1", titolo: "Asilo nido", misura: "Nidi", fin_pnrr: concentrata ? 2_700_000 : 5_000_000, fin_totale: 6_000_000, stato: "In Corso", data_fine: "2026-03-31" },
+        { cup: "J2", titolo: "Scuola", misura: "Scuole", fin_pnrr: 1_000_000, fin_totale: 1_200_000, stato: "Concluso", data_fine: "2025-06-30" },
+      ],
+    },
+    coesione: {
+      opere: {
+        n: 3, fin: 8_000_000, pagamenti: 5_000_000, pc: 400, mediana_pc: 700, rango: 30, n_simili: 12,
+        stati: { Concluso: 3 }, cicli: [{ ciclo: 2, n: 3, fin: 8_000_000 }],
+        progetti: [{ titolo: "Strada di collegamento", ciclo: 2, tema: "Trasporti", fin: 5_000_000, pagamenti: 4_000_000, stato: "Concluso", inizio: 2016, fine: 2019, link: "https://opencoesione.gov.it/x/" }],
+      },
+      altri: { incentivi: { n: 40, fin: 900_000 }, contributi: { n: 200, fin: 150_000 } },
+    },
+  },
   reddito: {
     "2023": { contribuenti: concentrata ? 50 : 700 * k, medio: 19000 + k * 500, pc: 12000, addizionale_media: 150, rango: 40, mediana_simili: 20000, n_simili: 12 },
     "2024": { contribuenti: concentrata ? 50 : 700 * k, medio: 20000 + k * 1000, pc: 13000, addizionale_media: null, rango: 60, mediana_simili: 21000, n_simili: 12 },
@@ -246,6 +264,46 @@ describe("eseguiIntento", () => {
     const r = await eseguiIntento({ tipo: "fuori_ambito" }, leggi);
     expect(r.ok).toBe(false);
     expect(r.riassunto).toContain("Non faccio previsioni");
+  });
+});
+
+describe("investimenti nella chat", () => {
+  it("riassume PNRR e coesione con il confronto coi simili", async () => {
+    const r = await eseguiIntento({ tipo: "investimenti_comune", comune: "Roma" }, leggi);
+    expect(r.ok).toBe(true);
+    expect(r.righe.find((x) => x.indicatore === "PNRR: progetti gestiti dal comune")?.comune).toBe("10");
+    expect(r.righe.find((x) => x.indicatore === "PNRR: euro per abitante")).toMatchObject({ comune: "500 €", simili: "300 €" });
+    expect(r.righe.find((x) => x.indicatore === "Coesione: euro per abitante")).toMatchObject({ comune: "400 €", simili: "700 €" });
+    expect(r.righe.find((x) => x.indicatore === "Maggior progetto PNRR")?.comune).toContain("Asilo nido");
+    expect(r.fatti.pnrr_pc.valore).toBe("500 €");
+  });
+  it("dice sempre cosa il PNRR comprende e cosa no", async () => {
+    const r = await eseguiIntento({ tipo: "investimenti_comune", comune: "Roma" }, leggi);
+    expect(r.note.join(" ")).toContain("soggetto attuatore");
+    expect(r.note.join(" ")).toContain("localizzate solo in questo comune");
+  });
+  it("incentivi e contributi: solo conteggio, mai nomi", async () => {
+    const r = await eseguiIntento({ tipo: "investimenti_comune", comune: "Roma" }, leggi);
+    expect(r.note.join(" ")).toContain("40 incentivi alle imprese");
+    expect(r.note.join(" ")).toContain("non si mostrano i nomi");
+  });
+  it("un progetto che pesa piu' di meta' del totale viene segnalato", async () => {
+    const r = await eseguiIntento({ tipo: "investimenti_comune", comune: "Elva" }, leggi);
+    expect(r.note.join(" ")).toMatch(/90%.*dipende da quell'opera/);
+  });
+  it("comune senza dati sugli investimenti", async () => {
+    FILE["/dati/comune/075099.json"] = { history: [], peers: {}, categorie: {} };
+    const r = await eseguiIntento({ tipo: "investimenti_comune", comune: "Castro", provincia: "Lecce" }, leggi);
+    expect(r.ok).toBe(false);
+    expect(r.riassunto).toContain("non ho dati sugli investimenti");
+    delete FILE["/dati/comune/075099.json"];
+  });
+  it("il modello puo' chiedere gli investimenti di un comune, ma serve il comune", () => {
+    expect(validaIntento({ tipo: "investimenti_comune", comune: "Roma" }).ok).toBe(true);
+    expect(validaIntento({ tipo: "investimenti_comune" }).ok).toBe(false);
+  });
+  it("il prompt dell'intento descrive la domanda sugli investimenti", () => {
+    expect(promptIntento(undefined, [2023, 2024])).toContain("investimenti_comune");
   });
 });
 

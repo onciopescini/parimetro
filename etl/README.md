@@ -49,7 +49,12 @@ python 04_import_siope.py --dir ./siope_2024 --year 2024
 python scarica_irpef.py --dest ../../etl-data/irpef --da 2020 --a 2024
 python 06_import_irpef.py --dir ../../etl-data/irpef
 
-# 5 · Esporta per il sito
+# 5 · Investimenti: PNRR e opere di coesione (~560 MB da scaricare, 3 file)
+python scarica_investimenti.py --dest ../../etl-data
+python 07_import_pnrr.py --csv ../../etl-data/pnrr/PNRR_Progetti.csv --ipa ../../etl-data/pnrr/ipa_enti.xlsx
+python 08_import_coesione.py --zip ../../etl-data/oc/progetti_esteso.zip
+
+# 6 · Esporta per il sito
 python 05_esporta_statico.py --dest ../web/public/dati
 ```
 
