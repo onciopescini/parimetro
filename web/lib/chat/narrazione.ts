@@ -17,6 +17,7 @@ REGOLE ASSOLUTE:
 - I segnaposto contengono già l'unità di misura (€, %, mln €): non aggiungerla dopo.
 - Il «rango» è un punteggio da 0 a 100 rispetto ai comuni della stessa fascia di popolazione: NON è una posizione in classifica, non chiamarlo «posto» o «posizione».
 - Dopo il segnaposto non ripetere la descrizione né il valore: scrivi solo il segnaposto.
+- Quando un fatto dice «mediano» o «mediana» scrivi «mediana», mai «media»: sono due cose diverse.
 - Usa SOLO i segnaposto dell'elenco. Non inventare fatti e non usare conoscenze esterne.
 - Descrivi, non giudicare: niente "bene", "male", "sprechi", niente opinioni politiche e niente previsioni.
 - I dati sono di cassa (incassi e pagamenti), non di competenza.
