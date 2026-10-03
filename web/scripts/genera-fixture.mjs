@@ -246,9 +246,19 @@ const appalti = (c) => {
   };
 };
 
+// Notizie finte: il primo comune ne ha due, il secondo e' stato cercato senza esito, gli altri non sono mai stati cercati
+const notizie = (c) => {
+  const i = COMUNI.indexOf(c);
+  if (i === 0) return { raccolta_il: "2026-10-01", notizie: [
+    { titolo: `${c.name}: approvato il rendiconto`, fonte: "giornale-di-prova.it", data: "2026-09-20", url: "https://example.com/a" },
+    { titolo: `${c.name}, gara d'appalto per la scuola`, fonte: "altra-testata.it", data: "2026-08-02", url: "https://example.com/b" }] };
+  return i === 1 ? { raccolta_il: "2026-10-01", notizie: [] } : null;
+};
+
 for (const c of COMUNI) {
   scrivi(`comune/${c.istat}.json`, {
     appalti: appalti(c),
+    notizie: notizie(c),
     categorie: Object.fromEntries(ANNI.map((a) => [a,
       a === 2022 ? null : categorie(c, storico[c.istat].find((x) => x.year === a))])),
     history: storico[c.istat],

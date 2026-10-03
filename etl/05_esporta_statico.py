@@ -149,6 +149,8 @@ def main() -> None:
                 "investimenti": scalare(k, "get_investimenti_comune", istat),
                 # Appalti banditi dal comune (ANAC), anno per anno
                 "appalti": scalare(k, "get_appalti_comune", istat),
+                # Notizie sui conti (titolo, fonte, data, link); null se non si e' mai cercato
+                "notizie": scalare(k, "get_notizie_comune", istat),
             })
 
     codici = [v["istat"] for v in indice]

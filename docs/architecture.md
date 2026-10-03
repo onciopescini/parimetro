@@ -70,6 +70,11 @@ for when a source becomes available.
   for micro-purchases too): lots triple, the median value falls from 68,000 to 16,000 euro and direct
   awards go from 73% to 89%. Comparison with peers of the *same year* stays valid; across the break it
   does not. The share of direct awards is only compared among towns with at least 5 lots.
+- **News (Firecrawl, optional).** One search per town; the *code* keeps only results that name the town and
+  mention accounts, taxes, procurement or funds (keywords, not a model), no older than 18 months. Only
+  title, source, date and link are stored and shown: no article text, no summaries. Towns with homonyms
+  must also name the province. The tab appears only for towns already searched, and says the selection
+  is automatic and not verified. The API key is an environment variable, never a file in the repo.
 - Spending areas are an editorial classification (`etl/categorie_spesa.py`). Generic items
   stay in "not attributable" and the share is shown for every town.
 
@@ -90,5 +95,5 @@ dati/province-{year}.json           province aggregates
 dati/classifiche/filtri-{year}.json filters for the rankings
 dati/classifiche/{year}/...json     one file per ranking combination (7 metrics; PNRR/cohesion
                                     rank only towns with at least one project)
-dati/comune/{istat}.json            history + peers + spending categories + income + investments + procurement
+dati/comune/{istat}.json            history + peers + spending categories + income + investments + procurement + news
 ```

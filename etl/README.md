@@ -58,7 +58,11 @@ python 08_import_coesione.py --zip ../../etl-data/oc/progetti_esteso.zip
 python scarica_anac.py --dest ../../etl-data/anac/cig --da 2020 --a 2024
 python 09_import_anac.py --dir ../../etl-data/anac/cig --ipa ../../etl-data/pnrr/ipa_enti.xlsx
 
-# 7 · Esporta per il sito
+# 7 · Notizie sui conti (Firecrawl, facoltativo). La chiave sta in FIRECRAWL_API_KEY, mai in un file del repo.
+python 10_raccogli_notizie.py                          # solo la stima dei crediti (~2 a comune, ~16.000 in tutto)
+python 10_raccogli_notizie.py --esegui --min-abitanti 20000 --limite 20   # una prova
+
+# 8 · Esporta per il sito
 python 05_esporta_statico.py --dest ../web/public/dati
 ```
 

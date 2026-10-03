@@ -16,6 +16,8 @@ import RedditoResidenti from "./RedditoResidenti";
 import InvestimentiComune from "./InvestimentiComune";
 import AppaltiComune from "./AppaltiComune";
 import type { Appalti } from "@/lib/appalti";
+import NotizieComune from "./NotizieComune";
+import type { NotizieComune as NotizieDati } from "@/lib/notizie";
 import type { Investimenti } from "@/lib/investimenti";
 import type { RedditoAnno } from "@/lib/reddito";
 import type { CategorieComune } from "@/lib/categorie";
@@ -107,11 +109,13 @@ interface BudgetDrawerProps {
   investimenti?: Investimenti | null;
   /** Appalti banditi dal comune, anno per anno */
   appalti?: Appalti | null;
+  /** Notizie sui conti (titolo, fonte, data, link); null = mai cercate: il tab non compare */
+  notizie?: NotizieDati | null;
   open: boolean;
   onClose: () => void;
 }
 
-type Tab = "quadro" | "spese" | "opere" | "appalti" | "grafici" | "debito";
+type Tab = "quadro" | "spese" | "opere" | "appalti" | "notizie" | "grafici" | "debito";
 
 // ---------------------------------------------------------- //
 // Utilità di formattazione (locale it-IT)
@@ -198,10 +202,13 @@ export default function BudgetDrawer({
   reddito,
   investimenti,
   appalti,
+  notizie,
   open,
   onClose,
 }: BudgetDrawerProps) {
   const [tab, setTab] = useState<Tab>("quadro");
+  // Passando a un comune senza notizie il tab non c'e' piu': si torna al quadro invece di mostrare il vuoto
+  if (tab === "notizie" && !notizie) setTab("quadro");
   // Default sui comuni simili: è il confronto che dice qualcosa. Rispetto alla
   // media nazionale un paese di 800 abitanti risulta sempre spendaccione, ma
   // solo perché i costi fissi si dividono per pochi residenti.
@@ -359,13 +366,14 @@ export default function BudgetDrawer({
           </header>
 
           {/* ---------- Tab bar ---------- */}
-          <nav className="flex gap-1 border-b border-white/10 p-2">
+          <nav className="flex gap-1 overflow-x-auto border-b border-white/10 p-2">
             {(
               [
                 ["quadro", "Quadro"],
                 ["spese", "Spese"],
                 ["opere", "Opere"],
                 ["appalti", "Appalti"],
+                ...(notizie ? ([["notizie", "Notizie"]] as [Tab, string][]) : []),
                 ["grafici", "Grafici"],
                 ["debito", haDebito ? "Debito & Alert" : "Alert"],
               ] as [Tab, string][]
@@ -373,7 +381,7 @@ export default function BudgetDrawer({
               <button
                 key={id}
                 onClick={() => setTab(id)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                className={`shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                   tab === id ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-200"
                 }`}
               >
@@ -518,6 +526,7 @@ export default function BudgetDrawer({
             {tab === "opere" && <InvestimentiComune inv={investimenti ?? null} />}
 
             {tab === "appalti" && <AppaltiComune appalti={appalti ?? null} anno={current.year} />}
+            {tab === "notizie" && <NotizieComune notizie={notizie ?? null} />}
 
             {tab === "grafici" && (
               <>
