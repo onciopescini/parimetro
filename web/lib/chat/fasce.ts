@@ -21,7 +21,7 @@ export function normalizzaFascia(testo: string | undefined): string | null {
   if (/5000.*20000/.test(t)) return FASCE[2];
   if (/20000.*60000/.test(t)) return FASCE[3];
   if (/60000.*250000/.test(t)) return FASCE[4];
-  if (/oltre|sopra|piu di 250000|grandi citta/.test(t)) return FASCE[5];
+  if (/(oltre|sopra|piu di)( i| gli)? 250000|grandi citta/.test(t)) return FASCE[5];
   return null;
 }
 
@@ -36,4 +36,36 @@ export function normalizzaRegione(testo: string | undefined, regioni: string[]):
     regioni.find((r) => f(r).startsWith(t) || t.startsWith(f(r).split(" ")[0])) ??
     null
   );
+}
+
+const SOGLIE = [1000, 5000, 20000, 60000, 250000];
+
+/**
+ * La fascia che la domanda dice a parole ("sopra i 250.000", "tra 20.000 e 60.000"), letta dal codice:
+ * il modello a volte la omette o se ne inventa una. `fascia` e' una fascia vera; `senzaFascia` e' la
+ * soglia citata che non coincide con nessuna fascia (es. "sopra i 50.000"), da dichiarare all'utente.
+ */
+export function fasciaDaDomanda(domanda: string): { fascia: string | null; senzaFascia: string | null } {
+  const t = senzaAccenti(domanda).toLowerCase().replace(/(\d)\.(\d{3})/g, "$1$2");
+  const nessuna = { fascia: null, senzaFascia: null };
+  const tra = t.match(/\b(?:tra|da)\s+(\d{3,6})\s+(?:e|a)\s+(\d{3,6})/);
+  if (tra) {
+    const [a, b] = [Number(tra[1]), Number(tra[2])];
+    const i = SOGLIE.indexOf(a);
+    if (i >= 0 && SOGLIE[i + 1] === b) return { fascia: FASCE[i + 1], senzaFascia: null };
+    return { fascia: null, senzaFascia: `tra ${a.toLocaleString("it-IT")} e ${b.toLocaleString("it-IT")} abitanti` };
+  }
+  const sopra = t.match(/\b(?:oltre|sopra|piu di|superiori a|maggiori di)(?:\s+(?:i|gli))?\s+(\d{3,6})/);
+  if (sopra) {
+    const n = Number(sopra[1]);
+    return n === 250000 ? { fascia: FASCE[5], senzaFascia: null }
+      : { fascia: null, senzaFascia: `oltre ${n.toLocaleString("it-IT")} abitanti` };
+  }
+  const sotto = t.match(/\b(?:sotto|meno di|inferiori a|minori di)(?:\s+(?:i|gli))?\s+(\d{3,6})/);
+  if (sotto) {
+    const n = Number(sotto[1]);
+    return n === 1000 ? { fascia: FASCE[0], senzaFascia: null }
+      : { fascia: null, senzaFascia: `sotto ${n.toLocaleString("it-IT")} abitanti` };
+  }
+  return nessuna;
 }

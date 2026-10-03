@@ -5,7 +5,7 @@ import { AREE, type AreaSpesa, type CategorieComune } from "../categorie";
 import { eConcentrata, righeVisibili } from "../classifica";
 import { pochiContribuenti } from "../reddito";
 import { risolviComune } from "./comuni";
-import { normalizzaFascia, normalizzaRegione } from "./fasce";
+import { FASCE, normalizzaFascia, normalizzaRegione } from "./fasce";
 import {
   ETICHETTE_METRICA,
   fEur,
@@ -322,7 +322,7 @@ async function classifica(
   let fascia: string | null = null;
   if (i.fascia) {
     fascia = normalizzaFascia(i.fascia);
-    if (!fascia) note.push(`Non ho riconosciuto la fascia «${i.fascia}»: ho considerato tutti i comuni.`);
+    if (!fascia) note.push(`Non ho una fascia «${i.fascia}»: ho considerato tutti i comuni. Le fasce sono: ${FASCE.join("; ")}.`);
   }
   let regione: string | null = null;
   if (i.regione) {

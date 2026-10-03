@@ -24,6 +24,7 @@ Domande possibili ("tipo"):
 3. classifica: {"tipo":"classifica","metrica":M,"ordine":"alto"|"basso","fascia":opzionale,"regione":opzionale,"anno":opzionale,"senza_concentrate":opzionale true/false}
    M tra: ${METRICHE.join(", ")}   (fhi = rango nella fascia; autonomia = autonomia finanziaria; expenditure_pc = spesa pro capite; revenue_pc = entrate pro capite; reddito_medio = reddito imponibile medio dei residenti, cioè quanto guadagnano le persone che vivono nel comune; pnrr_pc = euro del PNRR per abitante dei progetti di cui il comune è attuatore; opere_pc = euro per abitante di opere pubbliche finanziate dalla coesione sul suo territorio; entrambe sono cumulate e contano solo i comuni con almeno un progetto)
    fascia, se indicata, una tra: ${FASCE.join(" | ")}
+   Usa la fascia SOLO se la domanda coincide con una di queste; non inventarne altre (se chiede "sopra 50.000 abitanti" non esiste una fascia: omettila).
    "senza_concentrate": true se l'utente chiede di escludere i comuni con investimenti isolati / spesa concentrata.
 4. spesa_area: {"tipo":"spesa_area","comune":"Nome","area":A}
    A tra:

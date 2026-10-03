@@ -4,6 +4,7 @@
 //   3. il modello lo racconta con segnaposto              (puo' sbagliare: si valida)
 // Se il passo 3 non e' affidabile si usa il riassunto scritto dal codice.
 import { URL_DATI } from "../dati";
+import { FASCE, fasciaDaDomanda, normalizzaFascia } from "./fasce";
 import { estraiJson, MAX_DOMANDA, promptIntento, validaIntento } from "./intento";
 import { chiediModello, type OpzioniLlm } from "./llm";
 import { eseguiIntento } from "./motore";
@@ -46,7 +47,19 @@ export async function rispondi(
   }
 
   // 2 · intento -> risultato (il codice, non il modello)
-  const risultato = await eseguiIntento(scelto.valore, leggi, contesto);
+  let intento = scelto.valore;
+  // La fascia detta a parole la legge il codice: il modello a volte la omette o ne inventa una
+  const dettaFascia = intento.tipo === "classifica" ? fasciaDaDomanda(d) : null;
+  if (intento.tipo === "classifica" && dettaFascia?.fascia && !normalizzaFascia(intento.fascia)) {
+    intento = { ...intento, fascia: dettaFascia.fascia };
+  }
+  const risultato = await eseguiIntento(intento, leggi, contesto);
+  if (
+    risultato.ok && dettaFascia?.senzaFascia && !(intento.tipo === "classifica" && normalizzaFascia(intento.fascia)) &&
+    !risultato.note.some((n) => n.startsWith("Non ho una fascia"))
+  ) {
+    risultato.note.push(`Non esiste una fascia «${dettaFascia.senzaFascia}»: ho considerato tutti i comuni. Le fasce sono: ${FASCE.join("; ")}.`);
+  }
 
   // Niente da raccontare: errore, ambiguita', fuori ambito -> testo del codice
   if (!risultato.ok) {

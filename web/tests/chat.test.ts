@@ -6,7 +6,7 @@ import { eseguiIntento } from "../lib/chat/motore";
 import { promptNarrazione, ripulisci, validaNarrazione } from "../lib/chat/narrazione";
 import { chiediModello } from "../lib/chat/llm";
 import { rispondi } from "../lib/chat/rispondi";
-import { normalizzaFascia, normalizzaRegione } from "../lib/chat/fasce";
+import { fasciaDaDomanda, normalizzaFascia, normalizzaRegione } from "../lib/chat/fasce";
 import type { Leggi } from "../lib/chat/tipi";
 import { percorsoClassifica, type VoceIndice } from "../lib/dati";
 
@@ -133,10 +133,23 @@ describe("risolviComune", () => {
 
 describe("fasce e regioni", () => {
   it("riconosce le fasce scritte in modo libero", () => {
+    // una soglia che non e' una fascia vera non deve ricadere su "oltre 250.000"
+    expect(normalizzaFascia("sopra 50.000 abitanti")).toBeNull();
+    expect(normalizzaFascia("oltre 250.000 abitanti")).toBe("oltre 250.000 abitanti");
+    expect(normalizzaFascia("sopra i 250.000")).toBe("oltre 250.000 abitanti");
     expect(normalizzaFascia("sotto i 1000 abitanti")).toBe("sotto 1.000 abitanti");
     expect(normalizzaFascia("da 5.000 a 20.000 abitanti")).toBe("da 5.000 a 20.000 abitanti");
     expect(normalizzaFascia("oltre 250000")).toBe("oltre 250.000 abitanti");
     expect(normalizzaFascia("boh")).toBeNull();
+  });
+  it("legge la fascia dalla domanda, e dichiara le soglie che non sono una fascia", () => {
+    expect(fasciaDaDomanda("comuni sopra i 250.000 abitanti").fascia).toBe("oltre 250.000 abitanti");
+    expect(fasciaDaDomanda("comuni tra 20.000 e 60.000 abitanti").fascia).toBe("da 20.000 a 60.000 abitanti");
+    expect(fasciaDaDomanda("quelli sotto i 1.000 abitanti").fascia).toBe("sotto 1.000 abitanti");
+    const x = fasciaDaDomanda("comuni sopra i 50.000 abitanti");
+    expect(x.fascia).toBeNull();
+    expect(x.senzaFascia).toContain("50.000");
+    expect(fasciaDaDomanda("i piu' ricchi d'Italia")).toEqual({ fascia: null, senzaFascia: null });
   });
   it("riconosce le regioni anche abbreviate", () => {
     const r = ["Lazio", "Trentino-Alto Adige/Südtirol", "Valle d'Aosta/Vallée d'Aoste"];
@@ -473,6 +486,16 @@ describe("rispondi", () => {
     if ("errore" in r) throw new Error(r.errore);
     expect(r.narrato).toBe(true);
     expect(r.testo).toBe("Nel 2024 Roma spende 920 € a persona, contro 880 € dei comuni simili.");
+  });
+  it("una soglia che non e' una fascia viene dichiarata, e una fascia vera detta a parole viene applicata", async () => {
+    const { fetcher } = modelloFinto(['{"tipo":"classifica","metrica":"expenditure_pc","ordine":"alto"}', "x"]);
+    const r = await rispondi("comuni sopra i 50.000 abitanti per spesa", undefined, leggi, { ...OPZ, fetcher });
+    if ("errore" in r) throw new Error(r.errore);
+    expect(r.risultato.note.join(" ")).toContain("Non esiste una fascia «oltre 50.000 abitanti»");
+    const f2 = modelloFinto(['{"tipo":"classifica","metrica":"expenditure_pc","ordine":"alto"}', "x"]).fetcher;
+    const r2 = await rispondi("comuni sopra i 250.000 abitanti per spesa", undefined, leggi, { ...OPZ, fetcher: f2 });
+    if ("errore" in r2) throw new Error(r2.errore);
+    expect(r2.risultato.note.join(" ")).not.toContain("Non esiste una fascia");
   });
   it("se il modello scrive un numero sbagliato, l'utente vede il riassunto del codice", async () => {
     const { fetcher } = modelloFinto([
