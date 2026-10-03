@@ -148,8 +148,11 @@ def test_per_ciclo_e_per_stato(k):
     assert [(x["ciclo"], x["n"], x["fin"]) for x in o["cicli"]] == [(1, 1, 100), (2, 2, 500)]
 
 
-def test_chi_ha_piu_di_tutti_i_comuni_veri_e_in_cima_alla_sua_fascia(k):
+def test_chi_ha_piu_di_tutti_nella_sua_fascia_e_in_cima(k):
+    # Servono due comuni: da solo un comune ha rango 0 (nessuno con cui confrontarsi). Con i comuni
+    # veri nel database la fascia e' piena, ma il test deve valere anche sul database vuoto della CI.
     c = k.comune(popolazione=2000)
+    k.comune(popolazione=2000)  # nessun progetto
     k.pnrr(c, "A", 5_000_000_000)  # 2,5 milioni a testa: piu' di qualunque comune vero
     k.ricalcola()
     assert k.scheda(c)["pnrr"]["rango"] == 100
