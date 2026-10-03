@@ -31,7 +31,7 @@ ${aree}
 5. storico_comune: {"tipo":"storico_comune","comune":"Nome","metrica":S}
    S tra: ${METRICHE_STORICO.join(", ")}
 6. investimenti_comune: {"tipo":"investimenti_comune","comune":"Nome"}  (progetti PNRR gestiti dal comune e opere pubbliche finanziate dalla coesione: "quanti soldi del PNRR ha", "che opere ha fatto")
-7. appalti_comune: {"tipo":"appalti_comune","comune":"Nome","anno":opzionale}  (gare e affidamenti banditi dal comune: "quante gare", "affidamenti diretti", "appalti")
+7. appalti_comune: {"tipo":"appalti_comune","comune":"Nome","anno":opzionale}  (gare e affidamenti banditi dal comune: "quante gare", "affidamenti diretti", "appalti"; anche «come sono gli appalti di X rispetto ai comuni simili»: i comuni simili li confronta già la scheda, non è confronta_comuni)
 8. fuori_ambito: {"tipo":"fuori_ambito"}  per tutto il resto: opinioni, previsioni, politica, domande su dati che il sito non ha, saluti.
 
 Regole:
