@@ -1,5 +1,5 @@
 // GET /sitemap.xml : la home, l'elenco e la pagina di ogni comune.
-import { serviSitemap, type Assets } from "../lib/pagina/serve";
+import { serviSitemap, soloLettura, type Assets } from "../lib/pagina/serve";
 
-export const onRequestGet = ({ request, env }: { request: Request; env: { ASSETS: Assets } }) =>
-  serviSitemap(request, env.ASSETS);
+export const onRequest = ({ request, env }: { request: Request; env: { ASSETS: Assets } }) =>
+  soloLettura(request, () => serviSitemap(request, env.ASSETS));

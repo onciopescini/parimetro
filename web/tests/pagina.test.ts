@@ -12,7 +12,7 @@ import {
   type DatiComune,
   type VoceComune,
 } from "../lib/pagina/comune";
-import { _azzeraIndice, serviComune, serviElenco, serviLlms, serviRobots, serviSitemap, type Assets } from "../lib/pagina/serve";
+import { _azzeraIndice, soloLettura, serviComune, serviElenco, serviLlms, serviRobots, serviSitemap, type Assets } from "../lib/pagina/serve";
 
 const O = "https://parimetro.test";
 const VOCE: VoceComune = { istat: "070006", name: "Campobasso", region: "Molise", province: "Campobasso", population: 47418, lon: 14.659, lat: 41.565 };
@@ -191,6 +191,18 @@ describe("le funzioni", () => {
       expect(r.status).toBe(404);
       expect(await r.text()).toContain('content="noindex"');
     }
+  });
+  it("HEAD ha le stesse intestazioni e nessun corpo; gli altri metodi sono 405", async () => {
+    const get = await soloLettura(req("/comune/campobasso-070006"), () => serviComune(req("/comune/campobasso-070006"), assets, "campobasso-070006"));
+    const testa = await soloLettura(new Request(`${O}/comune/campobasso-070006`, { method: "HEAD" }), () =>
+      serviComune(req("/comune/campobasso-070006"), assets, "campobasso-070006"),
+    );
+    expect(testa.status).toBe(200);
+    expect(testa.headers.get("Content-Type")).toBe(get.headers.get("Content-Type"));
+    expect(await testa.text()).toBe("");
+    const post = await soloLettura(new Request(`${O}/comuni`, { method: "POST" }), () => serviElenco(req("/comuni"), assets));
+    expect(post.status).toBe(405);
+    expect(post.headers.get("Allow")).toBe("GET, HEAD");
   });
   it("sitemap, robots, llms.txt ed elenco rispondono", async () => {
     expect(await (await serviSitemap(req("/sitemap.xml"), assets)).text()).toContain("<urlset");

@@ -1,5 +1,5 @@
 // GET /comuni : un link per ognuno dei comuni, raggruppati per regione (serve a chi non legge la sitemap).
-import { serviElenco, type Assets } from "../lib/pagina/serve";
+import { serviElenco, soloLettura, type Assets } from "../lib/pagina/serve";
 
-export const onRequestGet = ({ request, env }: { request: Request; env: { ASSETS: Assets } }) =>
-  serviElenco(request, env.ASSETS);
+export const onRequest = ({ request, env }: { request: Request; env: { ASSETS: Assets } }) =>
+  soloLettura(request, () => serviElenco(request, env.ASSETS));

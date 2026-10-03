@@ -1,7 +1,7 @@
 // Il lato "server" delle pagine dei comuni: legge gli stessi JSON della mappa (binding ASSETS di Cloudflare Pages)
 // e risponde con HTML, sitemap, robots e llms.txt. Separato dalle funzioni di Cloudflare per poterlo provare in
 // locale con un finto ASSETS.
-import { istatDaSlug, llmsTxt, paginaComune, paginaElenco, robots, sitemap, slugComune, type DatiComune, type VoceComune } from "./comune";
+import { esc, istatDaSlug, llmsTxt, paginaComune, paginaElenco, robots, sitemap, slugComune, type DatiComune, type VoceComune } from "./comune";
 
 export interface Assets {
   fetch(req: Request): Promise<Response>;
@@ -38,9 +38,21 @@ const nonTrovata = (origine: string) =>
   new Response(
     `<!doctype html><html lang="it"><meta charset="utf-8"><meta name="robots" content="noindex"><title>Comune non trovato | Parimetro</title>` +
       `<body style="font:16px system-ui;max-width:40rem;margin:2rem auto;padding:0 1rem"><h1>Comune non trovato</h1>` +
-      `<p>Non conosco questo indirizzo. <a href="${origine}/comuni">Elenco di tutti i comuni</a> · <a href="${origine}/">Mappa</a></p></body></html>`,
+      `<p>Non conosco questo indirizzo. <a href="${esc(origine)}/comuni">Elenco di tutti i comuni</a> · <a href="${esc(origine)}/">Mappa</a></p></body></html>`,
     { status: 404, headers: { "Content-Type": HTML, "Cache-Control": "public, max-age=300" } },
   );
+
+/**
+ * Pages Function risponde solo al metodo indicato: senza questo, un HEAD (che molti crawler usano per controllare
+ * una pagina) cadrebbe sui file statici e riceverebbe 404. HEAD ha le stesse intestazioni e nessun corpo.
+ */
+export async function soloLettura(request: Request, risposta: () => Promise<Response>): Promise<Response> {
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return new Response("Metodo non consentito", { status: 405, headers: { Allow: "GET, HEAD" } });
+  }
+  const r = await risposta();
+  return request.method === "HEAD" ? new Response(null, { status: r.status, headers: r.headers }) : r;
+}
 
 export async function serviComune(request: Request, assets: Assets, slug: string): Promise<Response> {
   const origine = new URL(request.url).origin;
