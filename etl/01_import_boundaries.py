@@ -51,7 +51,10 @@ def percorso_wsl(p: str) -> str:
         # Gia' un percorso della WSL: abspath su Windows lo trasformerebbe in
         # C:\mnt\c\..., che verrebbe poi tradotto una seconda volta
         return p
-    m = re.match(r"^([A-Za-z]):[\\/](.*)$", os.path.abspath(p))
+    # Prima il percorso cosi' com'e': se ha gia' la lettera del disco non serve
+    # abspath, e su Linux (CI) abspath lo guasterebbe anteponendo la cartella corrente.
+    # Solo un percorso relativo passa da abspath.
+    m = re.match(r"^([A-Za-z]):[\\/](.*)$", p) or re.match(r"^([A-Za-z]):[\\/](.*)$", os.path.abspath(p))
     if not m:
         return p
     return f"/mnt/{m.group(1).lower()}/" + m.group(2).replace("\\", "/")
