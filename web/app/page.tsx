@@ -40,7 +40,7 @@ import { URL_DATI, cerca as cercaIndice, leggi, percorsoClassifica } from "@/lib
 // "debt" resta fuori: i dati SIOPE sono di cassa e non conoscono lo stock di
 // indebitamento, quindi la metrica darebbe una mappa piatta. Torna qui il
 // giorno in cui entrano i rendiconti di competenza.
-const METRICS: MetricKey[] = ["expenditure", "revenue", "surplus", "fhi"];
+const METRICS: MetricKey[] = ["expenditure", "revenue", "surplus", "fhi", "income"];
 
 /** Cio' che serve per aprire il drawer: anagrafica, non i bilanci. */
 type Anagrafica = Pick<MunicipalityProps, "istat" | "name" | "region" | "province" | "population">;
@@ -301,7 +301,7 @@ function Mappa() {
           dataUrl={URL_DATI}
           lodThreshold={comuniOvunque ? 0 : undefined}
           scale={perCapita ? "robust" : "log"}
-          palette={colorMetric === "fhi" ? "health" : "cost"}
+          palette={colorMetric === "fhi" ? "health" : colorMetric === "income" ? "income" : "cost"}
           flyTo={flyTo}
         />
       )}
@@ -457,6 +457,12 @@ function Mappa() {
         >
           {perCapita ? "Valori pro capite" : "Valori assoluti"}
         </button>
+        {(heightMetric === "income" || colorMetric === "income") && (
+          <p className="mt-1.5 text-[10px] leading-snug text-slate-400">
+            Il reddito è l&apos;imponibile IRPEF medio per contribuente, non cambia con pro capite/assoluti. Grigio:
+            dato non disponibile.
+          </p>
+        )}
 
         <button
           onClick={() => setComuniOvunque((v) => !v)}

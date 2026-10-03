@@ -45,7 +45,7 @@ function caricaMaplibre() {
 // ---------------------------------------------------------- //
 // Tipi
 // ---------------------------------------------------------- //
-export type MetricKey = "debt" | "expenditure" | "revenue" | "surplus" | "fhi";
+export type MetricKey = "debt" | "expenditure" | "revenue" | "surplus" | "fhi" | "income";
 
 export interface MunicipalityProps {
   istat: string;
@@ -61,6 +61,8 @@ export interface MunicipalityProps {
   expenditure_pc: number | null;
   debt_pc: number | null;
   fhi: number | null;
+  /** Reddito imponibile medio dei contribuenti (IRPEF); null se il dato e' oscurato */
+  reddito_medio?: number | null;
 }
 
 export interface ProvinceAgg {
@@ -77,6 +79,7 @@ export interface ProvinceAgg {
   expenditure_pc: number;
   debt_pc: number;
   fhi: number;
+  reddito_medio?: number | null;
 }
 
 interface MuniFeature {
@@ -138,6 +141,7 @@ export const METRIC_LABELS: Record<MetricKey, string> = {
   // Non più "salute finanziaria": il punteggio è la posizione del comune fra
   // quelli della sua fascia demografica, quindi è relativo per costruzione.
   fhi: "Posizione nella fascia",
+  income: "Reddito medio dei residenti",
 };
 
 const HIGHER_IS_WORSE: Record<MetricKey, boolean> = {
@@ -146,6 +150,8 @@ const HIGHER_IS_WORSE: Record<MetricKey, boolean> = {
   revenue: false,
   surplus: false,
   fhi: false,
+  // Non e' un giudizio: la rampa del reddito va dal basso (scuro) all'alto (chiaro), senza inversione
+  income: true,
 };
 
 const METRIC_KEYS: Record<"debt" | "revenue" | "expenditure", [string, string]> = {
@@ -158,6 +164,8 @@ const METRIC_KEYS: Record<"debt" | "revenue" | "expenditure", [string, string]> 
 function metricValue(p: any, metric: MetricKey, perCapita: boolean): number {
   if (!p) return 0;
   if (metric === "fhi") return p.fhi ?? 0;
+  // Il reddito manca dove e' oscurato: NaN, non zero, cosi' non finisce nella scala come "il piu' povero"
+  if (metric === "income") return p.reddito_medio ?? NaN;
   if (metric === "surplus") {
     const v = p.surplus_deficit ?? 0;
     return perCapita ? v / Math.max(p.population ?? 1, 1) : v;
@@ -170,7 +178,7 @@ function metricValue(p: any, metric: MetricKey, perCapita: boolean): number {
 // Color ramp divergente dark-friendly
 // #10B981 (stabilità) → #F59E0B (attenzione) → #EF4444 (criticità)
 // ---------------------------------------------------------- //
-export type PaletteKey = "health" | "cost";
+export type PaletteKey = "health" | "cost" | "income";
 
 const RAMPS: Record<PaletteKey, [number, number, number][]> = {
   // Salute finanziaria: verde stabilità → ambra attenzione → rosso criticità
@@ -180,6 +188,14 @@ const RAMPS: Record<PaletteKey, [number, number, number][]> = {
     [239, 68, 68],
   ],
   // Grandezze monetarie: blu/verde in basso → rosso in alto
+  // Reddito: sequenziale, dal blu notte al giallo
+  income: [
+    [30, 41, 120],
+    [37, 99, 235],
+    [14, 165, 233],
+    [16, 185, 129],
+    [250, 204, 21],
+  ],
   cost: [
     [37, 99, 235],
     [14, 165, 233],
@@ -192,6 +208,7 @@ const RAMPS: Record<PaletteKey, [number, number, number][]> = {
 const CSS_STOPS: Record<PaletteKey, string> = {
   health: "#10B981,#F59E0B,#EF4444",
   cost: "#2563EB,#0EA5E9,#10B981,#F59E0B,#EF4444",
+  income: "#1E2978,#2563EB,#0EA5E9,#10B981,#FACC15",
 };
 
 function mix(a: number[], b: number[], t: number): number[] {
@@ -328,40 +345,53 @@ export default function Map3D({
     [munis, provinces],
   );
 
-  const [qLo, qHi] =
-    scale === "full" ? [0, 1] : scale === "log" ? [0.01, 0.99] : [0.05, 0.95];
+  // Il reddito e' una media per contribuente: la scala logaritmica dei totali non gli si applica
+  const scalaDi = useCallback((m: MetricKey) => (m === "income" && scale === "log" ? "robust" : scale), [scale]);
+  const quantiliDi = (m: MetricKey): [number, number] => {
+    const sc = scalaDi(m);
+    return sc === "full" ? [0, 1] : sc === "log" ? [0.01, 0.99] : [0.05, 0.95];
+  };
+  const [hLo, hHi] = quantiliDi(heightMetric);
+  const [cLo, cHi] = quantiliDi(colorMetric);
 
   // In log si lavora sul valore trasformato, non su quello grezzo: il
   // segno è preservato per metriche che possono andare sotto zero (avanzo).
-  const tx = useCallback(
-    (v: number) => (scale === "log" ? Math.sign(v) * Math.log10(1 + Math.abs(v)) : v),
-    [scale],
+  const txDi = useCallback(
+    (m: MetricKey) => (v: number) => (scalaDi(m) === "log" ? Math.sign(v) * Math.log10(1 + Math.abs(v)) : v),
+    [scalaDi],
   );
+  const txH = useMemo(() => txDi(heightMetric), [txDi, heightMetric]);
+  const txC = useMemo(() => txDi(colorMetric), [txDi, colorMetric]);
 
   const heightDomain = useMemo(
-    () => quantiles(source.map((p) => tx(metricValue(p, heightMetric, perCapita))), qLo, qHi),
-    [source, heightMetric, perCapita, qLo, qHi, tx],
+    () => quantiles(source.map((p) => txH(metricValue(p, heightMetric, perCapita))), hLo, hHi),
+    [source, heightMetric, perCapita, hLo, hHi, txH],
   );
   const colorDomain = useMemo(
-    () => quantiles(source.map((p) => tx(metricValue(p, colorMetric, perCapita))), qLo, qHi),
-    [source, colorMetric, perCapita, qLo, qHi, tx],
+    () => quantiles(source.map((p) => txC(metricValue(p, colorMetric, perCapita))), cLo, cHi),
+    [source, colorMetric, perCapita, cLo, cHi, txC],
   );
 
   const elevationOf = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (p: any) =>
-      Math.max(0, norm(tx(metricValue(p, heightMetric, perCapita)), heightDomain)) * MAX_ELEVATION,
-    [heightMetric, perCapita, heightDomain, tx],
+    (p: any) => {
+      const v = metricValue(p, heightMetric, perCapita);
+      // senza dato (reddito oscurato) la colonna resta bassa, non alta
+      return Number.isFinite(v) ? Math.max(0, norm(txH(v), heightDomain)) * MAX_ELEVATION : 0;
+    },
+    [heightMetric, perCapita, heightDomain, txH],
   );
 
   const colorOf = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (p: any) => {
-      let t = norm(tx(metricValue(p, colorMetric, perCapita)), colorDomain);
+      const v = metricValue(p, colorMetric, perCapita);
+      if (!Number.isFinite(v)) return [100, 108, 120, 150] as [number, number, number, number]; // dato mancante: grigio
+      let t = norm(txC(v), colorDomain);
       if (!HIGHER_IS_WORSE[colorMetric]) t = 1 - t; // metriche "alto = buono" invertono la rampa
       return rampColor(RAMPS[palette], t);
     },
-    [colorMetric, perCapita, colorDomain, tx, palette],
+    [colorMetric, perCapita, colorDomain, txC, palette],
   );
 
   // ---- Layers con transizioni animate (timeline-ready) ----
@@ -433,8 +463,9 @@ export default function Map3D({
       const p: any = (object as any).properties ?? object;
       const name = p.name ?? p.province;
       const unit = perCapita ? " €/ab" : " €";
+      const unitaDi = (m: MetricKey) => (m === "fhi" ? "" : m === "income" ? " €/contribuente" : unit);
       const fmt = (v: number | null | undefined) =>
-        v == null ? "—" : new Intl.NumberFormat("it-IT", { maximumFractionDigits: 0 }).format(v);
+        v == null || !Number.isFinite(v) ? "—" : new Intl.NumberFormat("it-IT", { maximumFractionDigits: 0 }).format(v);
       const hVal = metricValue(p, heightMetric, perCapita);
       const cVal = metricValue(p, colorMetric, perCapita);
       const fhiCol = p.fhi >= 70 ? "#10B981" : p.fhi >= 40 ? "#F59E0B" : "#EF4444";
@@ -448,11 +479,11 @@ export default function Map3D({
             <div style="font-size:11px;color:#94A3B8;margin-bottom:8px">${p.name ? p.province : p.region} · ${fmt(p.population)} ab.</div>
             <div style="display:flex;justify-content:space-between;font-size:12px;gap:12px">
               <span style="color:#94A3B8">${METRIC_LABELS[heightMetric]}</span>
-              <span>${fmt(hVal)}${heightMetric === "fhi" ? "" : unit}</span>
+              <span>${fmt(hVal)}${unitaDi(heightMetric)}</span>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:12px;gap:12px">
               <span style="color:#94A3B8">${METRIC_LABELS[colorMetric]}</span>
-              <span>${fmt(cVal)}${colorMetric === "fhi" ? "" : unit}</span>
+              <span>${fmt(cVal)}${unitaDi(colorMetric)}</span>
             </div>
             ${p.fhi != null ? `<div style="margin-top:8px;font-size:11px;color:${fhiCol}">FHI ${p.fhi}/100</div>` : ""}
           </div>`,

@@ -122,6 +122,7 @@ for (const a of ANNI) {
           expenditure_total: b.expenditure_total, debt_total: null,
           surplus_deficit: b.surplus_deficit, revenue_pc: b.revenue_pc,
           expenditure_pc: b.expenditure_pc, debt_pc: null, fhi: b.fhi,
+          reddito_medio: c.istat === "990007" ? null : redditoDi.get(b),
         },
       };
     }),
@@ -132,7 +133,7 @@ for (const a of ANNI) {
     population: c.population, revenue_total: b.revenue_total,
     expenditure_total: b.expenditure_total, debt_total: 0,
     surplus_deficit: b.surplus_deficit, revenue_pc: b.revenue_pc,
-    expenditure_pc: b.expenditure_pc, debt_pc: 0, fhi: b.fhi,
+    expenditure_pc: b.expenditure_pc, debt_pc: 0, fhi: b.fhi, reddito_medio: redditoDi.get(b),
   })));
 
   // Classifiche: tutte le combinazioni, come l'esportatore vero
