@@ -17,6 +17,7 @@ import {
 } from "./formati";
 import type { RedditoAnno } from "../reddito";
 import { CICLI, GENERI_ALTRI, ordinaCicli, quotaDelPrimo, type Investimenti } from "../investimenti";
+import { annoDisponibile, nuovaRilevazione, type Appalti } from "../appalti";
 import type { Colonna, Contesto, Fatto, Intento, Leggi, RifComune, Risultato } from "./tipi";
 
 interface RigaStorico {
@@ -29,6 +30,7 @@ interface SchedaComune {
   categorie?: Record<string, CategorieComune | null>;
   reddito?: Record<string, RedditoAnno> | null;
   investimenti?: Investimenti | null;
+  appalti?: Appalti | null;
 }
 
 type Cella = string | number | null;
@@ -48,7 +50,7 @@ const vuoto = (titolo: string, riassunto: string, extra: Partial<Risultato> = {}
 export const CAPACITA =
   "Posso mostrarti la scheda di un comune, confrontare fino a quattro comuni, " +
   "fare una classifica (rango, autonomia, spesa o entrate pro capite, anche per fascia di popolazione o regione), " +
-  "dirti quanto spende un comune in una certa area (rifiuti, strade, scuole…), come sono andati i suoi conti negli anni e quali progetti PNRR e opere pubbliche ha. " +
+  "dirti quanto spende un comune in una certa area (rifiuti, strade, scuole…), come sono andati i suoi conti negli anni, quali progetti PNRR e opere pubbliche ha e come affida gli appalti. " +
   "Non faccio previsioni, non do giudizi politici e non conosco dati che non sono sul sito.";
 
 /** Anno richiesto se esiste, altrimenti l'ultimo; con una nota se si e' dovuto cambiare. */
@@ -560,6 +562,81 @@ async function investimentiComune(
   };
 }
 
+// ------------------------------------------------------------------ appalti
+async function appaltiComune(
+  leggi: Leggi,
+  indice: VoceIndice[],
+  i: Extract<Intento, { tipo: "appalti_comune" }>,
+  contesto?: Contesto,
+): Promise<Risultato> {
+  const t = await trovaComune(indice, i, contesto);
+  if ("errore" in t) return t.errore;
+  const { voce } = t;
+  const s = await leggiScheda(leggi, voce.istat);
+  if (!s.appalti) {
+    return vuoto(voce.name, `Per ${voce.name} non risultano appalti banditi direttamente dal comune nella banca dati ANAC.`, { apri: voce.istat });
+  }
+  const richiesto = i.anno ?? contesto?.anno;
+  const anno = annoDisponibile(s.appalti.anni, richiesto ?? Number.MAX_SAFE_INTEGER);
+  const a = anno == null ? null : s.appalti.anni[String(anno)];
+  if (anno == null || !a) return vuoto(voce.name, `Per ${voce.name} non ho appalti per quell'anno.`, { apri: voce.istat });
+
+  const colonne: Colonna[] = [
+    { k: "indicatore", label: "Indicatore" },
+    { k: "comune", label: voce.name, dx: true },
+    { k: "simili", label: "Mediana dei simili", dx: true },
+  ];
+  const righe: Record<string, string>[] = [];
+  const grezze: Record<string, Cella>[] = [];
+  const aggiungi = (indicatore: string, v: string, g: Cella, simili = "—", gs: Cella = null) => {
+    righe.push({ indicatore, comune: v, simili });
+    grezze.push({ indicatore, comune: g, simili: gs });
+  };
+  aggiungi("Lotti pubblicati", fNum(a.n), a.n);
+  aggiungi("Lotti ogni 1.000 abitanti", a.n_per_1000 == null ? "n.d." : String(a.n_per_1000).replace(".", ","), a.n_per_1000);
+  aggiungi("Quota di affidamenti diretti", fPct(a.quota_diretti), numero(a.quota_diretti), a.mediana_quota_diretti == null ? "—" : fPct(a.mediana_quota_diretti), numero(a.mediana_quota_diretti));
+  aggiungi("Procedure aperte", fNum(a.n_aperte), a.n_aperte);
+  aggiungi("Adesioni a convenzioni o accordi quadro", fNum(a.n_adesioni), a.n_adesioni);
+  aggiungi("Valore mediano di un lotto", fEur(a.importo_mediano), numero(a.importo_mediano));
+  aggiungi("Valore dei lotti attendibili", fEurBreve(a.importo), numero(a.importo));
+  if (a.n_pnrr > 0) aggiungi("Lotti finanziati dal PNRR", fNum(a.n_pnrr), a.n_pnrr);
+
+  const note: string[] = [];
+  if (richiesto != null && richiesto !== anno && richiesto !== Number.MAX_SAFE_INTEGER) {
+    note.push(`Per il ${richiesto} non ci sono dati: ti mostro il ${anno}.`);
+  }
+  if (nuovaRilevazione(anno)) {
+    note.push("Dal 2024 cambia la rilevazione ANAC (nuovo codice dei contratti, CIG anche per i micro-affidamenti): lotti, quota di affidamenti diretti e valore mediano non sono confrontabili con gli anni prima.");
+  }
+  if (a.n_importo_anomalo > 0) note.push(`${fNum(a.n_importo_anomalo)} lotti con un importo impossibile (oltre 10 volte i pagamenti annui del comune) sono esclusi dai totali.`);
+  if (a.n_adesioni > 0) note.push("L'importo delle adesioni a convenzioni e accordi quadro è il massimale dell'accordo, non una spesa del comune: non è sommato.");
+  note.push("Sono i lotti banditi dal comune stesso, con l'importo a base di gara dichiarato, non quanto è stato pagato.");
+
+  const fatti: Record<string, Fatto> = {
+    comune: { label: "Comune", valore: voce.name },
+    anno: { label: "Anno", valore: String(anno) },
+    lotti: { label: "lotti pubblicati", valore: fNum(a.n) },
+    quota_diretti: { label: "quota di affidamenti diretti", valore: fPct(a.quota_diretti) },
+    mediana_diretti: { label: "quota mediana di affidamenti diretti dei comuni simili", valore: a.mediana_quota_diretti == null ? "n.d." : fPct(a.mediana_quota_diretti) },
+    mediano: { label: "valore mediano di un lotto", valore: fEur(a.importo_mediano) },
+    aperte: { label: "procedure aperte", valore: fNum(a.n_aperte) },
+  };
+  return {
+    ok: true,
+    titolo: `${voce.name} · appalti ${anno}`,
+    colonne,
+    righe,
+    grezze,
+    fatti,
+    riassunto:
+      `${voce.name}, ${anno}: ${fNum(a.n)} lotti banditi, ${fPct(a.quota_diretti)} affidati direttamente` +
+      (a.mediana_quota_diretti != null ? ` (mediana dei comuni simili ${fPct(a.mediana_quota_diretti)})` : "") +
+      `, valore mediano ${fEur(a.importo_mediano)}.`,
+    note,
+    apri: voce.istat,
+  };
+}
+
 // ------------------------------------------------------------------ storico
 /** Il reddito IRPEF vive nel suo blocco (anno d'imposta -> valori), non nella serie dei bilanci. */
 function storicoReddito(voce: VoceIndice, s: SchedaComune, etichetta: string): Risultato {
@@ -667,5 +744,7 @@ export async function eseguiIntento(
       return storico(leggi, indice, intento, contesto);
     case "investimenti_comune":
       return investimentiComune(leggi, indice, intento, contesto);
+    case "appalti_comune":
+      return appaltiComune(leggi, indice, intento, contesto);
   }
 }

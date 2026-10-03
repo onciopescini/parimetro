@@ -54,7 +54,11 @@ python scarica_investimenti.py --dest ../../etl-data
 python 07_import_pnrr.py --csv ../../etl-data/pnrr/PNRR_Progetti.csv --ipa ../../etl-data/pnrr/ipa_enti.xlsx
 python 08_import_coesione.py --zip ../../etl-data/oc/progetti_esteso.zip
 
-# 6 · Esporta per il sito
+# 6 · Appalti dei comuni (ANAC, ~2,7 GB per il 2020-2024)
+python scarica_anac.py --dest ../../etl-data/anac/cig --da 2020 --a 2024
+python 09_import_anac.py --dir ../../etl-data/anac/cig --ipa ../../etl-data/pnrr/ipa_enti.xlsx
+
+# 7 · Esporta per il sito
 python 05_esporta_statico.py --dest ../web/public/dati
 ```
 

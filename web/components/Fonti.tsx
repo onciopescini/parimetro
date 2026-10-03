@@ -62,6 +62,11 @@ export default function Fonti() {
                 quando il comune è il soggetto che li realizza.
               </li>
               <li>
+                <strong className="text-slate-100">ANAC</strong>, Banca dati nazionale dei contratti pubblici (CC BY-SA
+                4.0): le gare bandite dai comuni. L&apos;importo è quello a base di gara dichiarato, non il pagato, e
+                alcuni importi sono refusi: per questo i totali escludono i valori impossibili.
+              </li>
+              <li>
                 <strong className="text-slate-100">MEF, Dipartimento delle Finanze</strong>: dichiarazioni
                 IRPEF per comune (reddito imponibile, contribuenti, addizionale comunale). Dati aperti: le
                 celle con pochi contribuenti sono oscurate dal segreto statistico e qui risultano mancanti.
@@ -71,6 +76,11 @@ export default function Fonti() {
                 Stato: incassi e pagamenti mensili di ogni comune, voce per voce (dati aperti, CC BY).
               </li>
               <li>Mappa di base: © OpenStreetMap contributors, © CARTO.</li>
+              <li>
+                I dati che questo sito pubblica sono rilasciati con licenza{" "}
+                <strong className="text-slate-100">CC BY-SA 4.0</strong> (per via dei dati ANAC, che sono con
+                condivisione alla pari): citando le fonti puoi riusarli, condividendo allo stesso modo ciò che ne ricavi.
+              </li>
             </ul>
 
             <h3 className="mt-4 text-xs font-medium uppercase tracking-wider text-slate-400">

@@ -16,8 +16,10 @@ Online: <https://parimetro.pages.dev> · 🇬🇧 [Read in English](README.md)
   con lo stesso confronto con i simili.
 - **Opere pubbliche e PNRR**: quali progetti del PNRR gestisce il comune e quali opere di coesione sono
   state fatte sul suo territorio, per abitante e rispetto ai simili.
+- **Come compra il comune**: le gare bandite dal comune (ANAC), la quota di affidamenti diretti rispetto ai
+  simili, i lotti maggiori — con le avvertenze sul cambio di rilevazione del 2024 e sugli importi inaffidabili.
 - Classifiche, ricerca, link condivisibili.
-- Una **chat AI** in cui il modello non produce mai numeri: sceglie una di sei domande
+- Una **chat AI** in cui il modello non produce mai numeri: sceglie una di sette domande
   previste e racconta un risultato calcolato dal codice ([come](docs/chat.md)). Ogni risposta
   ha una tabella esportabile in CSV.
 
@@ -85,4 +87,5 @@ sostituire e cosa tenere.
 ## Contribuire e licenza
 
 I contributi sono benvenuti: leggi [`CONTRIBUTING.md`](CONTRIBUTING.md). Problemi di sicurezza:
-[`SECURITY.md`](SECURITY.md). Codice: [MIT](LICENSE). Dati: vedi [`NOTICE`](NOTICE).
+[`SECURITY.md`](SECURITY.md). **Codice: [MIT](LICENSE). Dati pubblicati: CC BY-SA 4.0** (includono i dati ANAC sugli appalti, con condivisione alla
+pari): fonti e attribuzioni in [`NOTICE`](NOTICE).

@@ -147,6 +147,8 @@ def main() -> None:
                 "reddito": scalare(k, "get_reddito_comune", istat),
                 # PNRR (progetti di cui il comune e' attuatore) e opere di coesione sul suo territorio
                 "investimenti": scalare(k, "get_investimenti_comune", istat),
+                # Appalti banditi dal comune (ANAC), anno per anno
+                "appalti": scalare(k, "get_appalti_comune", istat),
             })
 
     codici = [v["istat"] for v in indice]

@@ -15,8 +15,8 @@ question ──► [model] intent (JSON) ──► validate against a closed lis
 ```
 
 1. **Intent** (`web/lib/chat/intento.ts`). The model must answer with one JSON object choosing
-   one of six questions: municipality card, comparison (2–4 towns), ranking, spending in an
-   area, history of a metric, investments (PNRR and public works) — or "out of scope". Anything else is rejected, so a prompt
+   one of seven questions: municipality card, comparison (2–4 towns), ranking, spending in an
+   area, history of a metric, investments (PNRR and public works), procurement — or "out of scope". Anything else is rejected, so a prompt
    injection cannot make the code do something else.
 2. **Engine** (`web/lib/chat/motore.ts`). Reads the same JSON files the site uses and builds the
    table. Every number, and its formatting, is produced here. Ambiguous town names (two

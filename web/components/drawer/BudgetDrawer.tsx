@@ -14,6 +14,8 @@ import { useMemo, useState } from "react";
 import SpesaPerCategoria from "./SpesaPerCategoria";
 import RedditoResidenti from "./RedditoResidenti";
 import InvestimentiComune from "./InvestimentiComune";
+import AppaltiComune from "./AppaltiComune";
+import type { Appalti } from "@/lib/appalti";
 import type { Investimenti } from "@/lib/investimenti";
 import type { RedditoAnno } from "@/lib/reddito";
 import type { CategorieComune } from "@/lib/categorie";
@@ -103,11 +105,13 @@ interface BudgetDrawerProps {
   reddito?: RedditoAnno | null;
   /** PNRR e opere di coesione (non dipendono dall'anno: sono un quadro complessivo) */
   investimenti?: Investimenti | null;
+  /** Appalti banditi dal comune, anno per anno */
+  appalti?: Appalti | null;
   open: boolean;
   onClose: () => void;
 }
 
-type Tab = "quadro" | "spese" | "opere" | "grafici" | "debito";
+type Tab = "quadro" | "spese" | "opere" | "appalti" | "grafici" | "debito";
 
 // ---------------------------------------------------------- //
 // Utilità di formattazione (locale it-IT)
@@ -193,6 +197,7 @@ export default function BudgetDrawer({
   categorie,
   reddito,
   investimenti,
+  appalti,
   open,
   onClose,
 }: BudgetDrawerProps) {
@@ -360,6 +365,7 @@ export default function BudgetDrawer({
                 ["quadro", "Quadro"],
                 ["spese", "Spese"],
                 ["opere", "Opere"],
+                ["appalti", "Appalti"],
                 ["grafici", "Grafici"],
                 ["debito", haDebito ? "Debito & Alert" : "Alert"],
               ] as [Tab, string][]
@@ -510,6 +516,8 @@ export default function BudgetDrawer({
             )}
 
             {tab === "opere" && <InvestimentiComune inv={investimenti ?? null} />}
+
+            {tab === "appalti" && <AppaltiComune appalti={appalti ?? null} anno={current.year} />}
 
             {tab === "grafici" && (
               <>

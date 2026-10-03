@@ -17,8 +17,10 @@ Live: <https://parimetro.pages.dev> · 🇮🇹 [Leggi in italiano](README.it.md
   town's spending, with the same peer comparison.
 - **Public works and the recovery plan (PNRR)**: which PNRR projects the town itself runs and which
   cohesion-policy works were built there, per inhabitant and against peers.
+- **How the town buys**: tenders issued by the municipality (ANAC), the share of direct awards against
+  peers, the biggest lots — with the caveats about the 2024 break and unreliable amounts spelled out.
 - Rankings, search, shareable deep links.
-- An **AI chat** where the model never produces numbers: it only picks one of six
+- An **AI chat** where the model never produces numbers: it only picks one of seven
   pre-defined questions and narrates a result that this code computed
   ([how](docs/chat.md)). Every answer comes with a table you can export as CSV.
 
@@ -88,4 +90,5 @@ what to replace and what to keep.
 ## Contributing & license
 
 Contributions are welcome — read [`CONTRIBUTING.md`](CONTRIBUTING.md). Security issues:
-[`SECURITY.md`](SECURITY.md). Code: [MIT](LICENSE). Data: see [`NOTICE`](NOTICE).
+[`SECURITY.md`](SECURITY.md). **Code: [MIT](LICENSE). Published data: CC BY-SA 4.0** (it includes ANAC
+procurement data, which is share-alike) — sources and attributions in [`NOTICE`](NOTICE).

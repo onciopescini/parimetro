@@ -47,6 +47,15 @@ const scheda = (k: number, concentrata = false) => ({
     "2024": { fascia: "x", n: 12, revenue_pc: 1000, expenditure_pc: 880, debt_pc: null, fhi: 50, pct_revenue: 50, pct_expenditure: 50, pct_fhi: 50 },
   },
   categorie: { "2023": null, "2024": categorie(concentrata) },
+  appalti: {
+    anni: {
+      "2023": { n: 200, n_per_1000: 2.5, n_diretti: 120, quota_diretti: 60, mediana_quota_diretti: 70, rango_diretti: 30, n_simili: 12, n_adesioni: 10, n_aperte: 20, quota_piattaforma: 80, n_pnrr: 3, importo: 30_000_000, importo_diretti: 4_000_000, importo_mediano: 40_000, n_importo_anomalo: 0, n_senza_importo: 0 },
+      "2024": { n: 600, n_per_1000: 7.5, n_diretti: 540, quota_diretti: 90, mediana_quota_diretti: 88.6, rango_diretti: 55, n_simili: 12, n_adesioni: 5, n_aperte: 15, quota_piattaforma: null, n_pnrr: 4, importo: 25_000_000, importo_diretti: 9_000_000, importo_mediano: 16_000, n_importo_anomalo: 2, n_senza_importo: 7 },
+    },
+    tipi: { LAVORI: 100, SERVIZI: 400, FORNITURE: 100 },
+    famiglie: { diretto: 660, aperta: 35, adesione: 15 },
+    maggiori: [{ anno: 2023, oggetto: "Raccolta rifiuti", importo: 9_000_000, tipo: "SERVIZI", procedura: "PROCEDURA APERTA", cig: "CIG1" }],
+  },
   investimenti: {
     pnrr: {
       n: 10, fin_pnrr: concentrata ? 3_000_000 : 20_000_000, fin_totale: 25_000_000, pc: 500, mediana_pc: 300, rango: 80, n_simili: 12, conclusi: 4,
@@ -264,6 +273,55 @@ describe("eseguiIntento", () => {
     const r = await eseguiIntento({ tipo: "fuori_ambito" }, leggi);
     expect(r.ok).toBe(false);
     expect(r.riassunto).toContain("Non faccio previsioni");
+  });
+});
+
+describe("appalti nella chat", () => {
+  it("l'ultimo anno, con la quota di affidamenti diretti e il confronto coi simili", async () => {
+    const r = await eseguiIntento({ tipo: "appalti_comune", comune: "Roma" }, leggi);
+    expect(r.ok).toBe(true);
+    expect(r.fatti.anno.valore).toBe("2024");
+    expect(r.righe.find((x) => x.indicatore === "Quota di affidamenti diretti")).toMatchObject({ comune: "90%", simili: "88,6%" });
+    expect(r.righe.find((x) => x.indicatore === "Lotti pubblicati")?.comune).toBe("600");
+  });
+  it("un anno richiesto vale, e il rango non e' mai presentato come voto", async () => {
+    const r = await eseguiIntento({ tipo: "appalti_comune", comune: "Roma", anno: 2023 }, leggi);
+    expect(r.fatti.anno.valore).toBe("2023");
+    expect(r.righe.find((x) => x.indicatore === "Quota di affidamenti diretti")?.comune).toBe("60%");
+  });
+  it("dal 2024 avverte che la rilevazione e' cambiata", async () => {
+    const nuovo = await eseguiIntento({ tipo: "appalti_comune", comune: "Roma" }, leggi);
+    expect(nuovo.note.join(" ")).toContain("non sono confrontabili con gli anni prima");
+    const vecchio = await eseguiIntento({ tipo: "appalti_comune", comune: "Roma", anno: 2023 }, leggi);
+    expect(vecchio.note.join(" ")).not.toContain("non sono confrontabili con gli anni prima");
+  });
+  it("dice quanti lotti hanno un importo impossibile e che le adesioni non sono sommate", async () => {
+    const r = await eseguiIntento({ tipo: "appalti_comune", comune: "Roma" }, leggi);
+    expect(r.note.join(" ")).toContain("2 lotti con un importo impossibile");
+    expect(r.note.join(" ")).toContain("massimale");
+  });
+  it("precisa che l'importo e' a base di gara, non il pagato", async () => {
+    const r = await eseguiIntento({ tipo: "appalti_comune", comune: "Roma" }, leggi);
+    expect(r.note.join(" ")).toContain("a base di gara");
+  });
+  it("un anno senza dati mostra l'ultimo e lo dice", async () => {
+    const r = await eseguiIntento({ tipo: "appalti_comune", comune: "Roma", anno: 2019 }, leggi);
+    expect(r.fatti.anno.valore).toBe("2024");
+    expect(r.note.join(" ")).toContain("Per il 2019 non ci sono dati");
+  });
+  it("comune senza appalti: lo dice", async () => {
+    const r = await eseguiIntento({ tipo: "appalti_comune", comune: "Elva" }, leggi);
+    expect(r.ok).toBe(true); // Elva ha la scheda di prova con appalti
+    FILE["/dati/comune/075099.json"] = { history: [], peers: {}, categorie: {}, appalti: null };
+    const senza = await eseguiIntento({ tipo: "appalti_comune", comune: "Castro", provincia: "Lecce" }, leggi);
+    expect(senza.ok).toBe(false);
+    expect(senza.riassunto).toContain("non risultano appalti");
+    delete FILE["/dati/comune/075099.json"];
+  });
+  it("il modello puo' chiedere gli appalti, serve il comune", () => {
+    expect(validaIntento({ tipo: "appalti_comune", comune: "Roma", anno: "2023" }).ok).toBe(true);
+    expect(validaIntento({ tipo: "appalti_comune" }).ok).toBe(false);
+    expect(promptIntento(undefined, [2023, 2024])).toContain("appalti_comune");
   });
 });
 

@@ -40,6 +40,7 @@ export type Intento =
   | ({ tipo: "spesa_area"; area: string } & RifComune)
   | ({ tipo: "storico_comune"; metrica: MetricaStorico } & RifComune)
   | ({ tipo: "investimenti_comune" } & RifComune)
+  | ({ tipo: "appalti_comune"; anno?: number } & RifComune)
   | { tipo: "fuori_ambito" };
 
 export interface Colonna {

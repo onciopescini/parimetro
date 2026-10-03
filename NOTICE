@@ -6,6 +6,15 @@ The DATA it processes and publishes is NOT covered by that license: it belongs t
 institutions below and is reused under their own terms. If you publish a site built
 with this code, you must keep these attributions visible.
 
+License of the data files this project publishes (the JSON under /dati)
+-----------------------------------------------------------------------
+The published data files combine material under CC BY 4.0 (ISTAT, BDAP/SIOPE, Italia Domani,
+OpenCoesione, IPA) with material under CC BY-SA 4.0 (ANAC). CC BY-SA requires that adapted
+material be shared under the same license. So the DATA FILES published by this project are offered
+under CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/), with the attributions below.
+The source CODE stays MIT. Anyone reusing the published data must keep the attributions and share
+their derived data under the same terms.
+
 Data
 ----
 - ISTAT (Italian National Institute of Statistics): municipal boundaries and resident
@@ -36,6 +45,13 @@ Data
   (2000-2027), CC BY 4.0. https://opencoesione.gov.it/it/opendata/
   Only projects located in a single municipality are used. Names of private companies and persons
   receiving incentives or grants are never published.
+
+- ANAC - Autorita' Nazionale Anticorruzione, Banca dati nazionale dei contratti pubblici: lots (CIG) of
+  public tenders and awards, 2020-2024. License: Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0).
+  https://dati.anticorruzione.it/opendata  - Only lots tendered by a municipality itself are used.
+  The declared lot value is NOT summed blindly: adhesions to framework agreements report the agreement's
+  ceiling, and some values are typing errors (e.g. 1.1 billion euro of meal vouchers for a town of 12,000
+  people). See db/migrations/20261003300000_appalti.sql.
 
 - IPA - Indice delle Pubbliche Amministrazioni (AgID), CC BY 4.0: used only to match an implementing
   body's fiscal code to its municipality; none of its content is republished.

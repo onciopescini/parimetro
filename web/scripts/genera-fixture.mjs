@@ -222,8 +222,32 @@ const investimenti = (c) => {
   };
 };
 
+// Appalti finti con la forma di get_appalti_comune(). Alpe Nera: nessun appalto (il file non ha la chiave);
+// Valle Finta: pochi lotti, quindi niente confronto con i simili.
+const appalti = (c) => {
+  if (c.istat === "990006") return null;
+  const anni = {};
+  for (const a of ANNI) {
+    const n = c.istat === "990007" ? 3 : Math.max(8, Math.round(c.population / 400));
+    const quota = Math.round(500 + rnd() * 450) / 10;
+    anni[a] = {
+      n, n_per_1000: Math.round((1000 * n) / c.population * 10) / 10, n_diretti: Math.round((n * quota) / 100), quota_diretti: quota,
+      mediana_quota_diretti: n >= 5 ? 71.5 : null, rango_diretti: n >= 5 ? [10, 50, 90][Math.floor(rnd() * 3)] : null, n_simili: 3,
+      n_adesioni: a === 2024 ? 0 : 4, n_aperte: Math.round(n * 0.1), quota_piattaforma: a === 2024 ? null : 62.5, n_pnrr: a >= 2023 ? 2 : 0,
+      importo: Math.round(n * 61000), importo_diretti: Math.round(n * 21000), importo_mediano: a === 2024 ? 16000 : 41000,
+      n_importo_anomalo: a === 2024 && c.istat === "990001" ? 2 : 0, n_senza_importo: a === 2024 ? 7 : 0,
+    };
+  }
+  return {
+    anni, tipi: { LAVORI: 40, SERVIZI: 120, FORNITURE: 25 },
+    famiglie: { diretto: 110, aperta: 14, negoziata: 22, adesione: 8, in_house: 3, altra: 2 },
+    maggiori: [1, 2, 3].map((i) => ({ anno: 2023, oggetto: `Lotto di prova ${i}`, importo: 900000 / i, tipo: "LAVORI", procedura: "PROCEDURA APERTA", cig: `ABC00${i}` })),
+  };
+};
+
 for (const c of COMUNI) {
   scrivi(`comune/${c.istat}.json`, {
+    appalti: appalti(c),
     categorie: Object.fromEntries(ANNI.map((a) => [a,
       a === 2022 ? null : categorie(c, storico[c.istat].find((x) => x.year === a))])),
     history: storico[c.istat],

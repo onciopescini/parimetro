@@ -26,7 +26,8 @@ region instead of one file per entity, or move bulky detail to object storage.
 | 4 | `etl/06_import_irpef.py` | MEF IRPEF income per municipality and tax year (`scarica_irpef.py` downloads it) |
 | 5 | `etl/07_import_pnrr.py`, `etl/08_import_coesione.py` | PNRR and cohesion-policy projects per municipality (`scarica_investimenti.py` downloads them) |
 | – | `etl/investimenti.py` | links a PNRR implementing body to a municipality (fiscal code, then name; never guesses) |
-| 6 | `etl/05_esporta_statico.py` | writes `web/public/dati/**` |
+| 6 | `etl/09_import_anac.py` | tenders (CIG lots) issued by municipalities, ANAC (`scarica_anac.py` downloads them) |
+| 7 | `etl/05_esporta_statico.py` | writes `web/public/dati/**` |
 | – | `db/migrations/*.sql` | schema, `refresh_fhi()`, spending-by-category, rankings |
 
 `etl/03_import_bdap.py` is an alternative importer for accrual-basis (competenza) data, kept
@@ -59,6 +60,16 @@ for when a source becomes available.
   multi-municipality, provincial and regional projects cannot be split and are left out (a 1.4 billion
   "national" project must not land on a village of 60 people). Names of companies and individuals
   receiving incentives or grants are never published, only counts and amounts.
+- **Procurement (ANAC).** One row per lot (CIG) whose buyer is the municipality itself; buyers like health
+  authorities, central purchasing bodies or municipal companies are not attributed to a town. *Counts and
+  shares are reliable; raw amounts are not*: in one month of municipal lots, 11 of 11,730 made two thirds
+  of the total (typing errors, and adhesions to framework agreements whose "value" is the agreement's
+  ceiling). So amounts are summed only for lots that are not adhesions and not above 10x the town's
+  total annual payments; the others are counted apart and the page says how many. The amount is the
+  declared tender value, not what was paid. **The series breaks in 2024** (new procurement code, a CIG
+  for micro-purchases too): lots triple, the median value falls from 68,000 to 16,000 euro and direct
+  awards go from 73% to 89%. Comparison with peers of the *same year* stays valid; across the break it
+  does not. The share of direct awards is only compared among towns with at least 5 lots.
 - Spending areas are an editorial classification (`etl/categorie_spesa.py`). Generic items
   stay in "not attributable" and the share is shown for every town.
 
@@ -78,5 +89,5 @@ dati/comuni-{year}.json             GeoJSON for the map
 dati/province-{year}.json           province aggregates
 dati/classifiche/filtri-{year}.json filters for the rankings
 dati/classifiche/{year}/...json     one file per ranking combination
-dati/comune/{istat}.json            history + peers + spending categories + income + investments
+dati/comune/{istat}.json            history + peers + spending categories + income + investments + procurement
 ```
