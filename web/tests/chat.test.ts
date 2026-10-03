@@ -401,6 +401,8 @@ describe("reddito IRPEF nella chat", () => {
   it("il modello puo' chiedere classifica e storico per reddito, e solo per metriche vere", () => {
     expect(validaIntento({ tipo: "classifica", metrica: "reddito_medio", ordine: "alto" }).ok).toBe(true);
     expect(validaIntento({ tipo: "storico_comune", comune: "Roma", metrica: "reddito_medio" }).ok).toBe(true);
+    expect(validaIntento({ tipo: "classifica", metrica: "pnrr_pc", ordine: "alto" }).ok).toBe(true);
+    expect(validaIntento({ tipo: "classifica", metrica: "opere_pc", ordine: "basso" }).ok).toBe(true);
     expect(validaIntento({ tipo: "classifica", metrica: "reddito_totale", ordine: "alto" }).ok).toBe(false);
   });
 });

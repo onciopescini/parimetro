@@ -88,6 +88,7 @@ dati/indice.json                    search index (code, name, province, populati
 dati/comuni-{year}.json             GeoJSON for the map
 dati/province-{year}.json           province aggregates
 dati/classifiche/filtri-{year}.json filters for the rankings
-dati/classifiche/{year}/...json     one file per ranking combination
+dati/classifiche/{year}/...json     one file per ranking combination (7 metrics; PNRR/cohesion
+                                    rank only towns with at least one project)
 dati/comune/{istat}.json            history + peers + spending categories + income + investments + procurement
 ```

@@ -44,6 +44,8 @@ const METRICHE: [string, string][] = [
   ["expenditure_pc", "Spesa pro capite"],
   ["revenue_pc", "Entrate pro capite"],
   ["reddito_medio", "Reddito imponibile medio"],
+  ["pnrr_pc", "PNRR per abitante"],
+  ["opere_pc", "Opere di coesione per abitante"],
 ];
 
 const eur = (v: number) =>

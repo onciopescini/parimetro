@@ -165,3 +165,34 @@ def test_un_progetto_pnrr_con_importo_nullo_non_rompe_la_somma(k):
     k.pnrr(c, "B", 100)
     k.ricalcola()
     assert k.scheda(c)["pnrr"]["fin_pnrr"] == 100
+
+
+def _con_bilancio(k, istat, anno=2099, popolazione=2000):
+    k.c.execute(
+        "insert into budget_records (municipality_id, year, population) "
+        "select id, %s, %s from municipalities where istat_code = %s", (anno, popolazione, istat))
+
+
+def test_la_classifica_per_pnrr_include_solo_chi_ha_progetti(k):
+    a, b, vuoto = k.comune(), k.comune(), k.comune()
+    for c in (a, b, vuoto):
+        _con_bilancio(k, c)
+    k.pnrr(a, "A", 2_000_000)   # 1.000 a testa
+    k.pnrr(b, "B", 6_000_000)   # 3.000 a testa
+    k.ricalcola()
+    alte = k.c.execute("select istat, valore from get_ranking(2099, 'pnrr_pc', null, 'Prova', true, 10)").fetchall()
+    assert [r[0] for r in alte] == [b, a] and float(alte[0][1]) == 3000
+    # "dal piu' basso" non deve riempirsi di comuni a zero
+    basse = k.c.execute("select istat from get_ranking(2099, 'pnrr_pc', null, 'Prova', false, 10)").fetchall()
+    assert [r[0] for r in basse] == [a, b]
+
+
+def test_la_classifica_per_opere_ignora_gli_incentivi(k):
+    a, b = k.comune(), k.comune()
+    for c in (a, b):
+        _con_bilancio(k, c)
+    k.opera(a, "O1", 1_000_000)
+    k.opera(b, "I1", 9_000_000, natura="incentivi")  # non e' un'opera
+    k.ricalcola()
+    righe = k.c.execute("select istat from get_ranking(2099, 'opere_pc', null, 'Prova', true, 10)").fetchall()
+    assert [r[0] for r in righe] == [a]

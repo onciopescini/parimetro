@@ -20,7 +20,7 @@ import { AREE, NATURE } from "../lib/categorie.ts";
 
 const DEST = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "dati");
 const ANNI = [2022, 2023, 2024];
-const METRICHE = ["fhi", "autonomia", "expenditure_pc", "revenue_pc", "reddito_medio"];
+const METRICHE = ["fhi", "autonomia", "expenditure_pc", "revenue_pc", "reddito_medio", "pnrr_pc", "opere_pc"];
 
 // Generatore pseudo-casuale con seme: due esecuzioni danno gli stessi file
 let seme = 42;
@@ -144,7 +144,7 @@ for (const a of ANNI) {
   });
   const valore = (b, m) =>
     m === "fhi" ? b.fhi : m === "autonomia" ? b.autonomia : m === "expenditure_pc" ? b.expenditure_pc
-    : m === "reddito_medio" ? redditoDi.get(b) : b.revenue_pc;
+    : m === "reddito_medio" ? redditoDi.get(b) : m === "pnrr_pc" ? b.population % 7 * 900 + 400 : m === "opere_pc" ? b.population % 5 * 700 + 300 : b.revenue_pc;
   for (const m of METRICHE)
     for (const desc of [true, false])
       for (const fa of [null, ...fasce])

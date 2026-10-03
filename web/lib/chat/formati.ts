@@ -37,6 +37,8 @@ export function formattaMetrica(metrica: string, v: unknown): string {
     case "revenue_pc":
     case "expenditure_pc":
     case "reddito_medio":
+    case "pnrr_pc":
+    case "opere_pc":
       return fEur(v);
     case "surplus_deficit":
     case "revenue_total":
@@ -53,6 +55,8 @@ export const ETICHETTE_METRICA: Record<string, string> = {
   expenditure_pc: "Spesa pro capite",
   revenue_pc: "Entrate pro capite",
   reddito_medio: "Reddito imponibile medio",
+  pnrr_pc: "PNRR per abitante",
+  opere_pc: "Opere di coesione per abitante",
   surplus_deficit: "Avanzo/disavanzo di cassa",
   revenue_total: "Entrate totali",
   expenditure_total: "Spesa totale",

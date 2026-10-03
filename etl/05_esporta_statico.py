@@ -23,7 +23,7 @@ from concurrent.futures import ThreadPoolExecutor
 import psycopg
 from dotenv import load_dotenv
 
-METRICHE = ("fhi", "autonomia", "expenditure_pc", "revenue_pc", "reddito_medio")
+METRICHE = ("fhi", "autonomia", "expenditure_pc", "revenue_pc", "reddito_medio", "pnrr_pc", "opere_pc")
 # Se ne esportano piu' di quelle mostrate (20): chi nasconde i comuni con spesa
 # concentrata deve comunque trovarne venti, e il filtro lo applica il sito
 LIMITE_CLASSIFICA = 50
