@@ -149,6 +149,8 @@ def main() -> None:
                 "investimenti": scalare(k, "get_investimenti_comune", istat),
                 # Appalti banditi dal comune (ANAC), anno per anno
                 "appalti": scalare(k, "get_appalti_comune", istat),
+                # Concorrenza nelle gare (offerte, ribasso) anno per anno; null senza gare aggiudicate
+                "concorrenza": scalare(k, "get_concorrenza_comune", istat),
                 # Notizie sui conti (titolo, fonte, data, link); null se non si e' mai cercato
                 "notizie": scalare(k, "get_notizie_comune", istat),
             })

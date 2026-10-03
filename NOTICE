@@ -47,7 +47,8 @@ Data
   receiving incentives or grants are never published.
 
 - ANAC - Autorita' Nazionale Anticorruzione, Banca dati nazionale dei contratti pubblici: lots (CIG) of
-  public tenders and awards, 2020-2024. License: Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0).
+  public tenders (2020-2025) and their awards (number of bids and discount only; the names of the winning
+  companies are not used). License: Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0).
   https://dati.anticorruzione.it/opendata  - Only lots tendered by a municipality itself are used.
   The declared lot value is NOT summed blindly: adhesions to framework agreements report the agreement's
   ceiling, and some values are typing errors (e.g. 1.1 billion euro of meal vouchers for a town of 12,000

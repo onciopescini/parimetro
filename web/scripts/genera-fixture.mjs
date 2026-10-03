@@ -246,6 +246,15 @@ const appalti = (c) => {
   };
 };
 
+// Concorrenza nelle gare, con la forma di get_concorrenza_comune(): solo per i comuni con abbastanza gare
+const concorrenza = (c) => {
+  if (c.istat === "990006" || c.istat === "990007") return null;
+  return Object.fromEntries(ANNI.map((a) => [a, {
+    n_gare: 24, n_con_offerte: 22, n_offerta_unica: 8, quota_offerta_unica: 36.4, mediana_quota_offerta_unica: 29.0,
+    rango_offerta_unica: [20, 60, 90][Math.floor(rnd() * 3)], n_simili: 3, offerte_mediane: 2.5, ribasso_mediano: 7.8,
+  }]));
+};
+
 // Notizie finte: il primo comune ne ha due, il secondo e' stato cercato senza esito, gli altri non sono mai stati cercati
 const notizie = (c) => {
   const i = COMUNI.indexOf(c);
@@ -259,6 +268,7 @@ for (const c of COMUNI) {
   scrivi(`comune/${c.istat}.json`, {
     appalti: appalti(c),
     notizie: notizie(c),
+    concorrenza: concorrenza(c),
     categorie: Object.fromEntries(ANNI.map((a) => [a,
       a === 2022 ? null : categorie(c, storico[c.istat].find((x) => x.year === a))])),
     history: storico[c.istat],

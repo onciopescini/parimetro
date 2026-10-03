@@ -21,7 +21,7 @@ import Map3D, {
 import type { CategorieComune } from "@/lib/categorie";
 import type { RedditoAnno } from "@/lib/reddito";
 import type { Investimenti } from "@/lib/investimenti";
-import type { Appalti } from "@/lib/appalti";
+import type { Appalti, Concorrenza } from "@/lib/appalti";
 import type { NotizieComune } from "@/lib/notizie";
 import ChatPanel from "@/components/chat/ChatPanel";
 import Fonti from "@/components/Fonti";
@@ -86,6 +86,7 @@ function Mappa() {
   const [reddito, setReddito] = useState<RedditoAnno | null>(null);
   const [investimenti, setInvestimenti] = useState<Investimenti | null>(null);
   const [appalti, setAppalti] = useState<Appalti | null>(null);
+  const [concorrenza, setConcorrenza] = useState<Concorrenza | null>(null);
   const [notizie, setNotizie] = useState<NotizieComune | null>(null);
   const [open, setOpen] = useState(false);
   const [flyTo, setFlyTo] = useState<{ lon: number; lat: number; nonce: number } | null>(null);
@@ -140,6 +141,7 @@ function Mappa() {
           investimenti?: Investimenti | null;
           appalti?: Appalti | null;
           notizie?: NotizieComune | null;
+          concorrenza?: Concorrenza | null;
         }>(`${URL_DATI}/comune/${p.istat}.json`),
         leggi<Record<string, NationalAverages>>(`${URL_DATI}/nazionale.json`),
       ]);
@@ -162,6 +164,7 @@ function Mappa() {
       setInvestimenti(scheda.investimenti ?? null);
       setAppalti(scheda.appalti ?? null);
       setNotizie(scheda.notizie ?? null);
+      setConcorrenza(scheda.concorrenza ?? null);
       setOpen(true);
     },
     [year, annoMappa],
@@ -512,6 +515,7 @@ function Mappa() {
         investimenti={investimenti}
         appalti={appalti}
         notizie={notizie}
+        concorrenza={concorrenza}
         open={open}
         onClose={() => setOpen(false)}
       />

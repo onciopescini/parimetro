@@ -5,11 +5,13 @@
 // dello stesso anno. Gli importi si sommano solo sui lotti attendibili, e la scheda dice quanti sono
 // stati esclusi e perche': sommare gli importi grezzi darebbe numeri assurdi.
 
+import { useState } from "react";
 import {
   annoDisponibile,
   FAMIGLIE,
   nuovaRilevazione,
   type Appalti,
+  type Concorrenza,
 } from "@/lib/appalti";
 
 const eurBreve = (v: number | null | undefined) =>
@@ -20,7 +22,17 @@ const eur = (v: number | null | undefined) =>
   v == null ? "—" : new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
 const num = (v: number) => new Intl.NumberFormat("it-IT").format(v);
 
-export default function AppaltiComune({ appalti, anno }: { appalti: Appalti | null; anno: number }) {
+export default function AppaltiComune({
+  appalti,
+  concorrenza,
+  anno,
+}: {
+  appalti: Appalti | null;
+  concorrenza?: Concorrenza | null;
+  anno: number;
+}) {
+  // L'anno si puo' cambiare dalla tabella anno per anno: gli appalti arrivano al 2025, i bilanci al 2024
+  const [scelto, setScelto] = useState<number | null>(null);
   if (!appalti) {
     return (
       <p className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-400">
@@ -28,10 +40,11 @@ export default function AppaltiComune({ appalti, anno }: { appalti: Appalti | nu
       </p>
     );
   }
-  const a_ = annoDisponibile(appalti.anni, anno);
+  const a_ = annoDisponibile(appalti.anni, scelto ?? anno);
   const a = a_ == null ? null : appalti.anni[String(a_)];
   if (a_ == null || !a) return null;
   const serie = Object.entries(appalti.anni).sort(([x], [y]) => Number(x) - Number(y));
+  const conc = concorrenza?.[String(a_)] ?? null;
   const confrontabile = a.mediana_quota_diretti != null && a.quota_diretti != null && a.rango_diretti != null;
 
   return (
@@ -40,7 +53,7 @@ export default function AppaltiComune({ appalti, anno }: { appalti: Appalti | nu
         <h3 className="text-[11px] uppercase tracking-wider text-slate-400">
           Appalti banditi dal comune · {a_}
         </h3>
-        {a_ !== anno && (
+        {scelto == null && a_ !== anno && (
           <p className="text-[11px] text-amber-200">Per il {anno} non ci sono dati: mostro il {a_}.</p>
         )}
 
@@ -112,9 +125,55 @@ export default function AppaltiComune({ appalti, anno }: { appalti: Appalti | nu
         )}
       </section>
 
+      {conc && (
+        <section className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
+          <h3 className="text-[11px] uppercase tracking-wider text-slate-400">Concorrenza nelle gare · {a_}</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <div className="text-[11px] text-slate-400">Gare con una sola offerta</div>
+              <div className="text-lg font-semibold text-slate-100">
+                {conc.quota_offerta_unica != null ? `${conc.quota_offerta_unica.toLocaleString("it-IT")}%` : "—"}
+              </div>
+              <div className="text-[11px] text-slate-400">
+                {conc.quota_offerta_unica != null && conc.mediana_quota_offerta_unica != null
+                  ? `mediana dei simili ${conc.mediana_quota_offerta_unica.toLocaleString("it-IT")}%`
+                  : "poche gare per confrontare"}
+              </div>
+            </div>
+            <div>
+              <div className="text-[11px] text-slate-400">Ribasso mediano</div>
+              <div className="text-lg font-semibold text-slate-100">
+                {conc.ribasso_mediano != null ? `${conc.ribasso_mediano.toLocaleString("it-IT")}%` : "—"}
+              </div>
+              <div className="text-[11px] text-slate-400">
+                {conc.offerte_mediane != null ? `offerte mediane: ${conc.offerte_mediane.toLocaleString("it-IT")}` : ""}
+              </div>
+            </div>
+          </div>
+          {conc.quota_offerta_unica != null && conc.rango_offerta_unica != null && (
+            <div>
+              <div className="flex justify-between text-[11px]">
+                <span className="text-slate-300">Meno concorrenza</span>
+                <span className="text-slate-400">
+                  più alta del {conc.rango_offerta_unica}% dei {num(conc.n_simili - 1)} simili
+                </span>
+              </div>
+              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-700/60">
+                <div className="h-full rounded-full bg-rose-400/70" style={{ width: `${conc.rango_offerta_unica}%` }} />
+              </div>
+            </div>
+          )}
+          <p className="text-[10px] leading-snug text-slate-500">
+            {num(conc.n_gare)} gare aggiudicate (procedure aperte, ristrette e negoziate); gli affidamenti diretti non
+            contano. Nell&apos;anno più recente alcune gare possono non essere ancora aggiudicate. Fonte: ANAC,
+            aggiudicazioni (CC BY-SA 4.0).
+          </p>
+        </section>
+      )}
+
       {serie.length > 1 && (
         <section className="space-y-1 rounded-xl border border-white/10 bg-white/5 p-3">
-          <h3 className="text-[11px] uppercase tracking-wider text-slate-400">Anno per anno</h3>
+          <h3 className="text-[11px] uppercase tracking-wider text-slate-400">Anno per anno · clicca per vedere un anno</h3>
           <table className="w-full text-[11px]">
             <thead>
               <tr className="text-slate-400">
@@ -126,7 +185,13 @@ export default function AppaltiComune({ appalti, anno }: { appalti: Appalti | nu
             </thead>
             <tbody>
               {serie.map(([y, v]) => (
-                <tr key={y} className="border-t border-white/5 text-slate-300">
+                <tr
+                  key={y}
+                  className={`cursor-pointer border-t border-white/5 hover:bg-white/5 ${
+                    Number(y) === a_ ? "text-white" : "text-slate-300"
+                  }`}
+                  onClick={() => setScelto(Number(y))}
+                >
                   <td className="py-0.5">
                     {y}
                     {nuovaRilevazione(Number(y)) ? " *" : ""}
@@ -143,7 +208,7 @@ export default function AppaltiComune({ appalti, anno }: { appalti: Appalti | nu
       )}
 
       <section className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
-        <h3 className="text-[11px] uppercase tracking-wider text-slate-400">Come sono stati affidati (2020-2024)</h3>
+        <h3 className="text-[11px] uppercase tracking-wider text-slate-400">Come sono stati affidati ({serie[0][0]}-{serie[serie.length - 1][0]})</h3>
         <ul className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px] text-slate-300">
           {Object.entries(appalti.famiglie)
             .sort(([, x], [, y]) => y - x)

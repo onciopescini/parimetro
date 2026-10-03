@@ -43,6 +43,24 @@ export interface Appalti {
   maggiori: LottoGrande[];
 }
 
+/** Concorrenza nelle gare vere (aperte, ristrette, negoziate) di un anno: get_concorrenza_comune(). */
+export interface ConcorrenzaAnno {
+  n_gare: number;
+  /** Gare di cui si sa quante offerte sono arrivate */
+  n_con_offerte: number;
+  n_offerta_unica: number;
+  /** null sotto 5 gare con l'informazione */
+  quota_offerta_unica: number | null;
+  mediana_quota_offerta_unica: number | null;
+  rango_offerta_unica: number | null;
+  n_simili: number;
+  offerte_mediane: number | null;
+  /** null sotto 5 gare che lo indicano */
+  ribasso_mediano: number | null;
+}
+
+export type Concorrenza = Record<string, ConcorrenzaAnno>;
+
 export const FAMIGLIE: Record<string, string> = {
   diretto: "affidamenti diretti",
   in_house: "affidamenti in house",

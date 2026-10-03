@@ -15,7 +15,7 @@ import SpesaPerCategoria from "./SpesaPerCategoria";
 import RedditoResidenti from "./RedditoResidenti";
 import InvestimentiComune from "./InvestimentiComune";
 import AppaltiComune from "./AppaltiComune";
-import type { Appalti } from "@/lib/appalti";
+import type { Appalti, Concorrenza } from "@/lib/appalti";
 import NotizieComune from "./NotizieComune";
 import type { NotizieComune as NotizieDati } from "@/lib/notizie";
 import type { Investimenti } from "@/lib/investimenti";
@@ -111,6 +111,8 @@ interface BudgetDrawerProps {
   appalti?: Appalti | null;
   /** Notizie sui conti (titolo, fonte, data, link); null = mai cercate: il tab non compare */
   notizie?: NotizieDati | null;
+  /** Offerte e ribasso nelle gare, anno per anno */
+  concorrenza?: Concorrenza | null;
   open: boolean;
   onClose: () => void;
 }
@@ -203,6 +205,7 @@ export default function BudgetDrawer({
   investimenti,
   appalti,
   notizie,
+  concorrenza,
   open,
   onClose,
 }: BudgetDrawerProps) {
@@ -525,7 +528,7 @@ export default function BudgetDrawer({
 
             {tab === "opere" && <InvestimentiComune inv={investimenti ?? null} />}
 
-            {tab === "appalti" && <AppaltiComune appalti={appalti ?? null} anno={current.year} />}
+            {tab === "appalti" && <AppaltiComune appalti={appalti ?? null} concorrenza={concorrenza ?? null} anno={current.year} />}
             {tab === "notizie" && <NotizieComune notizie={notizie ?? null} />}
 
             {tab === "grafici" && (

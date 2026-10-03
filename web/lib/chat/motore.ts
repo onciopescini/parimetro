@@ -17,7 +17,7 @@ import {
 } from "./formati";
 import type { RedditoAnno } from "../reddito";
 import { CICLI, GENERI_ALTRI, ordinaCicli, quotaDelPrimo, type Investimenti } from "../investimenti";
-import { annoDisponibile, nuovaRilevazione, type Appalti } from "../appalti";
+import { annoDisponibile, nuovaRilevazione, type Appalti, type Concorrenza } from "../appalti";
 import type { Colonna, Contesto, Fatto, Intento, Leggi, RifComune, Risultato } from "./tipi";
 
 interface RigaStorico {
@@ -31,6 +31,7 @@ interface SchedaComune {
   reddito?: Record<string, RedditoAnno> | null;
   investimenti?: Investimenti | null;
   appalti?: Appalti | null;
+  concorrenza?: Concorrenza | null;
 }
 
 type Cella = string | number | null;
@@ -600,6 +601,12 @@ async function appaltiComune(
   aggiungi("Valore mediano di un lotto", fEur(a.importo_mediano), numero(a.importo_mediano));
   aggiungi("Valore dei lotti attendibili", fEurBreve(a.importo), numero(a.importo));
   if (a.n_pnrr > 0) aggiungi("Lotti finanziati dal PNRR", fNum(a.n_pnrr), a.n_pnrr);
+  const conc = s.concorrenza?.[String(anno)] ?? null;
+  if (conc?.quota_offerta_unica != null) {
+    aggiungi("Gare con una sola offerta", fPct(conc.quota_offerta_unica), conc.quota_offerta_unica,
+      conc.mediana_quota_offerta_unica == null ? "—" : fPct(conc.mediana_quota_offerta_unica), numero(conc.mediana_quota_offerta_unica));
+  }
+  if (conc?.ribasso_mediano != null) aggiungi("Ribasso mediano nelle gare", fPct(conc.ribasso_mediano), conc.ribasso_mediano);
 
   const note: string[] = [];
   if (richiesto != null && richiesto !== anno && richiesto !== Number.MAX_SAFE_INTEGER) {
@@ -610,6 +617,9 @@ async function appaltiComune(
   }
   if (a.n_importo_anomalo > 0) note.push(`${fNum(a.n_importo_anomalo)} lotti con un importo impossibile (oltre 10 volte i pagamenti annui del comune) sono esclusi dai totali.`);
   if (a.n_adesioni > 0) note.push("L'importo delle adesioni a convenzioni e accordi quadro è il massimale dell'accordo, non una spesa del comune: non è sommato.");
+  if (conc?.quota_offerta_unica != null) {
+    note.push("Le gare sono le procedure aperte, ristrette e negoziate già aggiudicate: quelle dell'anno più recente possono non esserlo ancora. Gli affidamenti diretti non contano.");
+  }
   note.push("Sono i lotti banditi dal comune stesso, con l'importo a base di gara dichiarato, non quanto è stato pagato.");
 
   const fatti: Record<string, Fatto> = {
@@ -620,6 +630,15 @@ async function appaltiComune(
     mediana_diretti: { label: "quota mediana di affidamenti diretti dei comuni simili", valore: a.mediana_quota_diretti == null ? "n.d." : fPct(a.mediana_quota_diretti) },
     mediano: { label: "valore mediano di un lotto", valore: fEur(a.importo_mediano) },
     aperte: { label: "procedure aperte", valore: fNum(a.n_aperte) },
+    ...(conc?.quota_offerta_unica != null
+      ? {
+          offerta_unica: { label: "quota di gare aggiudicate con una sola offerta", valore: fPct(conc.quota_offerta_unica) },
+          offerta_unica_simili: {
+            label: "quota mediana di gare con una sola offerta dei comuni simili",
+            valore: conc.mediana_quota_offerta_unica == null ? "n.d." : fPct(conc.mediana_quota_offerta_unica),
+          },
+        }
+      : {}),
   };
   return {
     ok: true,

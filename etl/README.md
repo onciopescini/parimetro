@@ -54,9 +54,12 @@ python scarica_investimenti.py --dest ../../etl-data
 python 07_import_pnrr.py --csv ../../etl-data/pnrr/PNRR_Progetti.csv --ipa ../../etl-data/pnrr/ipa_enti.xlsx
 python 08_import_coesione.py --zip ../../etl-data/oc/progetti_esteso.zip
 
-# 6 · Appalti dei comuni (ANAC, ~2,7 GB per il 2020-2024)
-python scarica_anac.py --dest ../../etl-data/anac/cig --da 2020 --a 2024
+# 6 · Appalti dei comuni (ANAC, ~4 GB per il 2020-2025)
+python scarica_anac.py --dest ../../etl-data/anac/cig --da 2020 --a 2025
 python 09_import_anac.py --dir ../../etl-data/anac/cig --ipa ../../etl-data/pnrr/ipa_enti.xlsx
+# Aggiudicazioni (un solo zip da ~150 MB): offerte ricevute e ribasso, solo dei lotti gia' importati
+python scarica_anac.py --dest ../../etl-data/anac/aggiudicazioni --dataset aggiudicazioni
+python 11_import_aggiudicazioni.py --zip ../../etl-data/anac/aggiudicazioni/aggiudicazioni_csv.zip
 
 # 7 · Notizie sui conti (Firecrawl, facoltativo). La chiave sta in FIRECRAWL_API_KEY, mai in un file del repo.
 python 10_raccogli_notizie.py                          # solo la stima dei crediti (~2 a comune, ~16.000 in tutto)

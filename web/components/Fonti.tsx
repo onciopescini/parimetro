@@ -63,7 +63,7 @@ export default function Fonti() {
               </li>
               <li>
                 <strong className="text-slate-100">ANAC</strong>, Banca dati nazionale dei contratti pubblici (CC BY-SA
-                4.0): le gare bandite dai comuni. L&apos;importo è quello a base di gara dichiarato, non il pagato, e
+                4.0): le gare bandite dai comuni (2020-2025) e le loro aggiudicazioni, da cui il numero di offerte e il ribasso. L&apos;importo è quello a base di gara dichiarato, non il pagato, e
                 alcuni importi sono refusi: per questo i totali escludono i valori impossibili.
               </li>
               <li>

@@ -70,6 +70,11 @@ for when a source becomes available.
   for micro-purchases too): lots triple, the median value falls from 68,000 to 16,000 euro and direct
   awards go from 73% to 89%. Comparison with peers of the *same year* stays valid; across the break it
   does not. The share of direct awards is only compared among towns with at least 5 lots.
+  **Competition** comes from ANAC's awards dataset, for real tenders only (open, restricted, negotiated;
+  direct awards have no competition to measure): the share awarded with a single bid and the median
+  discount. Impossible values (negative discounts down to -2.8 million, years like 3202) become NULL, the
+  year is the lot's publication year, and a town needs 5 tenders with the information to be compared.
+  The latest year is incomplete because some tenders are not yet awarded. Winning companies are not used.
 - **News (Firecrawl, optional).** One search per town; the *code* keeps only results that name the town and
   mention accounts, taxes, procurement or funds (keywords, not a model), no older than 18 months. Only
   title, source, date and link are stored and shown: no article text, no summaries. Towns with homonyms

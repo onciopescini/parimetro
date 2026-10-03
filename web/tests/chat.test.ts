@@ -56,6 +56,9 @@ const scheda = (k: number, concentrata = false) => ({
     famiglie: { diretto: 660, aperta: 35, adesione: 15 },
     maggiori: [{ anno: 2023, oggetto: "Raccolta rifiuti", importo: 9_000_000, tipo: "SERVIZI", procedura: "PROCEDURA APERTA", cig: "CIG1" }],
   },
+  concorrenza: {
+    "2024": { n_gare: 30, n_con_offerte: 28, n_offerta_unica: 10, quota_offerta_unica: 35.7, mediana_quota_offerta_unica: 28.6, rango_offerta_unica: 70, n_simili: 12, offerte_mediane: 2, ribasso_mediano: 8.4 },
+  },
   investimenti: {
     pnrr: {
       n: 10, fin_pnrr: concentrata ? 3_000_000 : 20_000_000, fin_totale: 25_000_000, pc: 500, mediana_pc: 300, rango: 80, n_simili: 12, conclusi: 4,
@@ -296,6 +299,18 @@ describe("appalti nella chat", () => {
     expect(r.fatti.anno.valore).toBe("2024");
     expect(r.righe.find((x) => x.indicatore === "Quota di affidamenti diretti")).toMatchObject({ comune: "90%", simili: "88,6%" });
     expect(r.righe.find((x) => x.indicatore === "Lotti pubblicati")?.comune).toBe("600");
+  });
+  it("la concorrenza nelle gare: offerta unica e ribasso, con il confronto coi simili", async () => {
+    const r = await eseguiIntento({ tipo: "appalti_comune", comune: "Roma" }, leggi);
+    expect(r.righe.find((x) => x.indicatore === "Gare con una sola offerta")).toMatchObject({ comune: "35,7%", simili: "28,6%" });
+    expect(r.righe.find((x) => x.indicatore === "Ribasso mediano nelle gare")?.comune).toBe("8,4%");
+    expect(r.fatti.offerta_unica.valore).toBe("35,7%");
+    expect(r.note.join(" ")).toContain("già aggiudicate");
+  });
+  it("senza concorrenza per quell'anno la tabella resta quella di prima", async () => {
+    const r = await eseguiIntento({ tipo: "appalti_comune", comune: "Roma", anno: 2023 }, leggi);
+    expect(r.righe.find((x) => x.indicatore === "Gare con una sola offerta")).toBeUndefined();
+    expect(r.fatti.offerta_unica).toBeUndefined();
   });
   it("un anno richiesto vale, e il rango non e' mai presentato come voto", async () => {
     const r = await eseguiIntento({ tipo: "appalti_comune", comune: "Roma", anno: 2023 }, leggi);
