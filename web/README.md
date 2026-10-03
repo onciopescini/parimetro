@@ -32,7 +32,11 @@ database dell'officina: `../selfhost/README.md`.
 
 ## La chat (OpenRouter)
 
-`functions/api/chat.ts` e' una Pages Function: l'unico pezzo del sito che non e' statico.
+`functions/api/chat.ts` e' una Pages Function, e lo sono anche le pagine per i motori di ricerca: `functions/comune/[slug].ts`
+(la scheda di ogni comune come HTML), `functions/comuni.ts`, `sitemap.xml.ts`, `robots.txt.ts` e `llms.txt.ts`. Sono funzioni e non
+file statici perche' Cloudflare Pages accetta 20.000 file e l'export dei dati ne ha gia' circa 18.000: l'HTML si compone al volo
+dagli stessi JSON (`lib/pagina/`) e Cloudflare lo tiene in cache per un giorno. Gli indirizzi assoluti vengono dalla richiesta,
+quindi funzionano con qualunque dominio collegato.
 Il flusso e' deliberatamente stretto: **il modello AI non produce numeri**.
 
 1. Il modello traduce la domanda in una di 5 domande previste (`lib/chat/intento.ts`): scheda

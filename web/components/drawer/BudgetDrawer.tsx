@@ -17,6 +17,7 @@ import InvestimentiComune from "./InvestimentiComune";
 import AppaltiComune from "./AppaltiComune";
 import type { Appalti, Concorrenza } from "@/lib/appalti";
 import NotizieComune from "./NotizieComune";
+import { slugComune } from "@/lib/pagina/comune";
 import type { NotizieComune as NotizieDati } from "@/lib/notizie";
 import type { Investimenti } from "@/lib/investimenti";
 import type { RedditoAnno } from "@/lib/reddito";
@@ -344,6 +345,15 @@ export default function BudgetDrawer({
                 <span className="inline-flex items-center gap-1">
                   <Landmark size={12} /> Esercizio {current.year}
                 </span>
+                {/* la stessa scheda come pagina leggibile e condivisibile (testo, non mappa) */}
+                <a
+                  href={`/comune/${slugComune(data.name, data.istat)}`}
+                  target="_blank"
+                  rel="noopener"
+                  className="underline decoration-slate-600 underline-offset-2 hover:text-slate-200"
+                >
+                  Pagina del comune
+                </a>
               </div>
             </div>
             <div className="flex items-center gap-2">

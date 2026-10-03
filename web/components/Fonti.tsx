@@ -21,6 +21,11 @@ export default function Fonti() {
           >
             Fonti e metodo
           </button>
+          {" · "}
+          {/* un link vero e crawlabile: porta all'elenco di tutti i comuni, da cui i motori di ricerca raggiungono ogni scheda */}
+          <a href="/comuni" className="underline decoration-slate-600 underline-offset-2 hover:text-slate-200">
+            Tutti i comuni
+          </a>
         </p>
       </div>
 

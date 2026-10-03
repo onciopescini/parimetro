@@ -89,6 +89,19 @@ for when a source becomes available.
 - Spending areas are an editorial classification (`etl/categorie_spesa.py`). Generic items
   stay in "not attributable" and the share is shown for every town.
 
+## Pages for search engines and AI assistants
+
+The map is a single client-rendered page, which search engines and AI assistants cannot read. Every town also has
+a plain HTML page, `/comune/{name}-{ISTAT}`, composed on the fly by a Pages Function from the same JSON the map uses
+(`web/lib/pagina/`): text with the numbers and their context (median of similar towns, caveats), JSON-LD (`Place` and
+`Dataset` with the CC BY-SA licence and a link to the raw JSON), canonical URL. Around it: `/comuni` (one link per
+town, by region), `/sitemap.xml`, `/robots.txt` and `/llms.txt`.
+
+They are functions and not static files because Cloudflare Pages accepts 20,000 files per deployment and the data
+export already has about 18,000. Absolute URLs come from the request, so they follow whatever domain is attached.
+A wrong name in the URL redirects (301) to the canonical one; an unknown code is a 404 with `noindex`. Free-plan
+limit to keep in mind: 100,000 function requests a day (shared with the chat), with a one-day edge cache in front.
+
 ## Data contract between `etl/` and `web/`
 
 The exporter writes file names that the site recomputes (slugs, ranking paths). If the two
