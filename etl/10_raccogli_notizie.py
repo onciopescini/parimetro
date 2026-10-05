@@ -35,7 +35,7 @@ API = "https://api.firecrawl.dev/v2/search"
 CREDITI_A_RICERCA = 2 * len(TEMI)  # 2 crediti a ricerca, una ricerca per tema
 
 
-def cerca(chiave: str, testo: str, tentativi: int = 4) -> list[dict]:
+def cerca(chiave: str, testo: str, tentativi: int = 6) -> list[dict]:
     """Le notizie grezze per una ricerca; solleva l'ultimo errore se non riesce."""
     corpo = json.dumps({"query": testo, "sources": ["news"], "limit": 10, "location": "Italy"}).encode()
     for t in range(tentativi):
@@ -50,7 +50,7 @@ def cerca(chiave: str, testo: str, tentativi: int = 4) -> list[dict]:
                 raise SystemExit(f"Firecrawl ha risposto {e.code}: controlla la chiave e i crediti.") from e
             if t == tentativi - 1:
                 raise
-            time.sleep(5 * (t + 1) if e.code == 429 else 2 * (t + 1))
+            time.sleep(15 * (t + 1) if e.code == 429 else 2 * (t + 1))
         except (urllib.error.URLError, TimeoutError):
             if t == tentativi - 1:
                 raise
