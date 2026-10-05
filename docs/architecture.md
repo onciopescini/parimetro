@@ -115,7 +115,8 @@ drawn on every card and cannot be removed; the "question" card picks the spendin
 towns, in either direction, and is not offered when one item weighs 40% or more of the year's spending, because the
 per-capita figure is then not comparable; a card is simply unavailable (with the reason) when the data is missing.
 Cards never contain the user's name. The wording "non è un'accusa: è una domanda" and the mention of *accesso civico*
-should be reviewed by someone with legal competence before wide promotion.
+should be reviewed by someone with legal competence: until then the "question" card is built and tested but switched
+off (`ATTIVE` in `web/components/card/CreaCard.tsx`), so only the first two cards are offered.
 
 ## Data contract between `etl/` and `web/`
 

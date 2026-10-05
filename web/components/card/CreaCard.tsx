@@ -9,7 +9,13 @@ import { costruisci, disponibile, type ContenutoCard, type DatiCard, type TipoCa
 import { DIMENSIONI, disegna, type Ambiente } from "@/lib/card/disegna";
 import { slugComune } from "@/lib/pagina/comune";
 
-const SCELTE: { tipo: TipoCard; titolo: string; testo: string; formato: string }[] = [
+/**
+ * Le card offerte al pubblico. "domanda" e' pronta e testata ma resta spenta finche' il testo (e il rimando
+ * all'accesso civico) non e' stato rivisto da chi ha competenza legale: per accenderla basta aggiungerla qui.
+ */
+const ATTIVE: readonly TipoCard[] = ["cento", "tre"];
+
+const TUTTE: { tipo: TipoCard; titolo: string; testo: string; formato: string }[] = [
   { tipo: "cento", titolo: "Dove vanno i soldi", testo: "Ogni 100 € spesi dal comune, divisi per voce.", formato: "Quadrata · Facebook e Instagram" },
   { tipo: "tre", titolo: "Il confronto con i simili", testo: "Tre numeri: spesa, PNRR e gare.", formato: "Verticale · storie" },
   { tipo: "domanda", titolo: "Una domanda per il comune", testo: "Il dato che si discosta di più dai comuni simili.", formato: "Larga · WhatsApp e link" },
@@ -28,6 +34,8 @@ function famiglie(): Pick<Ambiente, "serif" | "sans" | "mono"> {
     mono: leggi("--font-card-mono", "ui-monospace, monospace"),
   };
 }
+
+const SCELTE = TUTTE.filter((s) => ATTIVE.includes(s.tipo));
 
 export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: () => void }) {
   const contenuti = useMemo(() => costruisci(dati), [dati]);
