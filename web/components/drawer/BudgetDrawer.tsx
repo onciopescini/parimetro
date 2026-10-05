@@ -17,6 +17,8 @@ import InvestimentiComune from "./InvestimentiComune";
 import AppaltiComune from "./AppaltiComune";
 import type { Appalti, Concorrenza } from "@/lib/appalti";
 import NotizieComune from "./NotizieComune";
+import CreaCard from "../card/CreaCard";
+import type { DatiCard } from "@/lib/card/contenuto";
 import { slugComune } from "@/lib/pagina/comune";
 import type { NotizieComune as NotizieDati } from "@/lib/notizie";
 import type { Investimenti } from "@/lib/investimenti";
@@ -211,6 +213,7 @@ export default function BudgetDrawer({
   onClose,
 }: BudgetDrawerProps) {
   const [tab, setTab] = useState<Tab>("quadro");
+  const [creaCard, setCreaCard] = useState(false);
   // Passando a un comune senza notizie il tab non c'e' piu': si torna al quadro invece di mostrare il vuoto
   if (tab === "notizie" && !notizie) setTab("quadro");
   // Default sui comuni simili: è il confronto che dice qualcosa. Rispetto alla
@@ -229,6 +232,24 @@ export default function BudgetDrawer({
 
   const pctDiff = (v?: number | null, avg?: number | null) =>
     v == null || !avg ? null : ((v - avg) / avg) * 100;
+
+  // Cio' che serve a una card da condividere. Se l'anno mostrato non e' quello richiesto (scivola sull'ultimo
+  // disponibile) i dati per anno non si mescolano: la card parla solo di anni coerenti.
+  const datiCard = useMemo<DatiCard | null>(() => {
+    if (!data || !current) return null;
+    const coerente = current.year === year;
+    return {
+      voce: { istat: data.istat, name: data.name, province: data.province, region: data.region, population: data.population },
+      anno: current.year,
+      spesaPc: current.expenditure_pc,
+      simili: coerente && peerAvg ? { fascia: peerAvg.fascia, n: peerAvg.n, expenditure_pc: peerAvg.expenditure_pc } : null,
+      categorie: coerente ? (categorie ?? null) : null,
+      investimenti: investimenti ?? null,
+      appalti: appalti ?? null,
+      concorrenza: concorrenza ?? null,
+      reddito: coerente ? (reddito ?? null) : null,
+    };
+  }, [data, current, year, peerAvg, categorie, investimenti, appalti, concorrenza, reddito]);
 
   /** La sorgente porta il debito? Con SIOPE (cassa) no: è NULL su tutta la serie. */
   const haDebito = useMemo(
@@ -321,6 +342,7 @@ export default function BudgetDrawer({
   );
 
   return (
+    <>
     <AnimatePresence>
       {open && data && current && (
         <motion.aside
@@ -355,6 +377,17 @@ export default function BudgetDrawer({
                   Pagina del comune
                 </a>
               </div>
+              {datiCard && (
+                <button
+                  onClick={() => setCreaCard(true)}
+                  className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-full bg-amber-400 px-4 text-sm font-semibold text-slate-950 hover:bg-amber-300"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
+                  </svg>
+                  Crea la card da condividere
+                </button>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <div
@@ -672,5 +705,7 @@ export default function BudgetDrawer({
         </motion.aside>
       )}
     </AnimatePresence>
+    {open && creaCard && datiCard && <CreaCard key={datiCard.voce.istat} dati={datiCard} onClose={() => setCreaCard(false)} />}
+    </>
   );
 }

@@ -102,6 +102,21 @@ export already has about 18,000. Absolute URLs come from the request, so they fo
 A wrong name in the URL redirects (301) to the canonical one; an unknown code is a 404 with `noindex`. Free-plan
 limit to keep in mind: 100,000 function requests a day (shared with the chat), with a one-day edge cache in front.
 
+## Shareable cards
+
+From a town's panel, "Crea la card da condividere" draws an image in the browser (a `<canvas>`, nothing is sent to
+a server) and lets people download it, share it with the system share sheet, copy the page link or send it on
+WhatsApp. Three cards: *where the money goes* (every 100 euro, 100 squares, 1080x1080), *three numbers against
+similar towns* (1080x1920) and *a question for the town* (1200x630). What goes on a card is decided by pure functions
+(`web/lib/card/contenuto.ts`), the drawing by `web/lib/card/disegna.ts`; both are tested without a browser.
+
+Rules that are part of the product: the warning line (cash basis, year, which towns it is compared with, source) is
+drawn on every card and cannot be removed; the "question" card picks the spending area that differs most from similar
+towns, in either direction, and is not offered when one item weighs 40% or more of the year's spending, because the
+per-capita figure is then not comparable; a card is simply unavailable (with the reason) when the data is missing.
+Cards never contain the user's name. The wording "non è un'accusa: è una domanda" and the mention of *accesso civico*
+should be reviewed by someone with legal competence before wide promotion.
+
 ## Data contract between `etl/` and `web/`
 
 The exporter writes file names that the site recomputes (slugs, ranking paths). If the two
