@@ -1,13 +1,14 @@
-// Disegno delle card su un <canvas>. Riceve il contesto di disegno (non il canvas), cosi' si prova anche senza browser.
-// Le misure sono quelle del design: quadrata 1080x1080, verticale 1080x1920, larga 1200x630.
+// Disegno delle card su un <canvas> nell'identita' di Parimetro: fondo crema o mirtillo, colori piatti, forme
+// tonde, numeri in Fraunces morbida. Riceve il contesto di disegno (non il canvas), cosi' si prova anche senza browser.
+// Misure: quadrata 1080x1080, verticale 1080x1920, larga 1200x630.
 
 import { COLORE_RESTO, euro, type ContenutoCard, type TipoCard } from "./contenuto";
 
 export interface Ambiente {
   /** Famiglie di caratteri gia' caricate (stringhe adatte a ctx.font) */
-  serif: string;
-  mono: string;
-  sans: string;
+  display: string;
+  testo: string;
+  codice: string;
   /** Indirizzo da stampare sulla card, es. "parimetro.pages.dev" */
   indirizzo: string;
 }
@@ -15,25 +16,26 @@ export interface Ambiente {
 export const DIMENSIONI: Record<TipoCard, { w: number; h: number }> = {
   cento: { w: 1080, h: 1080 },
   tre: { w: 1080, h: 1920 },
+  confronto: { w: 1200, h: 630 },
   domanda: { w: 1200, h: 630 },
 };
 
-// Notte (cards dei dati) e carta (la card della domanda)
-const NOTTE = "#0A1018";
-const TESTO = "#E8EEF5";
-const MUTO = "#8FA3BB";
-const SOFT = "#B9C7D8";
-const OCRA = "#F2B544";
-const CARTA = "#F4EFE4";
-const INCHIOSTRO = "#1F2430";
-const OCRA_SCURO = "#8A5300";
-const MUTO_CARTA = "#6B6A60";
+const CREMA = "#FFF6E5";
+const INCHIOSTRO = "#1B1A2E";
+const MIRTILLO = "#3B3BD6";
+const LIMONE = "#FFD23F";
+const MENTA = "#2DBE8B";
+const LILLA = "#B8A1FF";
+const POMODORO = "#F0502D";
+const GRIGIO = "#5A5873";
+const TESTO2 = "#45435E";
+const LINEA = "#E8DEC8";
 
 type Ctx = CanvasRenderingContext2D;
 
 // ---------------------------------------------------------------- utilita'
 function spaziatura(ctx: Ctx, px: number) {
-  // letterSpacing non c'e' in tutti i browser: dove manca, il testo resta semplicemente senza spaziatura
+  // letterSpacing non c'e' in tutti i browser: dove manca, il testo resta senza spaziatura
   (ctx as unknown as { letterSpacing: string }).letterSpacing = `${px}px`;
 }
 
@@ -71,6 +73,26 @@ function paragrafo(ctx: Ctx, t: string, x: number, y: number, larghezza: number,
   return y + righe.length * interlinea;
 }
 
+/**
+ * Le avvertenze stanno in fondo e non si tagliano mai: se non ci stanno in `maxRighe`, il carattere si rimpicciolisce
+ * (fino a `minPx`); in ultimo si va a capo quanto serve. Restituisce la y sopra la prima riga, cosi' si sa dove
+ * finisce lo spazio per il resto.
+ */
+function avvertenzeInBasso(ctx: Ctx, t: string, x: number, yUltima: number, larghezza: number, famiglia: string, colore: string, px: number, minPx: number, maxRighe: number): number {
+  let corpo = px;
+  let righe: string[] = [];
+  for (;;) {
+    ctx.font = `400 ${corpo}px ${famiglia}`;
+    righe = avvolgi(ctx, t, larghezza);
+    if (righe.length <= maxRighe || corpo <= minPx) break;
+    corpo -= 1;
+  }
+  const lh = Math.round(corpo * 1.34);
+  const y0 = yUltima - (righe.length - 1) * lh;
+  righe.forEach((r, i) => testo(ctx, r, x, y0 + i * lh, `400 ${corpo}px ${famiglia}`, colore));
+  return y0 - lh;
+}
+
 /** Il corpo piu' grande che ci sta nella larghezza, fra `max` e `min`. */
 function adatta(ctx: Ctx, t: string, famiglia: string, peso: number, larghezza: number, max: number, min: number): number {
   let px = max;
@@ -82,146 +104,230 @@ function adatta(ctx: Ctx, t: string, famiglia: string, peso: number, larghezza: 
   return px;
 }
 
+function larghezzaTesto(ctx: Ctx, t: string, font: string): number {
+  ctx.font = font;
+  return ctx.measureText(t).width;
+}
+
 function rettangolo(ctx: Ctx, x: number, y: number, w: number, h: number, r: number, riempi: string) {
+  const rr = Math.min(r, w / 2, h / 2);
   ctx.fillStyle = riempi;
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
+  ctx.moveTo(x + rr, y);
+  ctx.arcTo(x + w, y, x + w, y + h, rr);
+  ctx.arcTo(x + w, y + h, x, y + h, rr);
+  ctx.arcTo(x, y + h, x, y, rr);
+  ctx.arcTo(x, y, x + w, y, rr);
   ctx.closePath();
   ctx.fill();
 }
 
-/** Colonne decorative in fondo: richiamano la mappa 3D, non rappresentano alcun dato. */
-function colonneDecorative(ctx: Ctx, w: number, yBase: number, alto: number) {
-  const ramp = ["#2563EB", "#0EA5E9", "#10B981", "#F59E0B", "#EF4444"];
-  const n = 26;
-  const larg = w / n;
-  ctx.save();
-  ctx.globalAlpha = 0.3;
-  for (let i = 0; i < n; i++) {
-    const s = Math.sin(i * 12.9898) * 43758.5453;
-    const q = 0.25 + 0.75 * (s - Math.floor(s));
-    ctx.fillStyle = ramp[Math.min(ramp.length - 1, Math.floor(q * ramp.length))];
-    const h = alto * q;
-    ctx.fillRect(i * larg + 3, yBase - h, larg - 6, h);
-  }
-  ctx.restore();
+function contorno(ctx: Ctx, x: number, y: number, w: number, h: number, r: number, colore: string, spessore: number) {
+  const m = spessore / 2;
+  const rr = Math.min(r, w / 2 - m, h / 2 - m);
+  ctx.strokeStyle = colore;
+  ctx.lineWidth = spessore;
+  ctx.beginPath();
+  ctx.moveTo(x + m + rr, y + m);
+  ctx.arcTo(x + w - m, y + m, x + w - m, y + h - m, rr);
+  ctx.arcTo(x + w - m, y + h - m, x + m, y + h - m, rr);
+  ctx.arcTo(x + m, y + h - m, x + m, y + m, rr);
+  ctx.arcTo(x + m, y + m, x + w - m, y + m, rr);
+  ctx.closePath();
+  ctx.stroke();
 }
 
-// ---------------------------------------------------------------- le tre card
+/** Il segno di Parimetro: due pillole di lunghezza diversa, un confronto. */
+function segno(ctx: Ctx, x: number, y: number, lato: number, sfondo: string, barra1: string, barra2: string) {
+  rettangolo(ctx, x, y, lato, lato, lato * 0.32, sfondo);
+  const h = lato * 0.17;
+  const gap = lato * 0.12;
+  const top = y + (lato - (2 * h + gap)) / 2;
+  rettangolo(ctx, x + lato * 0.2, top, lato * 0.43, h, h / 2, barra1);
+  rettangolo(ctx, x + lato * 0.2, top + h + gap, lato * 0.6, h, h / 2, barra2);
+}
+
+/** Una pillola con del testo dentro; restituisce la larghezza, cosi' si possono mettere in fila. */
+function adesivo(ctx: Ctx, t: string, x: number, y: number, h: number, font: string, sfondo: string, colore: string, bordo?: string): number {
+  const w = larghezzaTesto(ctx, t, font) + h * 0.9;
+  rettangolo(ctx, x, y, w, h, h / 2, sfondo);
+  if (bordo) contorno(ctx, x, y, w, h, h / 2, bordo, 3);
+  testo(ctx, t, x + w / 2, y + h * 0.68, font, colore, "center");
+  return w;
+}
+
+function pillolaUrl(ctx: Ctx, a: Ambiente, destra: number, y: number, h: number, corpo: number, sfondo: string, colore: string) {
+  const font = `500 ${corpo}px ${a.codice}`;
+  const w = larghezzaTesto(ctx, a.indirizzo, font) + h * 1.0;
+  rettangolo(ctx, destra - w, y, w, h, h / 2, sfondo);
+  testo(ctx, a.indirizzo, destra - w / 2, y + h * 0.66, font, colore, "center");
+}
+
+// ---------------------------------------------------------------- ogni 100 euro
 function cento(ctx: Ctx, c: ContenutoCard, a: Ambiente) {
-  const P = 72;
-  ctx.fillStyle = NOTTE;
+  const P = 64;
+  ctx.fillStyle = CREMA;
   ctx.fillRect(0, 0, 1080, 1080);
 
-  testo(ctx, "Parimetro", P, P + 34, `600 40px ${a.serif}`, TESTO);
-  testo(ctx, String(c.anno), 1080 - P, P + 30, `400 24px ${a.mono}`, MUTO, "right");
+  segno(ctx, P, P, 60, MIRTILLO, CREMA, LIMONE);
+  testo(ctx, "Parimetro", P + 76, P + 43, `700 38px ${a.display}`, INCHIOSTRO);
+  const annoFont = `400 22px ${a.codice}`;
+  const wAnno = larghezzaTesto(ctx, String(c.anno), annoFont) + 44;
+  rettangolo(ctx, 1080 - P - wAnno, P + 8, wAnno, 44, 22, INCHIOSTRO);
+  testo(ctx, String(c.anno), 1080 - P - wAnno / 2, P + 38, annoFont, CREMA, "center");
 
-  testo(ctx, "OGNI 100 € CHE SPENDE", P, 196, `500 26px ${a.sans}`, MUTO, "left", 2.5);
-  const px = adatta(ctx, c.titolo, a.serif, 500, 1080 - 2 * P, 112, 54);
-  testo(ctx, c.titolo, P, 196 + px * 0.95 + 12, `500 ${px}px ${a.serif}`, TESTO);
+  testo(ctx, "OGNI 100 € CHE SPENDE", P, 200, `400 24px ${a.codice}`, GRIGIO, "left", 1.5);
+  const px = adatta(ctx, c.titolo, a.display, 700, 1080 - 2 * P, 132, 60);
+  const base = 200 + px * 0.92 + 6;
+  testo(ctx, c.titolo, P, base, `700 ${px}px ${a.display}`, INCHIOSTRO);
 
   // 100 quadretti, uno per euro, riempiti per voce
   const lato = 48;
   const gap = 6;
-  const x0 = P;
-  const y0 = 410;
+  const y0 = Math.max(378, base + 36);
   let k = 0;
   for (const f of c.fette ?? []) {
     for (let i = 0; i < f.euro; i++, k++) {
-      const col = k % 10;
-      const riga = Math.floor(k / 10);
-      rettangolo(ctx, x0 + col * (lato + gap), y0 + riga * (lato + gap), lato, lato, 7, f.colore);
+      rettangolo(ctx, P + (k % 10) * (lato + gap), y0 + Math.floor(k / 10) * (lato + gap), lato, lato, 15, f.colore);
     }
   }
   for (; k < 100; k++) {
-    rettangolo(ctx, x0 + (k % 10) * (lato + gap), y0 + Math.floor(k / 10) * (lato + gap), lato, lato, 7, COLORE_RESTO);
+    rettangolo(ctx, P + (k % 10) * (lato + gap), y0 + Math.floor(k / 10) * (lato + gap), lato, lato, 15, COLORE_RESTO);
   }
 
   // legenda
-  const xl = x0 + 10 * lato + 9 * gap + 52;
+  const xl = P + 10 * lato + 9 * gap + 46;
   (c.fette ?? []).forEach((f, i) => {
-    const y = y0 + 30 + i * 70;
-    rettangolo(ctx, xl, y - 24, 24, 24, 6, f.colore);
-    testo(ctx, `${f.euro} €`, xl + 116, y, `500 32px ${a.mono}`, TESTO, "right");
-    testo(ctx, f.nome, xl + 130, y - 2, `400 23px ${a.sans}`, SOFT);
+    const y = y0 + 30 + i * 64;
+    rettangolo(ctx, xl, y - 26, 26, 26, 9, f.colore);
+    testo(ctx, `${f.euro} €`, xl + 128, y, `700 34px ${a.display}`, INCHIOSTRO, "right");
+    testo(ctx, f.nome, xl + 144, y - 2, `500 22px ${a.testo}`, TESTO2);
   });
 
-  paragrafo(ctx, `Un quadretto = 1 €. ${c.avvertenza}`, P, 972, 700, `400 21px ${a.sans}`, MUTO, 29, 4);
-  testo(ctx, a.indirizzo, 1080 - P, 1040, `500 23px ${a.mono}`, OCRA, "right");
+  // fonte e avvertenze, sempre (mai tagliate, mai sotto l'indirizzo)
+  const yPrima = avvertenzeInBasso(ctx, c.avvertenza, P, 1050, 640, a.testo, GRIGIO, 18, 14, 3);
+  let x = P;
+  x += adesivo(ctx, `dati di cassa ${c.anno}`, x, yPrima - 56, 42, `700 20px ${a.testo}`, LIMONE, INCHIOSTRO) + 10;
+  adesivo(ctx, "fonte SIOPE", x, yPrima - 56, 42, `700 20px ${a.testo}`, MENTA, INCHIOSTRO);
+  pillolaUrl(ctx, a, 1080 - P, 1050 - 40, 52, 21, MIRTILLO, "#FFFFFF");
 }
 
+// ---------------------------------------------------------------- tre numeri
 function tre(ctx: Ctx, c: ContenutoCard, a: Ambiente) {
-  const P = 80;
-  ctx.fillStyle = NOTTE;
+  const P = 72;
+  ctx.fillStyle = MIRTILLO;
   ctx.fillRect(0, 0, 1080, 1920);
-  // fra i numeri e le avvertenze: non deve coprire niente
-  colonneDecorative(ctx, 1080, 1672, 200);
 
-  testo(ctx, "Parimetro", P, P + 44, `600 48px ${a.serif}`, TESTO);
-  testo(ctx, String(c.anno), 1080 - P, P + 38, `400 28px ${a.mono}`, MUTO, "right");
+  segno(ctx, P, 84, 68, CREMA, MIRTILLO, POMODORO);
+  testo(ctx, "Parimetro", P + 86, 84 + 48, `700 44px ${a.display}`, "#FFFFFF");
+  const annoFont = `400 26px ${a.codice}`;
+  const wAnno = larghezzaTesto(ctx, String(c.anno), annoFont) + 48;
+  rettangolo(ctx, 1080 - P - wAnno, 84 + 9, wAnno, 50, 25, CREMA);
+  testo(ctx, String(c.anno), 1080 - P - wAnno / 2, 84 + 43, annoFont, INCHIOSTRO, "center");
 
-  testo(ctx, "IL MIO COMUNE IN TRE NUMERI", P, 270, `500 30px ${a.sans}`, MUTO, "left", 3);
-  const px = adatta(ctx, c.titolo, a.serif, 500, 1080 - 2 * P, 150, 64);
-  testo(ctx, c.titolo, P, 270 + px + 4, `500 ${px}px ${a.serif}`, TESTO);
-  testo(ctx, c.sottotitolo, P, 270 + px + 70, `400 30px ${a.sans}`, SOFT);
+  testo(ctx, "IL MIO COMUNE IN TRE NUMERI", P, 300, `400 26px ${a.codice}`, "#CFCFFF", "left", 1.5);
+  const px = adatta(ctx, c.titolo, a.display, 700, 1080 - 2 * P, 176, 70);
+  testo(ctx, c.titolo, P, 300 + px * 0.95 + 8, `700 ${px}px ${a.display}`, "#FFFFFF");
+  testo(ctx, c.sottotitolo, P, 300 + px * 0.95 + 66, `400 30px ${a.testo}`, "#E4E4FF");
 
-  let y = 668;
-  for (const n of c.numeri ?? []) {
-    const vp = adatta(ctx, n.valore, a.mono, 500, 1080 - 2 * P, 128, 70);
-    testo(ctx, n.valore, P, y + vp * 0.8, `500 ${vp}px ${a.mono}`, OCRA);
-    const yEt = paragrafo(ctx, n.etichetta, P, y + vp * 0.8 + 58, 1080 - 2 * P, `400 36px ${a.sans}`, TESTO, 46, 2);
-    paragrafo(ctx, n.confronto, P, yEt + 2, 1080 - 2 * P, `400 29px ${a.sans}`, SOFT, 38, 2);
-    y += 280;
+  const blocchi = [
+    { sf: LIMONE, sotto: "#3A2F00" },
+    { sf: MENTA, sotto: "#0B3B2B" },
+    { sf: LILLA, sotto: "#2A1A66" },
+  ];
+  let y = 616;
+  (c.numeri ?? []).forEach((n, i) => {
+    const b = blocchi[i % blocchi.length];
+    rettangolo(ctx, P, y, 1080 - 2 * P, 318, 56, b.sf);
+    const vp = adatta(ctx, n.valore, a.display, 700, 1080 - 2 * P - 88, 124, 70);
+    testo(ctx, n.valore, P + 44, y + 44 + vp * 0.82, `700 ${vp}px ${a.display}`, INCHIOSTRO);
+    const yEt = paragrafo(ctx, n.etichetta, P + 44, y + 44 + vp * 0.82 + 56, 1080 - 2 * P - 88, `600 34px ${a.testo}`, INCHIOSTRO, 42, 2);
+    paragrafo(ctx, n.confronto, P + 44, yEt + 2, 1080 - 2 * P - 88, `400 26px ${a.testo}`, b.sotto, 34, 2);
+    y += 318 + 22;
+  });
+
+  // fonte e avvertenze, sempre (mai tagliate)
+  const yPrima = avvertenzeInBasso(ctx, c.avvertenza, P, 1812, 1080 - 2 * P, a.testo, "#E4E4FF", 23, 17, 5);
+  let x = P;
+  x += adesivo(ctx, `dati di cassa ${c.anno}`, x, yPrima - 62, 46, `700 22px ${a.testo}`, CREMA, INCHIOSTRO) + 10;
+  adesivo(ctx, "fonti SIOPE · ANAC", x, yPrima - 62, 46, `700 22px ${a.testo}`, CREMA, INCHIOSTRO);
+  pillolaUrl(ctx, a, 1080 - P, 1850, 54, 24, CREMA, MIRTILLO);
+}
+
+// ---------------------------------------------------------------- larga: confronto (e domanda, spenta)
+function larga(ctx: Ctx, c: ContenutoCard, a: Ambiente) {
+  const P = 56;
+  ctx.fillStyle = CREMA;
+  ctx.fillRect(0, 0, 1200, 630);
+
+  segno(ctx, P, 40, 46, MIRTILLO, CREMA, LIMONE);
+  testo(ctx, "Parimetro", P + 60, 40 + 33, `700 30px ${a.display}`, INCHIOSTRO);
+  const etichetta = c.tipo === "domanda" ? `UNA DOMANDA PER IL COMUNE DI ${c.titolo.toUpperCase()}` : `SPESA PER ABITANTE · ${c.anno}`;
+  testo(ctx, etichetta, 1200 - P, 40 + 28, `400 17px ${a.codice}`, GRIGIO, "right", 1.2);
+
+  const k = c.confronto;
+  const d = c.domanda;
+  const verbo = k ? (k.direzione === "in linea" ? "spende quanto i" : `spende ${k.direzione} dei`) : "";
+  const titolo = k ? `${c.titolo} ${verbo} comuni come lui.` : `${d?.nome ?? ""} a ${c.titolo}`;
+  const px = adatta(ctx, titolo, a.display, 700, 1200 - 2 * P, 56, 34);
+  ctx.font = `700 ${px}px ${a.display}`;
+  const righe = avvolgi(ctx, titolo, 1200 - 2 * P).slice(0, 2);
+  righe.forEach((r, i) => testo(ctx, r, P, 160 + i * (px * 1.06), `700 ${px}px ${a.display}`, INCHIOSTRO));
+  const yBarre = 160 + (righe.length - 1) * px * 1.06 + 44;
+
+  const v1 = k ? k.comune : d!.pc;
+  const v2 = k ? k.simili : d!.mediana;
+  const max = Math.max(v1, v2);
+  const wMax = 760;
+  const w1 = Math.max(70, (wMax * v1) / max);
+  const w2 = Math.max(70, (wMax * v2) / max);
+  const nomeComune = c.titolo.length > 14 ? c.titolo.slice(0, 13) + "…" : c.titolo;
+  const H = 60;
+  // simili: pillola vuota col bordo; comune: pillola piena
+  testo(ctx, "Comuni simili", P, yBarre + 38, `600 22px ${a.testo}`, GRIGIO);
+  contorno(ctx, P + 190, yBarre, w2, H, 30, MIRTILLO, 5);
+  testo(ctx, euro(v2), P + 190 + w2 + 18, yBarre + 42, `600 38px ${a.display}`, INCHIOSTRO);
+  testo(ctx, nomeComune, P, yBarre + 82 + 38, `700 22px ${a.testo}`, INCHIOSTRO);
+  rettangolo(ctx, P + 190, yBarre + 82, w1, H, 30, MIRTILLO);
+  testo(ctx, euro(v1), P + 190 + w1 + 18, yBarre + 82 + 42, `700 38px ${a.display}`, INCHIOSTRO);
+
+  // adesivo con la differenza
+  const diff = k ? k.differenza : Math.abs(v1 - v2);
+  const segnoDiff = k ? (k.direzione === "più" ? "+" : k.direzione === "meno" ? "−" : "") : v1 >= v2 ? "+" : "−";
+  const testoAdesivo = k && k.direzione === "in linea" ? "in linea" : `${segnoDiff}${euro(diff)}`;
+  const fa = `700 42px ${a.display}`;
+  const wa = larghezzaTesto(ctx, testoAdesivo, fa) + 52;
+  ctx.save();
+  ctx.translate(1200 - P - wa / 2 - 4, yBarre + 36);
+  ctx.rotate((4 * Math.PI) / 180);
+  ctx.shadowColor = "rgba(27,26,46,0.14)";
+  ctx.shadowBlur = 24;
+  ctx.shadowOffsetY = 10;
+  rettangolo(ctx, -wa / 2, -30, wa, 60, 30, LIMONE);
+  ctx.shadowColor = "transparent";
+  testo(ctx, testoAdesivo, 0, 14, fa, INCHIOSTRO, "center");
+  ctx.restore();
+
+  const yDopo = yBarre + 82 + H + 34;
+  if (d) {
+    rettangolo(ctx, P, yDopo, 1200 - 2 * P, 76, 22, INCHIOSTRO);
+    testo(ctx, "LA DOMANDA", P + 26, yDopo + 27, `400 14px ${a.codice}`, LIMONE, "left", 1.2);
+    testo(ctx, "Cosa spiega la differenza con i comuni simili?", P + 26, yDopo + 59, `600 30px ${a.display}`, CREMA);
+  } else {
+    // come si legge: serve a chi non conosce questo tipo di grafico
+    testo(ctx, "Pillola piena: il comune. Pillola vuota: la mediana dei comuni della sua dimensione.", P, yDopo + 10, `400 19px ${a.testo}`, TESTO2);
   }
 
-  paragrafo(ctx, c.avvertenza, P, 1700, 1080 - 2 * P, `400 25px ${a.sans}`, MUTO, 36, 6);
-  testo(ctx, a.indirizzo, P, 1868, `500 29px ${a.mono}`, OCRA);
-}
-
-function domanda(ctx: Ctx, c: ContenutoCard, a: Ambiente) {
-  const d = c.domanda!;
-  ctx.fillStyle = CARTA;
-  ctx.fillRect(0, 0, 1200, 630);
-  const P = 56;
-
-  testo(ctx, "Parimetro", P, 48 + 24, `600 30px ${a.serif}`, INCHIOSTRO);
-  testo(ctx, `UNA DOMANDA PER IL COMUNE DI ${c.titolo.toUpperCase()}`, 1200 - P, 48 + 20, `500 17px ${a.sans}`, MUTO_CARTA, "right", 1.6);
-
-  testo(ctx, `${d.nome} · ${c.anno}`, P, 150, `400 20px ${a.sans}`, MUTO_CARTA);
-  const val = euro(d.pc);
-  testo(ctx, val, P, 250, `500 98px ${a.mono}`, OCRA_SCURO);
-  ctx.font = `500 98px ${a.mono}`;
-  const wVal = ctx.measureText(val).width;
-  testo(ctx, "per abitante", P + wVal + 18, 250, `400 26px ${a.sans}`, "#45463F");
-  testo(ctx, `contro ${euro(d.mediana)} nei comuni simili`, P, 296, `400 28px ${a.sans}`, "#45463F");
-
-  const cx = 760;
-  ctx.fillStyle = "#D9D0BE";
-  ctx.fillRect(cx - 38, 140, 2, 170);
-  testo(ctx, `IL COMUNE SPENDE ${d.direzione.toUpperCase()} DEI SIMILI`, cx, 164, `500 17px ${a.sans}`, MUTO_CARTA, "left", 1.6);
-  const volte = (Math.round(d.rapporto * 10) / 10).toString().replace(".", ",");
-  const frase =
-    d.direzione === "più"
-      ? `Circa ${volte} volte la mediana dei comuni della sua fascia.`
-      : `La mediana dei comuni della sua fascia è circa ${volte} volte più alta.`;
-  paragrafo(ctx, frase, cx, 204, 1200 - P - cx, `400 24px ${a.sans}`, "#2B2F38", 34, 4);
-
-  // fascia scura con la domanda
-  rettangolo(ctx, P, 360, 1200 - 2 * P, 116, 16, NOTTE);
-  testo(ctx, "LA DOMANDA", P + 28, 396, `500 17px ${a.sans}`, OCRA, "left", 1.6);
-  paragrafo(ctx, "Cosa spiega la differenza con i comuni simili?", P + 28, 444, 1200 - 2 * P - 56, `500 36px ${a.serif}`, CARTA, 40, 1);
-
-  paragrafo(ctx, c.avvertenza, P, 520, 900, `400 16px ${a.sans}`, MUTO_CARTA, 23, 4);
-  testo(ctx, a.indirizzo, 1200 - P, 600, `500 18px ${a.mono}`, OCRA_SCURO, "right");
+  // fonte e avvertenze, sempre (mai tagliate, mai sotto l'indirizzo)
+  const yPrima = avvertenzeInBasso(ctx, c.avvertenza, P, 604, 800, a.testo, GRIGIO, 14, 11, 3);
+  let x = P;
+  x += adesivo(ctx, "fonte SIOPE", x, yPrima - 46, 34, `700 16px ${a.testo}`, MENTA, INCHIOSTRO) + 8;
+  adesivo(ctx, `dati di cassa ${c.anno}`, x, yPrima - 46, 34, `700 16px ${a.testo}`, "#FFFFFF", INCHIOSTRO, LINEA);
+  pillolaUrl(ctx, a, 1200 - P, 630 - 40 - 46, 46, 18, MIRTILLO, "#FFFFFF");
 }
 
 export function disegna(ctx: Ctx, c: ContenutoCard, a: Ambiente) {
   if (c.tipo === "cento") cento(ctx, c, a);
   else if (c.tipo === "tre") tre(ctx, c, a);
-  else domanda(ctx, c, a);
+  else larga(ctx, c, a);
 }
-

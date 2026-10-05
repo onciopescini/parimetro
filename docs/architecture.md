@@ -102,11 +102,22 @@ export already has about 18,000. Absolute URLs come from the request, so they fo
 A wrong name in the URL redirects (301) to the canonical one; an unknown code is a 404 with `noindex`. Free-plan
 limit to keep in mind: 100,000 function requests a day (shared with the chat), with a one-day edge cache in front.
 
+## Visual identity
+
+Key colours, flat and round: Mirtillo `#3B3BD6`, Limone `#FFD23F`, Pomodoro `#F0502D`, Menta `#2DBE8B`, on a cream
+ground with ink text (tokens in `web/app/globals.css`). Fraunces "soft" for titles and big numbers, Figtree for text,
+DM Mono for sources and years. The mark is two pills of different length: a comparison. Every spending area keeps
+the same colour on every card (`COLORE_AREA` in `web/lib/card/contenuto.ts`); colours say *what* is discussed, never
+good or bad. Fraunces is served with its SOFT axis pinned (a `<canvas>` cannot set font variations), from our own
+domain. The server-rendered reading pages (`/comune/...`, `/comuni`) use the same look. The map app itself still
+has its original dark interface: moving it to the new identity is the next step.
+
 ## Shareable cards
 
 From a town's panel, "Crea la card da condividere" draws an image in the browser (a `<canvas>`, nothing is sent to
 a server) and lets people download it, share it with the system share sheet, copy the page link or send it on
-WhatsApp. Three cards: *where the money goes* (every 100 euro, 100 squares, 1080x1080), *three numbers against
+WhatsApp, together with a ready-to-edit post text (two tones, curious or neutral), the sources with their links and a
+line to cite us. Cards: *where the money goes* (every 100 euro, 100 squares, 1080x1080), *three numbers against
 similar towns* (1080x1920) and *a question for the town* (1200x630). What goes on a card is decided by pure functions
 (`web/lib/card/contenuto.ts`), the drawing by `web/lib/card/disegna.ts`; both are tested without a browser.
 

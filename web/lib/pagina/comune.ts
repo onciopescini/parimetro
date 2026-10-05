@@ -104,6 +104,38 @@ const ultimo = <T>(o: Record<string, T> | null | undefined): [string, T] | null 
   return k.length ? [k[k.length - 1], o![k[k.length - 1]]] : null;
 };
 
+// ---------------------------------------------------------------- aspetto (l'identita' di Parimetro)
+/** Il segno: due pillole di lunghezza diversa su un quadrato tondo. */
+export const SEGNO =
+  '<svg class="segno" viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><rect width="48" height="48" rx="15" fill="#3B3BD6"/>' +
+  '<rect x="10" y="15" width="20" height="8" rx="4" fill="#FFF6E5"/><rect x="10" y="26" width="29" height="8" rx="4" fill="#FFD23F"/></svg>';
+
+/**
+ * I caratteri stanno sul nostro sito (public/fonts, licenza OFL): nessuna richiesta a terzi. Fondo crema, titoli in
+ * Fraunces morbida, forme tonde. In modalita' scura si inverte, senza cambiare voce.
+ */
+export const STILE = `
+@font-face{font-family:"Fraunces";src:url(/fonts/fraunces-morbida-latin.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Figtree";src:url(/fonts/figtree-latin.woff2) format("woff2");font-weight:400 700;font-display:swap}
+:root{--fg:#1B1A2E;--bg:#FFF6E5;--carta:#FFFDF8;--mut:#5A5873;--line:#E8DEC8;--link:#3B3BD6;--acc:#FFD23F}
+@media (prefers-color-scheme:dark){:root{--fg:#FFF6E5;--bg:#1B1A2E;--carta:#26243F;--mut:#B9B5D6;--line:#3A3860;--link:#B8A1FF}}
+body{margin:0;background:var(--bg);color:var(--fg);font:18px/1.65 Figtree,system-ui,sans-serif}
+main,header,footer{max-width:46rem;margin:0 auto;padding:0 1.25rem}
+header{padding-top:1.1rem;display:flex;justify-content:space-between;align-items:center;font-weight:600}
+a{color:var(--link);text-underline-offset:3px}.marchio{display:flex;align-items:center;gap:.6rem;color:var(--fg);text-decoration:none;font:700 1.5rem/1 Fraunces,Georgia,serif;letter-spacing:-.02em}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:700;letter-spacing:-.02em}
+h1{font-size:2.5rem;line-height:1.05;margin:1.4rem 0}h2{font-size:1.65rem;line-height:1.15;margin:2.6rem 0 .6rem}
+table{border-collapse:collapse;width:100%;font-size:1rem;margin:1rem 0;background:var(--carta);border-radius:20px;overflow:hidden}
+caption{text-align:left;color:var(--mut);padding:.2rem .2rem .5rem;font-size:.92rem}
+th,td{border-bottom:1px solid var(--line);padding:.55rem .8rem;text-align:right}th[scope=row],thead th:first-child{text-align:left}
+thead th{color:var(--mut);font-size:.82rem;text-transform:uppercase;letter-spacing:.05em}
+.avviso{background:var(--acc);color:#1B1A2E;padding:.8rem 1.1rem;border-radius:22px}
+.nota{color:var(--mut);font-size:.92rem}
+.cta{display:inline-block;margin:.4rem 0 1rem;padding:.8rem 1.5rem;border-radius:99px;background:var(--link);color:#fff;text-decoration:none;font-weight:700}
+@media (prefers-color-scheme:dark){.cta{color:#1B1A2E}}
+footer{padding-bottom:3.5rem;color:var(--mut);font-size:.92rem}
+`;
+
 // ---------------------------------------------------------------- contenuto
 export interface Pagina {
   title: string;
@@ -321,20 +353,10 @@ export function paginaComune(v: VoceComune, d: DatiComune, origine: string): Pag
 <meta property="og:url" content="${esc(url)}">
 <meta name="twitter:card" content="summary">
 <script type="application/ld+json">${jsonld}</script>
-<style>
-:root{--fg:#0f172a;--bg:#f8fafc;--mut:#475569;--line:#cbd5e1;--link:#1d4ed8}
-@media (prefers-color-scheme:dark){:root{--fg:#e2e8f0;--bg:#0b1220;--mut:#94a3b8;--line:#334155;--link:#7dd3fc}}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,sans-serif}
-main,header,footer{max-width:46rem;margin:0 auto;padding:0 1rem}
-header{padding-top:1rem}a{color:var(--link)}h1{font-size:1.6rem;line-height:1.25}h2{font-size:1.2rem;margin-top:2rem}
-table{border-collapse:collapse;width:100%;font-size:.92rem;margin:1rem 0}caption{text-align:left;color:var(--mut);padding-bottom:.4rem}
-th,td{border-bottom:1px solid var(--line);padding:.35rem .5rem;text-align:right}th[scope=row],thead th:first-child{text-align:left}
-.avviso{border-left:4px solid #d97706;background:rgba(217,119,6,.12);padding:.5rem .8rem;border-radius:.3rem}.nota{color:var(--mut);font-size:.88rem}.cta{display:inline-block;margin:.5rem 0 1rem;padding:.5rem 1rem;border:1px solid var(--link);border-radius:.5rem;text-decoration:none}
-footer{padding-bottom:3rem;color:var(--mut);font-size:.88rem}
-</style>
+<style>${STILE}</style>
 </head>
 <body>
-<header><a href="${esc(origine)}/">Parimetro</a> · <a href="${esc(origine)}/comuni">Tutti i comuni</a></header>
+<header><a class="marchio" href="${esc(origine)}/">${SEGNO}<span>Parimetro</span></a><a href="${esc(origine)}/comuni">Tutti i comuni</a></header>
 <main>
 <h1>Bilancio del Comune di ${esc(v.name)} (${esc(v.province)}): entrate e spese per abitante</h1>
 <a class="cta" href="${esc(mappa)}">Apri nella mappa 3D interattiva</a>
@@ -378,12 +400,14 @@ export function paginaElenco(indice: VoceComune[], origine: string): string {
 <title>Tutti i comuni italiani: bilanci, spese e appalti | Parimetro</title>
 <meta name="description" content="Elenco dei ${indice.length} comuni italiani con i loro bilanci di cassa, la spesa per categoria, il reddito dei residenti, il PNRR e gli appalti.">
 <link rel="canonical" href="${esc(origine)}/comuni">
-<style>body{font:16px/1.6 system-ui,sans-serif;max-width:60rem;margin:0 auto;padding:1rem}.el{columns:3 14rem;list-style:none;padding:0}.nota{color:#64748b;font-size:.85rem}</style>
+<style>${STILE}main,header{max-width:62rem}.el{columns:3 15rem;list-style:none;padding:0;margin:0}.el li{padding:.15rem 0}</style>
 </head><body>
-<p><a href="${esc(origine)}/">Parimetro</a></p>
+<header><a class="marchio" href="${esc(origine)}/">${SEGNO}<span>Parimetro</span></a><a href="${esc(origine)}/comuni">Tutti i comuni</a></header>
+<main>
 <h1>Tutti i comuni italiani</h1>
 <p>Ogni scheda confronta il comune con quelli della sua fascia di popolazione: entrate e spese per abitante, spesa per categoria, reddito dei residenti, PNRR e appalti.</p>
 ${corpo}
+</main>
 </body></html>`;
 }
 

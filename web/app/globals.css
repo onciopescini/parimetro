@@ -6,6 +6,22 @@
 }
 
 @theme inline {
+  /* L'identita' di Parimetro: colori chiave piatti, tondi, senza sfumature (vedi la tela di design) */
+  --color-mirtillo: #3b3bd6;
+  --color-limone: #ffd23f;
+  --color-pomodoro: #f0502d;
+  --color-menta: #2dbe8b;
+  --color-lilla: #b8a1ff;
+  --color-cielo: #8fd3ff;
+  --color-pesca: #ffb88a;
+  --color-sabbia: #cfc6b3;
+  --color-inchiostro: #1b1a2e;
+  --color-crema: #fff6e5;
+  --color-carta: #fffdf8;
+  --color-grigio: #5a5873;
+  --font-display: var(--f-display), Georgia, serif;
+  --font-testo: var(--f-testo), system-ui, sans-serif;
+  --font-codice: var(--f-codice), ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

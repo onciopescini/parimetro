@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from "next/font/google";
+import { DM_Mono, Figtree, Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,10 +13,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// I caratteri delle card da condividere (vedi lib/card): il canvas li legge da queste variabili CSS
-const cardSerif = Newsreader({ variable: "--font-card-serif", subsets: ["latin"], weight: ["500", "600"] });
-const cardSans = IBM_Plex_Sans({ variable: "--font-card-sans", subsets: ["latin"], weight: ["400", "500", "600"] });
-const cardMono = IBM_Plex_Mono({ variable: "--font-card-mono", subsets: ["latin"], weight: ["400", "500"] });
+// L'identita' di Parimetro: Fraunces "morbida" per titoli e numeri, Figtree per il testo, DM Mono per fonti e anni.
+// Fraunces e' servita dal nostro sito (public/fonts, licenza OFL) con l'asse SOFT fissato a 100, perche' un <canvas>
+// non puo' impostarlo: cosi' le card hanno lo stesso carattere del sito. Il canvas legge le famiglie da queste variabili.
+const display = localFont({ src: "../public/fonts/fraunces-morbida-latin.woff2", variable: "--f-display", weight: "100 900", style: "normal", display: "swap" });
+const testo = Figtree({ variable: "--f-testo", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
+const codice = DM_Mono({ variable: "--f-codice", subsets: ["latin"], weight: ["400", "500"] });
 
 export const metadata: Metadata = {
   title: "Parimetro · i bilanci dei comuni italiani",
@@ -37,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="it"
-      className={`${geistSans.variable} ${geistMono.variable} ${cardSerif.variable} ${cardSans.variable} ${cardMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${display.variable} ${testo.variable} ${codice.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

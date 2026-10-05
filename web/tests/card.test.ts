@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
   avvertenza,
+  citazione,
+  confrontoSpesaCard,
   costruisci,
   disponibile,
   domanda,
+  fonti,
   ognicento,
   spesaConcentrata,
+  testoPost,
   treNumeri,
   type DatiCard,
 } from "../lib/card/contenuto";
@@ -155,7 +159,7 @@ describe("avvertenze", () => {
 });
 
 describe("costruisci", () => {
-  it("prepara le tre card, con nomi di file puliti", () => {
+  it("prepara tutte le card, con nomi di file puliti", () => {
     const c = costruisci(DATI);
     expect(Object.values(c).every(disponibile)).toBe(true);
     if (disponibile(c.cento)) expect(c.cento.file).toBe("parimetro-campobasso-ogni-100-euro");
@@ -179,6 +183,87 @@ describe("costruisci", () => {
   });
 });
 
+describe("confronto della spesa", () => {
+  it("dice più, meno o in linea, con la differenza in euro", () => {
+    expect(confrontoSpesaCard(DATI)).toMatchObject({ direzione: "più", comune: 1751.02, simili: 1123.2 });
+    expect(Math.round(confrontoSpesaCard(DATI)!.differenza)).toBe(628);
+    expect(confrontoSpesaCard({ ...DATI, spesaPc: 900 })!.direzione).toBe("meno");
+    expect(confrontoSpesaCard({ ...DATI, spesaPc: 1130 })!.direzione).toBe("in linea");
+  });
+  it("non c'è se manca un dato o se la spesa è concentrata", () => {
+    expect(confrontoSpesaCard({ ...DATI, simili: null })).toBeNull();
+    expect(confrontoSpesaCard({ ...DATI, spesaPc: null })).toBeNull();
+    expect(confrontoSpesaCard({ ...DATI, categorie: CONCENTRATA })).toBeNull();
+    const c = costruisci({ ...DATI, categorie: CONCENTRATA });
+    expect(disponibile(c.confronto)).toBe(false);
+    expect((c.confronto as { motivo: string }).motivo).toContain("non è affidabile");
+  });
+});
+
+describe("il testo del post", () => {
+  const URL_PAGINA = "https://esempio.it/comune/campobasso-070006";
+  const card = (tipo: "cento" | "tre" | "confronto") => {
+    const c = costruisci(DATI)[tipo];
+    if (!disponibile(c)) throw new Error("manca " + tipo);
+    return c;
+  };
+
+  it("porta sempre il dato, l'avvertenza di cassa, il confronto e il link", () => {
+    for (const tipo of ["cento", "tre", "confronto"] as const) {
+      for (const tono of ["curioso", "neutro"] as const) {
+        const t = testoPost(DATI, card(tipo), tono, URL_PAGINA);
+        expect(t).toContain("Dati di cassa 2024, fonte SIOPE.");
+        expect(t).toContain("Confronto con 414 comuni simili.");
+        expect(t).toContain(`Il dato e la fonte: ${URL_PAGINA}`);
+      }
+    }
+  });
+  it("il tono curioso apre con una frase di scoperta, il neutro no", () => {
+    expect(testoPost(DATI, card("confronto"), "curioso", URL_PAGINA).startsWith("Mi ha incuriosito")).toBe(true);
+    expect(testoPost(DATI, card("confronto"), "neutro", URL_PAGINA).startsWith("Campobasso spende")).toBe(true);
+  });
+  it("nessun tono è arrabbiato: niente maiuscole urlate, punti esclamativi, accuse", () => {
+    for (const tipo of ["cento", "tre", "confronto"] as const) {
+      for (const tono of ["curioso", "neutro"] as const) {
+        const t = testoPost(DATI, card(tipo), tono, URL_PAGINA);
+        expect(t).not.toMatch(/!|vergogna|spreco|sprechi|ladri|scandal/i);
+        expect(t).not.toMatch(/\b[A-ZÀ-Ý]{6,}\b/);
+      }
+    }
+  });
+  it("ogni 100 euro cita le due voci più grosse che dicono qualcosa", () => {
+    const t = testoPost(DATI, card("cento"), "neutro", URL_PAGINA);
+    expect(t).toContain("17 vanno a funzionamento");
+    expect(t).toContain("13 a personale"); // "non attribuibile" e "tutto il resto" non fanno notizia
+  });
+});
+
+describe("fonti e citazione", () => {
+  const c = costruisci(DATI).tre;
+  if (!disponibile(c)) throw new Error("manca");
+  it("elenca solo le fonti usate dalla card, tutte con un link vero", () => {
+    const f = fonti(DATI, c, "https://esempio.it/comune/campobasso-070006", "https://esempio.it");
+    const nomi = f.map((x) => x.nome);
+    expect(nomi).toContain("Spesa per voce e per abitante");
+    expect(nomi).toContain("PNRR");
+    expect(nomi).toContain("Gare e appalti");
+    expect(f.every((x) => /^https:\/\//.test(x.url))).toBe(true);
+    expect(f.at(-1)!.url).toBe("https://esempio.it/dati/comune/070006.json");
+  });
+  it("una card di sola spesa non cita PNRR né gare", () => {
+    const cento = costruisci(DATI).cento;
+    if (!disponibile(cento)) throw new Error("manca");
+    const nomi = fonti(DATI, cento, "https://esempio.it/x", "https://esempio.it").map((x) => x.nome);
+    expect(nomi).not.toContain("PNRR");
+    expect(nomi).not.toContain("Gare e appalti");
+  });
+  it("la citazione ha fonte, anno, link e data", () => {
+    expect(citazione(c, "https://esempio.it/comune/campobasso-070006", "5 ottobre 2026")).toBe(
+      "Parimetro, dati SIOPE (cassa) 2024, https://esempio.it/comune/campobasso-070006, consultato il 5 ottobre 2026",
+    );
+  });
+});
+
 describe("disegno", () => {
   // un contesto finto che registra cosa viene scritto: prova tutte le strade senza un browser
   function finto() {
@@ -194,11 +279,11 @@ describe("disegno", () => {
     });
     return { ctx: ctx as unknown as CanvasRenderingContext2D, testi };
   }
-  const AMB: Ambiente = { serif: "serif", sans: "sans-serif", mono: "monospace", indirizzo: "esempio.it" };
+  const AMB: Ambiente = { display: "serif", testo: "sans-serif", codice: "monospace", indirizzo: "esempio.it" };
 
-  it("disegna tutte e tre le card con le avvertenze e l'indirizzo", () => {
+  it("disegna tutte le card con le avvertenze e l'indirizzo", () => {
     const c = costruisci(DATI);
-    for (const t of ["cento", "tre", "domanda"] as const) {
+    for (const t of ["cento", "tre", "confronto", "domanda"] as const) {
       const cont = c[t];
       if (!disponibile(cont)) throw new Error("manca " + t);
       const { ctx, testi } = finto();
@@ -219,10 +304,32 @@ describe("disegno", () => {
     expect(tutto).toContain("208 €");
     expect(tutto).toContain("61 €");
     expect(tutto).toContain("Cosa spiega la differenza");
-    expect(tutto).toContain("3,4 volte");
+  });
+  it("la card del confronto scrive i due numeri e la differenza con il segno giusto", () => {
+    const cont = costruisci(DATI).confronto;
+    if (!disponibile(cont)) throw new Error("manca");
+    const { ctx, testi } = finto();
+    disegna(ctx, cont, AMB);
+    const tutto = testi.join(" ");
+    expect(tutto).toContain("Campobasso spende più dei comuni come lui.");
+    expect(tutto).toContain("1751 €");
+    expect(tutto).toContain("1123 €");
+    expect(tutto).toContain("+628 €");
+    // in senso opposto il segno è un vero meno
+    const meno = costruisci({ ...DATI, spesaPc: 900 }).confronto;
+    if (!disponibile(meno)) throw new Error("manca");
+    const g = finto();
+    disegna(g.ctx, meno, AMB);
+    expect(g.testi.join(" ")).toContain("spende meno dei comuni come lui.");
+    expect(g.testi.join(" ")).toContain("−223 €");
   });
   it("le misure sono quelle del design", () => {
-    expect(DIMENSIONI).toEqual({ cento: { w: 1080, h: 1080 }, tre: { w: 1080, h: 1920 }, domanda: { w: 1200, h: 630 } });
+    expect(DIMENSIONI).toEqual({
+      cento: { w: 1080, h: 1080 },
+      tre: { w: 1080, h: 1920 },
+      confronto: { w: 1200, h: 630 },
+      domanda: { w: 1200, h: 630 },
+    });
   });
   it("va a capo alle parole senza perderne", () => {
     const ctx = { measureText: (t: string) => ({ width: t.length * 10 }) };

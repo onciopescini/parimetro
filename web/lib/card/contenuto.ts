@@ -1,7 +1,9 @@
-// Cosa scrivere su una card da condividere. Funzioni pure (dati -> contenuto): il disegno sta in disegna.ts.
+// Cosa scrivere su una card da condividere, e il testo del post che l'accompagna. Funzioni pure (dati -> contenuto):
+// il disegno sta in disegna.ts, la finestra in components/card/CreaCard.tsx.
 //
 // Principi, gli stessi del resto del sito: solo cio' che i dati dicono; mai un numero senza il suo confronto coi
-// comuni simili; le avvertenze sono parte della card e non si tolgono; una domanda non e' un'accusa.
+// comuni simili; le avvertenze e le fonti sono parte della card e non si tolgono; una domanda non e' un'accusa;
+// discussione si', rabbia no.
 
 import { AREE, type CategorieComune } from "../categorie";
 import type { Appalti, Concorrenza } from "../appalti";
@@ -9,7 +11,8 @@ import type { Investimenti } from "../investimenti";
 import type { RedditoAnno } from "../reddito";
 import { eConcentrata } from "../classifica";
 
-export type TipoCard = "cento" | "tre" | "domanda";
+export type TipoCard = "cento" | "tre" | "confronto" | "domanda";
+export type Tono = "curioso" | "neutro";
 
 export interface VoceCard {
   istat: string;
@@ -64,24 +67,27 @@ const NOME_CORTO: Record<string, string> = {
   operazioni_finanziarie: "Operazioni finanziarie",
 };
 
-/** Un colore per area, sempre lo stesso: cosi' le card di comuni diversi si leggono allo stesso modo. */
+/**
+ * Un colore per area, sempre lo stesso: cosi' le card di comuni diversi si leggono allo stesso modo.
+ * I colori dicono DI COSA si parla, non se e' bene o male (identita' di Parimetro).
+ */
 export const COLORE_AREA: Record<string, string> = {
-  funzionamento: "#F2B544",
-  non_attribuibile: "#6C7F99",
-  personale: "#2563EB",
-  strade_trasporti: "#3FC1A5",
-  rifiuti: "#F2725B",
-  istruzione: "#7DD3FC",
-  sociale_sanita: "#C084FC",
-  ambiente_territorio: "#84CC16",
-  cultura_sport_turismo: "#F472B6",
-  patrimonio: "#FB923C",
-  utenze: "#FACC15",
-  trasferimenti_imposte: "#94A3B8",
-  debito: "#A78BFA",
-  operazioni_finanziarie: "#64748B",
+  funzionamento: "#B8A1FF", // lillà
+  non_attribuibile: "#CFC6B3", // sabbia: "non sappiamo"
+  personale: "#3B3BD6", // mirtillo
+  strade_trasporti: "#FFD23F", // limone
+  rifiuti: "#F0502D", // pomodoro
+  istruzione: "#2DBE8B", // menta
+  sociale_sanita: "#8FD3FF", // cielo
+  patrimonio: "#FFB88A", // pesca
+  cultura_sport_turismo: "#FF9EC4",
+  ambiente_territorio: "#9BE564",
+  utenze: "#E0C068",
+  trasferimenti_imposte: "#D8D2EA",
+  debito: "#9A92C9",
+  operazioni_finanziarie: "#B9B2A0",
 };
-export const COLORE_RESTO = "#3F5877";
+export const COLORE_RESTO = "#E8DEC8";
 
 export const nomeArea = (area: string) => NOME_CORTO[area] ?? AREE[area] ?? area;
 
@@ -182,7 +188,24 @@ export function treNumeri(d: DatiCard): Numero[] | null {
   return out.length >= 2 ? out : null;
 }
 
-// ---------------------------------------------------------------- una domanda
+// ---------------------------------------------------------------- il confronto della spesa
+export interface Confronto {
+  comune: number;
+  simili: number;
+  /** Differenza assoluta in euro */
+  differenza: number;
+  direzione: "più" | "meno" | "in linea";
+}
+
+/** La spesa per abitante contro la mediana dei simili. Niente se manca uno dei due o se la spesa e' concentrata. */
+export function confrontoSpesaCard(d: DatiCard): Confronto | null {
+  if (d.spesaPc == null || d.simili?.expenditure_pc == null || spesaConcentrata(d.categorie)) return null;
+  const diff = d.spesaPc - d.simili.expenditure_pc;
+  const direzione = Math.abs(diff) < 0.03 * d.simili.expenditure_pc ? "in linea" : diff > 0 ? "più" : "meno";
+  return { comune: d.spesaPc, simili: d.simili.expenditure_pc, differenza: Math.abs(diff), direzione };
+}
+
+// ---------------------------------------------------------------- una domanda (spenta in attesa del parere legale)
 export interface Domanda {
   area: string;
   nome: string;
@@ -228,6 +251,7 @@ export function avvertenza(d: DatiCard, tipo: TipoCard): string {
   const parti: string[] = [];
   const conc = spesaConcentrata(d.categorie);
   if (tipo === "domanda") parti.push("Non è un’accusa: è una domanda.");
+  if (tipo === "cento") parti.push("1 quadretto = 1 €.");
   parti.push(`Dati di cassa ${d.anno} (incassi e pagamenti), fonte SIOPE.`);
   if (d.simili) parti.push(`Confronto con ${nf.format(d.simili.n)} comuni della stessa fascia (${d.simili.fascia}).`);
   if (tipo === "tre" && (d.concorrenza || d.appalti)) parti.push("Gare: fonte ANAC, anno più recente.");
@@ -246,6 +270,7 @@ export interface ContenutoCard {
   anno: number;
   fette?: Fetta[];
   numeri?: Numero[];
+  confronto?: Confronto;
   domanda?: Domanda;
   avvertenza: string;
   /** Nome del file da scaricare, senza estensione */
@@ -291,6 +316,23 @@ export function costruisci(d: DatiCard): Record<TipoCard, ContenutoCard | { moti
       }
     : { motivo: "Servono almeno due dati confrontabili, e per questo comune non ci sono." };
 
+  const conf = confrontoSpesaCard(d);
+  out.confronto = conf
+    ? {
+        ...base,
+        tipo: "confronto",
+        titolo: d.voce.name,
+        confronto: conf,
+        avvertenza: avvertenza(d, "confronto"),
+        file: `parimetro-${slug(d.voce.name)}-confronto`,
+        descrizione: `${d.voce.name} spende ${euro(conf.comune)} per abitante; nei comuni simili la mediana è ${euro(conf.simili)}.`,
+      }
+    : {
+        motivo: spesaConcentrata(d.categorie)
+          ? "Una sola voce pesa troppo sulla spesa di quest’anno: il confronto per abitante non è affidabile."
+          : "Per questo comune mancano la spesa o il confronto con i simili.",
+      };
+
   const dom = domanda(d.categorie);
   out.domanda = dom
     ? {
@@ -311,3 +353,67 @@ export function costruisci(d: DatiCard): Record<TipoCard, ContenutoCard | { moti
 }
 
 export const disponibile = (c: ContenutoCard | { motivo: string }): c is ContenutoCard => "tipo" in c;
+
+// ---------------------------------------------------------------- il testo del post, le fonti, la citazione
+/** Le due voci piu' grosse che dicono qualcosa: fuori "non attribuibile" e il resto. */
+function voceNote(fette: Fetta[]): Fetta[] {
+  return fette.filter((f) => f.nome !== "Tutto il resto" && f.nome !== "Non attribuibile").slice(0, 2);
+}
+
+/**
+ * Il testo gia' pronto per il post. Due toni, entrambi senza rabbia: "curioso" apre con una frase di scoperta,
+ * "neutro" va dritto al dato. Chiude sempre con le avvertenze brevi e il link al dato.
+ */
+export function testoPost(d: DatiCard, c: ContenutoCard, tono: Tono, indirizzo: string): string {
+  const nome = d.voce.name;
+  let dato = "";
+  if (c.tipo === "cento" && c.fette) {
+    const [a, b] = voceNote(c.fette);
+    dato = a && b
+      ? `Su 100 € spesi da ${nome} nel ${c.anno}, ${a.euro} vanno a ${a.nome.toLowerCase()} e ${b.euro} a ${b.nome.toLowerCase()}.`
+      : `Dove vanno i soldi di ${nome}: ogni 100 € spesi nel ${c.anno}, divisi per voce.`;
+  } else if (c.tipo === "tre" && c.numeri) {
+    dato = `${nome} in tre numeri: ${c.numeri.map((n) => `${n.valore} ${n.etichetta}`).join("; ")}.`;
+  } else if (c.tipo === "confronto" && c.confronto) {
+    const k = c.confronto;
+    dato =
+      k.direzione === "in linea"
+        ? `${nome} spende ${euro(k.comune)} per abitante, in linea con i comuni della sua dimensione (${euro(k.simili)}).`
+        : `${nome} spende ${euro(k.comune)} per abitante; nei comuni della sua dimensione la mediana è ${euro(k.simili)}.`;
+  } else if (c.tipo === "domanda" && c.domanda) {
+    dato = `${nome}, ${c.domanda.nome.toLowerCase()}: ${euro(c.domanda.pc)} per abitante contro ${euro(c.domanda.mediana)} dei comuni simili. Cosa spiega la differenza?`;
+  }
+  const apertura = tono === "curioso" ? "Mi ha incuriosito questo confronto. " : "";
+  const simili = d.simili ? ` Confronto con ${nf.format(d.simili.n)} comuni simili.` : "";
+  return `${apertura}${dato}\n\nDati di cassa ${c.anno}, fonte SIOPE.${simili}\nIl dato e la fonte: ${indirizzo}`;
+}
+
+export interface Fonte {
+  nome: string;
+  dettaglio: string;
+  url: string;
+}
+
+/** Le fonti che la card usa davvero, con il link: chi la vede deve poter controllare. */
+export function fonti(d: DatiCard, c: ContenutoCard, indirizzoPagina: string, origine: string): Fonte[] {
+  const out: Fonte[] = [];
+  out.push({ nome: "Spesa per voce e per abitante", dettaglio: `SIOPE, dati di cassa ${c.anno}`, url: "https://www.siope.it" });
+  if (d.simili) {
+    out.push({
+      nome: "Confronto con i simili",
+      dettaglio: `${nf.format(d.simili.n)} comuni ${d.simili.fascia}, mediana`,
+      url: indirizzoPagina,
+    });
+  }
+  if (c.tipo === "tre") {
+    if (d.investimenti?.pnrr.n) out.push({ nome: "PNRR", dettaglio: "Italia Domani, progetti di cui il comune è attuatore", url: "https://www.italiadomani.gov.it" });
+    if (d.concorrenza || d.appalti) out.push({ nome: "Gare e appalti", dettaglio: "ANAC, banca dati dei contratti pubblici", url: "https://dati.anticorruzione.it/opendata" });
+  }
+  out.push({ nome: "Tutti i dati di questo comune", dettaglio: "File JSON, liberi (CC BY-SA 4.0)", url: `${origine}/dati/comune/${d.voce.istat}.json` });
+  return out;
+}
+
+/** La frase per citarci, da copiare. `oggi` e' gia' scritta in italiano ("5 ottobre 2026"). */
+export function citazione(c: ContenutoCard, indirizzoPagina: string, oggi: string): string {
+  return `Parimetro, dati SIOPE (cassa) ${c.anno}, ${indirizzoPagina}, consultato il ${oggi}`;
+}

@@ -78,3 +78,9 @@ AI chat
 The optional chat sends the user's question to a third-party model provider through
 OpenRouter. The numbers shown in answers are always computed by this code from the
 published data files, never by the model.
+
+Fonts
+-----
+Fraunces and Figtree are served from this site (web/public/fonts), under the SIL Open Font License 1.1, so that
+visitors' browsers do not contact a third party. DM Mono is bundled by Next.js at build time (also OFL 1.1).
+See web/public/fonts/LICENZA-FONT.txt.

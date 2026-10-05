@@ -1,0 +1,8 @@
+Fraunces (variable, with the "SOFT" axis fixed at 100, subset: latin)
+Copyright 2018 The Fraunces Project Authors (https://github.com/undercasetype/Fraunces)
+Licensed under the SIL Open Font License, Version 1.1: https://openfontlicense.org
+Served from this site instead of a third party, so that visitors' browsers do not contact Google.
+
+Figtree (variable, subset: latin)
+Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree)
+Licensed under the SIL Open Font License, Version 1.1: https://openfontlicense.org

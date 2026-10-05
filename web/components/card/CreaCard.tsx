@@ -1,11 +1,21 @@
 "use client";
 
-// "Crea la card": sceglie cosa mostrare, disegna l'immagine nel browser e la fa scaricare o condividere.
-// Nessun server e nessun dato lascia il dispositivo: l'immagine nasce da un <canvas> locale.
-// Le avvertenze sono dentro la card e non c'e' modo di toglierle.
+// "Crea la card": sceglie cosa mostrare, disegna l'immagine nel browser e la fa scaricare o condividere, insieme
+// al testo del post, alle fonti con i link e alla frase per citarci. Nessun server e nessun dato lascia il
+// dispositivo: l'immagine nasce da un <canvas> locale. Avvertenze e fonti sono dentro la card e non si tolgono.
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { costruisci, disponibile, type ContenutoCard, type DatiCard, type TipoCard } from "@/lib/card/contenuto";
+import {
+  citazione,
+  costruisci,
+  disponibile,
+  fonti,
+  testoPost,
+  type ContenutoCard,
+  type DatiCard,
+  type TipoCard,
+  type Tono,
+} from "@/lib/card/contenuto";
 import { DIMENSIONI, disegna, type Ambiente } from "@/lib/card/disegna";
 import { slugComune } from "@/lib/pagina/comune";
 
@@ -13,43 +23,61 @@ import { slugComune } from "@/lib/pagina/comune";
  * Le card offerte al pubblico. "domanda" e' pronta e testata ma resta spenta finche' il testo (e il rimando
  * all'accesso civico) non e' stato rivisto da chi ha competenza legale: per accenderla basta aggiungerla qui.
  */
-const ATTIVE: readonly TipoCard[] = ["cento", "tre"];
+const ATTIVE: readonly TipoCard[] = ["cento", "tre", "confronto"];
 
-const TUTTE: { tipo: TipoCard; titolo: string; testo: string; formato: string }[] = [
-  { tipo: "cento", titolo: "Dove vanno i soldi", testo: "Ogni 100 € spesi dal comune, divisi per voce.", formato: "Quadrata · Facebook e Instagram" },
-  { tipo: "tre", titolo: "Il confronto con i simili", testo: "Tre numeri: spesa, PNRR e gare.", formato: "Verticale · storie" },
-  { tipo: "domanda", titolo: "Una domanda per il comune", testo: "Il dato che si discosta di più dai comuni simili.", formato: "Larga · WhatsApp e link" },
+const TUTTE: { tipo: TipoCard; nome: string; testo: string }[] = [
+  { tipo: "cento", nome: "Ogni 100 €", testo: "Quadrata, per i post." },
+  { tipo: "tre", nome: "Tre numeri", testo: "Verticale, per le storie." },
+  { tipo: "confronto", nome: "Confronto", testo: "Larga, per messaggi e link." },
+  { tipo: "domanda", nome: "Una domanda", testo: "Larga." },
+];
+const SCELTE = TUTTE.filter((s) => ATTIVE.includes(s.tipo));
+
+const TONI: { tono: Tono; nome: string }[] = [
+  { tono: "curioso", nome: "Curioso" },
+  { tono: "neutro", nome: "Neutro" },
 ];
 
 /** Le famiglie di caratteri che next/font ha caricato, lette dalle variabili CSS; se mancano, caratteri di sistema. */
-function famiglie(): Pick<Ambiente, "serif" | "sans" | "mono"> {
+function famiglie(): Pick<Ambiente, "display" | "testo" | "codice"> {
   const css = getComputedStyle(document.documentElement);
   const leggi = (nome: string, ripiego: string) => {
     const v = css.getPropertyValue(nome).trim();
     return v ? `${v}, ${ripiego}` : ripiego;
   };
   return {
-    serif: leggi("--font-card-serif", "Georgia, serif"),
-    sans: leggi("--font-card-sans", "system-ui, sans-serif"),
-    mono: leggi("--font-card-mono", "ui-monospace, monospace"),
+    display: leggi("--f-display", "Georgia, serif"),
+    testo: leggi("--f-testo", "system-ui, sans-serif"),
+    codice: leggi("--f-codice", "ui-monospace, monospace"),
   };
 }
 
-const SCELTE = TUTTE.filter((s) => ATTIVE.includes(s.tipo));
+const oggi = () => new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "long", year: "numeric" }).format(new Date());
 
 export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: () => void }) {
   const contenuti = useMemo(() => costruisci(dati), [dati]);
   const primo = SCELTE.find((s) => disponibile(contenuti[s.tipo]))?.tipo ?? "cento";
   const [tipo, setTipo] = useState<TipoCard>(primo);
+  const [tono, setTono] = useState<Tono>("curioso");
   const [anteprima, setAnteprima] = useState<string | null>(null);
   const [errore, setErrore] = useState<string | null>(null);
-  const [copiato, setCopiato] = useState(false);
+  const [copiato, setCopiato] = useState<"" | "testo" | "citazione">("");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chiudiRef = useRef<HTMLButtonElement>(null);
 
   const scelto = contenuti[tipo];
   const contenuto: ContenutoCard | null = disponibile(scelto) ? scelto : null;
-  const indirizzoPagina = typeof window === "undefined" ? "" : `${window.location.origin}/comune/${slugComune(dati.voce.name, dati.voce.istat)}`;
+
+  // Gli indirizzi dipendono dal sito su cui siamo: valgono con qualunque dominio
+  const origine = typeof window === "undefined" ? "" : window.location.origin;
+  const indirizzoPagina = `${origine}/comune/${slugComune(dati.voce.name, dati.voce.istat)}`;
+
+  // Il testo del post: si riscrive quando cambiano card o tono, a meno che la persona l'abbia modificato
+  const proposto = useMemo(() => (contenuto ? testoPost(dati, contenuto, tono, indirizzoPagina) : ""), [dati, contenuto, tono, indirizzoPagina]);
+  const [modificato, setModificato] = useState<string | null>(null);
+  const testo = modificato ?? proposto;
+  const elencoFonti = useMemo(() => (contenuto ? fonti(dati, contenuto, indirizzoPagina, origine) : []), [dati, contenuto, indirizzoPagina, origine]);
+  const frase = contenuto ? citazione(contenuto, indirizzoPagina, oggi()) : "";
   const sharePossibile = typeof navigator !== "undefined" && typeof navigator.share === "function" && typeof navigator.canShare === "function";
 
   // Disegna la card quando cambia il tipo (e i caratteri sono pronti)
@@ -60,7 +88,7 @@ export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: (
       try {
         const f = famiglie();
         await Promise.all(
-          [`500 40px ${f.serif}`, `600 40px ${f.serif}`, `400 24px ${f.mono}`, `500 24px ${f.mono}`, `400 24px ${f.sans}`, `500 24px ${f.sans}`].map(
+          [`700 40px ${f.display}`, `600 20px ${f.display}`, `400 20px ${f.testo}`, `500 20px ${f.testo}`, `600 20px ${f.testo}`, `700 20px ${f.testo}`, `400 20px ${f.codice}`, `500 20px ${f.codice}`].map(
             (x) => document.fonts.load(x).catch(() => []),
           ),
         );
@@ -117,127 +145,194 @@ export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: (
     if (!b || !contenuto) return;
     const file = new File([b], `${contenuto.file}.png`, { type: "image/png" });
     try {
-      if (navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: `${dati.voce.name} · Parimetro`, text: contenuto.descrizione, url: indirizzoPagina });
-      } else {
-        await navigator.share({ title: `${dati.voce.name} · Parimetro`, text: contenuto.descrizione, url: indirizzoPagina });
-      }
+      if (navigator.canShare({ files: [file] })) await navigator.share({ files: [file], title: `${dati.voce.name} · Parimetro`, text: testo });
+      else await navigator.share({ title: `${dati.voce.name} · Parimetro`, text: testo, url: indirizzoPagina });
     } catch {
       /* l'utente ha chiuso il foglio di condivisione: niente da segnalare */
     }
   }
 
-  async function copiaLink() {
+  async function copia(cosa: "testo" | "citazione") {
     try {
-      await navigator.clipboard.writeText(indirizzoPagina);
-      setCopiato(true);
-      setTimeout(() => setCopiato(false), 2500);
+      await navigator.clipboard.writeText(cosa === "testo" ? testo : frase);
+      setCopiato(cosa);
+      setTimeout(() => setCopiato(""), 2500);
     } catch {
-      setErrore("Non riesco a copiare il link: selezionalo e copialo a mano.");
+      setErrore("Non riesco a copiare: selezionalo e copialo a mano.");
     }
   }
 
-  const testoWhatsapp = contenuto ? `${contenuto.descrizione} ${indirizzoPagina}` : indirizzoPagina;
+  const nonDisponibili = SCELTE.filter((s) => !disponibile(contenuti[s.tipo]));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-6" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-inchiostro/80 p-0 backdrop-blur-sm sm:items-center sm:p-6" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="crea-card-titolo"
-        className="flex max-h-[96vh] w-full max-w-4xl flex-col overflow-hidden rounded-t-3xl bg-[#F4EFE4] text-[#1F2430] shadow-2xl sm:rounded-3xl"
+        className="font-testo flex max-h-[96vh] w-full max-w-5xl flex-col overflow-hidden rounded-t-[36px] bg-crema text-inchiostro shadow-2xl sm:rounded-[44px]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 px-6 pb-3 pt-6 sm:px-8">
+        <div className="flex items-start justify-between gap-4 px-6 pb-2 pt-6 sm:px-9 sm:pt-8">
           <div>
-            <h2 id="crea-card-titolo" className="font-serif text-2xl font-semibold leading-tight sm:text-3xl" style={{ fontFamily: "var(--font-card-serif), Georgia, serif" }}>
-              Crea la card di {dati.voce.name}
+            <h2 id="crea-card-titolo" className="font-display text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl">
+              Il post di {dati.voce.name} è già pronto.
             </h2>
-            <p className="mt-1 text-base text-[#6B6A60]">Scegli cosa mostrare, poi scaricala o mandala.</p>
+            <p className="mt-1 text-base text-[#45435E]">Cambialo come vuoi: la fonte viaggia con la card.</p>
           </div>
           <button
             ref={chiudiRef}
             onClick={onClose}
             aria-label="Chiudi"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#C9BFA9] text-[#45463F] hover:bg-black/5"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-[#E8DEC8] bg-white hover:bg-[#F4EEDF]"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
         </div>
 
-        <div className="grid min-h-0 flex-1 gap-6 overflow-y-auto px-6 pb-6 sm:px-8 md:grid-cols-[1.05fr_.95fr]">
+        <div className="grid min-h-0 flex-1 gap-6 overflow-y-auto px-6 pb-6 pt-3 sm:px-9 md:grid-cols-[.9fr_1.1fr]">
+          {/* ---- la card ---- */}
           <div className="flex flex-col gap-3">
-            <div role="radiogroup" aria-label="Che cosa vuoi mostrare" className="flex flex-col gap-3">
+            <div className="flex min-h-[260px] items-center justify-center rounded-[32px] bg-[#F0E8D6] p-4">
+              {anteprima && contenuto ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={anteprima} alt={contenuto.descrizione} className="max-h-[48vh] w-auto max-w-full rounded-[24px] shadow-[0_18px_40px_rgba(27,26,46,.18)]" />
+              ) : errore ? (
+                <p className="text-center text-[15px] text-[#A83A22]">{errore}</p>
+              ) : (
+                <p className="text-[15px] text-grigio">{contenuto ? "Preparo la card…" : "Scegli una card disponibile."}</p>
+              )}
+            </div>
+            <div role="radiogroup" aria-label="Che card vuoi" className="flex flex-wrap justify-center gap-2">
               {SCELTE.map((s) => {
-                const c = contenuti[s.tipo];
-                const ok = disponibile(c);
+                const ok = disponibile(contenuti[s.tipo]);
                 const attivo = tipo === s.tipo && ok;
                 return (
                   <button
                     key={s.tipo}
                     role="radio"
                     aria-checked={attivo}
-                    aria-disabled={!ok}
                     disabled={!ok}
-                    onClick={() => setTipo(s.tipo)}
-                    className={`min-h-14 rounded-2xl border-2 px-4 py-3 text-left transition ${
-                      attivo ? "border-[#D99A25] bg-[#FFF7E3]" : ok ? "border-[#D9D0BE] bg-[#FBF8F1] hover:border-[#C9BFA9]" : "cursor-not-allowed border-[#E3DAC8] bg-[#EFE7D6] opacity-70"
+                    title={s.testo}
+                    onClick={() => {
+                      setTipo(s.tipo);
+                      setModificato(null);
+                    }}
+                    className={`min-h-12 rounded-full border-2 px-5 text-[15px] font-semibold transition ${
+                      attivo ? "border-mirtillo bg-mirtillo text-white" : ok ? "border-[#E8DEC8] bg-white hover:border-[#CFC6B3]" : "cursor-not-allowed border-[#E8DEC8] bg-[#EFE7D6] text-grigio opacity-70"
                     }`}
                   >
-                    <div className="text-lg font-semibold">{s.titolo}</div>
-                    <div className="text-[15px] leading-snug text-[#6B6A60]">{ok ? s.testo : (c as { motivo: string }).motivo}</div>
-                    {ok && <div className="mt-1 text-[13px] font-medium text-[#8A5300]">{s.formato}</div>}
+                    {s.nome}
                   </button>
                 );
               })}
             </div>
-            <p className="rounded-2xl bg-[#EFE7D6] p-4 text-[15px] leading-relaxed text-[#2B2F38]">
-              <strong>Le avvertenze restano sulla card.</strong> Dice che i dati sono di cassa e con quali comuni è confrontato: così un numero non viene frainteso. Non si può togliere.
-            </p>
+            {nonDisponibili.map((s) => (
+              <p key={s.tipo} className="px-2 text-center text-[13px] leading-snug text-grigio">
+                <strong>{s.nome}</strong> non c’è: {(contenuti[s.tipo] as { motivo: string }).motivo}
+              </p>
+            ))}
           </div>
 
-          <div className="flex flex-col gap-3">
-            <div className="flex min-h-[220px] items-center justify-center rounded-2xl bg-[#E9E2D1] p-4">
-              {anteprima && contenuto ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={anteprima} alt={contenuto.descrizione} className="max-h-[46vh] w-auto max-w-full rounded-xl shadow-lg" />
-              ) : errore ? (
-                <p className="text-center text-[15px] text-[#A83A22]">{errore}</p>
-              ) : (
-                <p className="text-[15px] text-[#6B6A60]">{contenuto ? "Preparo la card…" : "Scegli un’opzione disponibile."}</p>
+          {/* ---- il testo, le fonti, i pulsanti ---- */}
+          <div className="flex flex-col gap-4">
+            <div>
+              <div className="font-codice text-xs font-medium uppercase tracking-wider text-grigio">Che tono vuoi?</div>
+              <div className="mt-2 flex gap-2" role="radiogroup" aria-label="Tono del testo">
+                {TONI.map((t) => (
+                  <button
+                    key={t.tono}
+                    role="radio"
+                    aria-checked={tono === t.tono}
+                    onClick={() => {
+                      setTono(t.tono);
+                      setModificato(null);
+                    }}
+                    className={`min-h-12 rounded-full border-2 px-5 text-[15px] font-semibold ${
+                      tono === t.tono ? "border-mirtillo bg-mirtillo text-white" : "border-[#E8DEC8] bg-white hover:border-[#CFC6B3]"
+                    }`}
+                  >
+                    {t.nome}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="testo-post" className="font-codice text-xs font-medium uppercase tracking-wider text-grigio">
+                Il testo del post
+              </label>
+              <textarea
+                id="testo-post"
+                value={testo}
+                onChange={(e) => setModificato(e.target.value)}
+                rows={6}
+                className="mt-2 w-full resize-y rounded-[24px] border-2 border-[#E8DEC8] bg-white p-4 text-[16px] leading-relaxed focus:border-mirtillo focus:outline-none"
+              />
+              {modificato != null && (
+                <button onClick={() => setModificato(null)} className="mt-1 min-h-11 text-sm font-semibold text-mirtillo underline underline-offset-2">
+                  Riscrivi il testo
+                </button>
               )}
             </div>
-            <button
-              onClick={scarica}
-              disabled={!anteprima}
-              className="min-h-14 rounded-2xl bg-[#0A1018] text-lg font-semibold text-[#F4EFE4] hover:bg-[#1A2A40] disabled:opacity-50"
-            >
-              Scarica l’immagine
-            </button>
-            <div className="grid grid-cols-2 gap-3">
+
+            <div>
+              <div className="font-codice text-xs font-medium uppercase tracking-wider text-grigio">Le fonti che porti con te</div>
+              <ul className="mt-2 flex flex-col gap-2">
+                {elencoFonti.map((f) => (
+                  <li key={f.nome} className="flex items-start gap-3 rounded-[20px] bg-white px-4 py-3">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-menta" aria-hidden="true">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1B1A2E" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12l5 5 9-10" />
+                      </svg>
+                    </span>
+                    <div className="text-[15px] leading-snug">
+                      <strong>{f.nome}</strong> · {f.dettaglio}
+                      <br />
+                      <a href={f.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-mirtillo underline underline-offset-2">
+                        Apri il dato ↗
+                      </a>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-[24px] bg-[#E8E4FF] px-4 py-3">
+              <div className="min-w-0 flex-1 text-sm leading-snug">
+                <strong>Come citarci</strong>
+                <div className="font-codice mt-0.5 break-words text-[13px]">{frase}</div>
+              </div>
+              <button onClick={() => copia("citazione")} className="min-h-11 shrink-0 rounded-full border-2 border-inchiostro bg-white px-4 text-sm font-semibold" aria-live="polite">
+                {copiato === "citazione" ? "Copiata ✓" : "Copia"}
+              </button>
+            </div>
+
+            <div className="mt-auto grid gap-3 sm:grid-cols-[1.3fr_1fr_1fr]">
               {sharePossibile ? (
-                <button onClick={condividi} disabled={!anteprima} className="min-h-12 rounded-xl border border-[#1F2430] text-base hover:bg-black/5 disabled:opacity-50">
+                <button onClick={condividi} disabled={!anteprima} className="min-h-14 rounded-full bg-mirtillo text-lg font-bold text-white hover:opacity-90 disabled:opacity-50">
                   Condividi…
                 </button>
               ) : (
                 <a
-                  href={`https://wa.me/?text=${encodeURIComponent(testoWhatsapp)}`}
+                  href={`https://wa.me/?text=${encodeURIComponent(testo)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex min-h-12 items-center justify-center rounded-xl border border-[#1F2430] text-base hover:bg-black/5"
+                  className="flex min-h-14 items-center justify-center rounded-full bg-mirtillo text-lg font-bold text-white hover:opacity-90"
                 >
                   Manda su WhatsApp
                 </a>
               )}
-              <button onClick={copiaLink} className="min-h-12 rounded-xl border border-[#1F2430] text-base hover:bg-black/5" aria-live="polite">
-                {copiato ? "Link copiato ✓" : "Copia il link"}
+              <button onClick={scarica} disabled={!anteprima} className="min-h-14 rounded-full border-2 border-inchiostro text-base font-bold hover:bg-white disabled:opacity-50">
+                Scarica
+              </button>
+              <button onClick={() => copia("testo")} className="min-h-14 rounded-full border-2 border-inchiostro text-base font-bold hover:bg-white" aria-live="polite">
+                {copiato === "testo" ? "Copiato ✓" : "Copia il testo"}
               </button>
             </div>
-            <p className="text-[13px] leading-snug text-[#6B6A60]">
-              La card non contiene il tuo nome. Il link porta alla pagina del comune, non a un tuo profilo.
-            </p>
+            <p className="text-[13px] leading-snug text-grigio">La card non contiene il tuo nome. Il link porta alla pagina del comune, non a un tuo profilo.</p>
           </div>
         </div>
       </div>
