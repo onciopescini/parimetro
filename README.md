@@ -3,7 +3,7 @@
 **An interactive 3D map of how every Italian municipality spends public money** — and how
 it compares with towns of the same size. Open data in, a static website out.
 
-Live: <https://parimetro.pages.dev> · 🇮🇹 [Leggi in italiano](README.it.md)
+Live: <https://parimetro.it> · 🇮🇹 [Leggi in italiano](README.it.md)
 
 ## What it does
 

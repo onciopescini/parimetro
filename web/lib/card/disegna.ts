@@ -9,7 +9,7 @@ export interface Ambiente {
   display: string;
   testo: string;
   codice: string;
-  /** Indirizzo da stampare sulla card, es. "parimetro.pages.dev" */
+  /** Indirizzo da stampare sulla card, es. "parimetro.it" */
   indirizzo: string;
 }
 

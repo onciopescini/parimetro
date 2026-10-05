@@ -3,7 +3,7 @@
 **Una mappa 3D interattiva di come ogni comune italiano spende i soldi pubblici**, e di come
 si colloca rispetto ai comuni della sua taglia. Dati aperti in ingresso, un sito statico in uscita.
 
-Online: <https://parimetro.pages.dev> · 🇬🇧 [Read in English](README.md)
+Online: <https://parimetro.it> · 🇬🇧 [Read in English](README.md)
 
 ## Cosa fa
 

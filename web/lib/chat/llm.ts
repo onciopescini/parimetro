@@ -58,7 +58,7 @@ async function provaModello<T>(
       headers: {
         Authorization: `Bearer ${o.chiave}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": o.referer ?? "https://parimetro.pages.dev",
+        "HTTP-Referer": o.referer ?? "https://parimetro.it",
         "X-Title": "Parimetro",
       },
       body: JSON.stringify(corpo),
