@@ -468,21 +468,20 @@ export default function Map3D({
         v == null || !Number.isFinite(v) ? "—" : new Intl.NumberFormat("it-IT", { maximumFractionDigits: 0 }).format(v);
       const hVal = metricValue(p, heightMetric, perCapita);
       const cVal = metricValue(p, colorMetric, perCapita);
-      const fhiCol = p.fhi >= 70 ? "#10B981" : p.fhi >= 40 ? "#F59E0B" : "#EF4444";
+      const fhiCol = p.fhi >= 70 ? "#1B1A2E" : p.fhi >= 40 ? "#1B1A2E" : "#1B1A2E";
       return {
         html: `
-          <div style="font-family:ui-sans-serif,system-ui;min-width:190px;padding:10px 12px;border-radius:12px;
-                      background:rgba(15,23,42,.85);backdrop-filter:blur(8px);
-                      border:1px solid rgba(255,255,255,.12);color:#E2E8F0;
-                      box-shadow:0 8px 24px rgba(0,0,0,.4)">
-            <div style="font-weight:600;font-size:13px;margin-bottom:2px">${name}</div>
-            <div style="font-size:11px;color:#94A3B8;margin-bottom:8px">${p.name ? p.province : p.region} · ${fmt(p.population)} ab.</div>
+          <div style="font-family:Figtree,ui-sans-serif,system-ui;min-width:190px;padding:12px 14px;border-radius:20px;
+                      background:#FFF6E5;border:1px solid #E8DEC8;color:#1B1A2E;
+                      box-shadow:0 8px 24px rgba(27,26,46,.25)">
+            <div style="font-weight:700;font-size:15px;margin-bottom:2px">${name}</div>
+            <div style="font-size:11px;color:#5A5873;margin-bottom:8px">${p.name ? p.province : p.region} · ${fmt(p.population)} ab.</div>
             <div style="display:flex;justify-content:space-between;font-size:12px;gap:12px">
-              <span style="color:#94A3B8">${METRIC_LABELS[heightMetric]}</span>
+              <span style="color:#5A5873">${METRIC_LABELS[heightMetric]}</span>
               <span>${fmt(hVal)}${unitaDi(heightMetric)}</span>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:12px;gap:12px">
-              <span style="color:#94A3B8">${METRIC_LABELS[colorMetric]}</span>
+              <span style="color:#5A5873">${METRIC_LABELS[colorMetric]}</span>
               <span>${fmt(cVal)}${unitaDi(colorMetric)}</span>
             </div>
             ${p.fhi != null ? `<div style="margin-top:8px;font-size:11px;color:${fhiCol}">FHI ${p.fhi}/100</div>` : ""}
@@ -536,8 +535,8 @@ export default function Map3D({
       </DeckGL>
 
       {/* Legenda cromatica */}
-      <div className="pointer-events-none absolute bottom-4 left-4 rounded-xl border border-white/10 bg-slate-900/80 px-3 py-2 backdrop-blur-md">
-        <div className="mb-1 text-[10px] uppercase tracking-wider text-slate-400">
+      <div className="pointer-events-none absolute bottom-4 left-4 rounded-3xl border border-[#E8DEC8] bg-crema px-3 py-2">
+        <div className="mb-1 text-xs uppercase tracking-wider text-grigio">
           {METRIC_LABELS[colorMetric]}
         </div>
         <div
@@ -550,14 +549,14 @@ export default function Map3D({
             })`,
           }}
         />
-        <div className="mt-1 flex justify-between text-[10px] text-slate-400">
+        <div className="mt-1 flex justify-between text-xs text-grigio">
           <span>min</span>
           <span>max</span>
         </div>
       </div>
 
       {loading && (
-        <div className="absolute right-4 top-4 rounded-full border border-white/10 bg-slate-900/80 px-3 py-1.5 text-xs text-slate-300 backdrop-blur-md">
+        <div className="absolute right-4 top-4 rounded-full border border-[#E8DEC8] bg-crema px-3 py-1.5 text-xs text-inchiostro">
           Caricamento bilanci {year}…
         </div>
       )}

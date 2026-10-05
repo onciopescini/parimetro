@@ -331,7 +331,7 @@ function Mappa() {
       )}
 
       <div
-        className={`pointer-events-auto absolute left-4 top-4 w-60 rounded-xl border border-white/10 bg-slate-900/80 p-3 text-slate-200 backdrop-blur-md ${
+        className={`pointer-events-auto absolute left-4 top-4 max-h-[calc(100dvh-9rem)] w-64 overflow-y-auto rounded-3xl border border-[#E8DEC8] bg-crema p-3 text-inchiostro ${
           classifiche
             ? "hidden" // le classifiche occupano lo stesso posto
             : open
@@ -341,24 +341,24 @@ function Mappa() {
       >
         <div className="flex items-baseline justify-between">
           <h1 className="text-sm font-semibold">Parimetro</h1>
-          <span className="text-[10px] uppercase tracking-wider text-slate-500">3D</span>
+          <span className="text-xs uppercase tracking-wider text-grigio">3D</span>
         </div>
 
-        <p className="mt-1 text-[11px] leading-snug text-slate-400">
+        <p className="mt-1 text-xs leading-snug text-grigio">
           Confini e popolazione ISTAT · importi SIOPE.
         </p>
 
         {/* I dati SIOPE sono di cassa, non di competenza: dirlo è doveroso,
             perché "avanzo" qui significa saldo di cassa e non risultato
             di amministrazione. */}
-        <p className="mt-1 text-[11px] leading-snug text-amber-300/80">
+        <p className="mt-1 text-xs leading-snug text-inchiostro">
           Contabilità di cassa: incassi e pagamenti, non accertamenti e impegni.
         </p>
 
         <div className="relative mt-3">
           <Search
             size={13}
-            className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-slate-500"
+            className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-grigio"
           />
           <input
             type="search"
@@ -366,28 +366,28 @@ function Mappa() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cerca un comune…"
             aria-label="Cerca un comune per nome o codice ISTAT"
-            className="w-full rounded-md border border-white/10 bg-slate-800/80 py-1.5 pl-7 pr-7 text-[11px] text-slate-200 placeholder:text-slate-500 focus:border-sky-400/50 focus:outline-none"
+            className="w-full rounded-xl border border-[#E8DEC8] bg-carta py-1.5 pl-7 pr-7 text-xs text-inchiostro placeholder:text-grigio focus:border-mirtillo focus:outline-none"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
               aria-label="Cancella la ricerca"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-slate-500 hover:text-slate-200"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-grigio hover:text-inchiostro"
             >
               <X size={13} />
             </button>
           )}
 
           {risultati.length > 0 && (
-            <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-white/10 bg-slate-900/95 py-1 shadow-xl backdrop-blur-md">
+            <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-[#E8DEC8] bg-crema py-1 shadow-[0_12px_40px_rgba(27,26,46,0.2)]">
               {risultati.map((r) => (
                 <li key={r.istat}>
                   <button
                     onClick={() => vaiA(r)}
-                    className="w-full px-2 py-1.5 text-left hover:bg-white/10"
+                    className="w-full px-2 py-1.5 text-left hover:bg-sabbia/30"
                   >
-                    <div className="text-[11px] text-slate-100">{r.name}</div>
-                    <div className="text-[10px] text-slate-400">
+                    <div className="text-xs text-inchiostro">{r.name}</div>
+                    <div className="text-xs text-grigio">
                       {r.province} · {new Intl.NumberFormat("it-IT").format(r.population)} ab
                     </div>
                   </button>
@@ -397,7 +397,7 @@ function Mappa() {
           )}
         </div>
 
-        <label className="mt-3 block text-[10px] uppercase tracking-wider text-slate-400">
+        <label className="mt-3 block text-xs uppercase tracking-wider text-grigio">
           Esercizio
         </label>
         <div className="mt-1 flex flex-wrap gap-1">
@@ -405,10 +405,10 @@ function Mappa() {
             <button
               key={y}
               onClick={() => setYear(y)}
-              className={`rounded-md px-2 py-1 text-[11px] transition-colors ${
+              className={`rounded-xl px-2 py-1 text-xs transition-colors ${
                 y === year
-                  ? "bg-white/15 text-white"
-                  : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  ? "bg-mirtillo text-white"
+                  : "text-grigio hover:bg-sabbia/30 hover:text-inchiostro"
               }`}
             >
               {y}
@@ -417,7 +417,7 @@ function Mappa() {
         </div>
 
         <label
-          className="mt-3 block text-[10px] uppercase tracking-wider text-slate-400"
+          className="mt-3 block text-xs uppercase tracking-wider text-grigio"
           htmlFor="height-metric"
         >
           Altezza
@@ -426,7 +426,7 @@ function Mappa() {
           id="height-metric"
           value={heightMetric}
           onChange={(e) => setHeightMetric(e.target.value as MetricKey)}
-          className="mt-1 w-full rounded-md border border-white/10 bg-slate-800/80 px-2 py-1 text-[11px] text-slate-200"
+          className="mt-1 w-full rounded-xl border border-[#E8DEC8] bg-carta px-2 py-1 text-xs text-inchiostro"
         >
           {METRICS.map((m) => (
             <option key={m} value={m}>
@@ -436,7 +436,7 @@ function Mappa() {
         </select>
 
         <label
-          className="mt-2 block text-[10px] uppercase tracking-wider text-slate-400"
+          className="mt-2 block text-xs uppercase tracking-wider text-grigio"
           htmlFor="color-metric"
         >
           Colore
@@ -445,7 +445,7 @@ function Mappa() {
           id="color-metric"
           value={colorMetric}
           onChange={(e) => setColorMetric(e.target.value as MetricKey)}
-          className="mt-1 w-full rounded-md border border-white/10 bg-slate-800/80 px-2 py-1 text-[11px] text-slate-200"
+          className="mt-1 w-full rounded-xl border border-[#E8DEC8] bg-carta px-2 py-1 text-xs text-inchiostro"
         >
           {METRICS.map((m) => (
             <option key={m} value={m}>
@@ -456,16 +456,16 @@ function Mappa() {
 
         <button
           onClick={() => setPerCapita((v) => !v)}
-          className={`mt-3 w-full rounded-md border px-2 py-1.5 text-[11px] transition-colors ${
+          className={`mt-3 w-full rounded-xl border px-2 py-1.5 text-xs transition-colors ${
             perCapita
-              ? "border-emerald-400/40 bg-emerald-400/15 text-emerald-200"
-              : "border-white/10 bg-white/5 text-slate-300 hover:bg-white/10"
+              ? "border-mirtillo bg-mirtillo text-white"
+              : "border-[#E8DEC8] bg-carta text-inchiostro hover:bg-sabbia/30"
           }`}
         >
           {perCapita ? "Valori pro capite" : "Valori assoluti"}
         </button>
         {(heightMetric === "income" || colorMetric === "income") && (
-          <p className="mt-1.5 text-[10px] leading-snug text-slate-400">
+          <p className="mt-1.5 text-xs leading-snug text-grigio">
             Il reddito è l&apos;imponibile IRPEF medio per contribuente, non cambia con pro capite/assoluti. Grigio:
             dato non disponibile.
           </p>
@@ -473,10 +473,10 @@ function Mappa() {
 
         <button
           onClick={() => setComuniOvunque((v) => !v)}
-          className={`mt-1.5 w-full rounded-md border px-2 py-1.5 text-[11px] transition-colors ${
+          className={`mt-1.5 w-full rounded-xl border px-2 py-1.5 text-xs transition-colors ${
             comuniOvunque
-              ? "border-sky-400/40 bg-sky-400/15 text-sky-200"
-              : "border-white/10 bg-white/5 text-slate-300 hover:bg-white/10"
+              ? "border-mirtillo bg-mirtillo text-white"
+              : "border-[#E8DEC8] bg-carta text-inchiostro hover:bg-sabbia/30"
           }`}
         >
           {/* Niente conteggio cablato: cambia a ogni import dell'ETL
@@ -486,12 +486,12 @@ function Mappa() {
 
         <button
           onClick={() => setClassifiche(true)}
-          className="mt-1.5 flex w-full items-center justify-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] text-slate-300 transition-colors hover:bg-white/10"
+          className="mt-1.5 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#E8DEC8] bg-carta px-2 py-1.5 text-xs text-inchiostro transition-colors hover:bg-sabbia/30"
         >
           <Trophy size={12} /> Classifiche
         </button>
 
-        <p className="mt-3 text-[10px] leading-snug text-slate-500">
+        <p className="mt-3 text-xs leading-snug text-grigio">
           Trascina per ruotare · rotella per lo zoom · clicca un comune per il
           dettaglio. In modalità province il passaggio ai comuni scatta a zoom 6.3.
         </p>

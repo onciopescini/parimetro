@@ -349,7 +349,7 @@ export default function BudgetDrawer({
           className="fixed inset-x-0 bottom-0 z-40 flex max-h-[84vh] flex-col rounded-t-[32px] border-t border-[#E8DEC8] bg-crema text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.16)] md:inset-y-0 md:left-auto md:right-0 md:h-full md:max-h-none md:w-[440px] md:rounded-l-[32px] md:rounded-tr-none md:border-l md:border-t-0"
         >
           {/* ---------- Header ---------- */}
-          <header className="flex items-start justify-between gap-3 border-b border-[#E8DEC8] p-4">
+          <header className="flex shrink-0 items-start justify-between gap-3 border-b border-[#E8DEC8] p-4">
             <div>
               <h2 className="font-display text-3xl font-semibold leading-tight">{data.name}</h2>
               <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-grigio">
@@ -407,7 +407,7 @@ export default function BudgetDrawer({
           </header>
 
           {/* ---------- Tab bar ---------- */}
-          <nav className="flex gap-1.5 overflow-x-auto border-b border-[#E8DEC8] p-2.5">
+          <nav className="flex shrink-0 gap-1.5 overflow-x-auto border-b border-[#E8DEC8] p-2.5">
             {(
               [
                 ["quadro", "Quadro"],
