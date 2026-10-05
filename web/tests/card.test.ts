@@ -5,7 +5,6 @@ import {
   confrontoSpesaCard,
   costruisci,
   disponibile,
-  domanda,
   fonti,
   ognicento,
   spesaConcentrata,
@@ -118,38 +117,13 @@ describe("tre numeri", () => {
   });
 });
 
-describe("una domanda", () => {
-  it("sceglie l'area che si discosta di più dai simili", () => {
-    const d = domanda(CAT)!;
-    expect(d.area).toBe("strade_trasporti"); // 208 contro 61: 3,4 volte
-    expect(d.direzione).toBe("più");
-    expect(Math.round(d.rapporto * 10) / 10).toBe(3.4);
-  });
-  it("non fa domande su voci contabili o con troppi pochi simili", () => {
-    const solo = { ...CAT, aree: [area("non_attribuibile", 1, 500, 10), area("debito", 1, 500, 10), area("rifiuti", 1, 500, 10, 5)] };
-    expect(domanda(solo)).toBeNull();
-  });
-  it("sa anche quando il comune spende molto meno", () => {
-    const d = domanda({ ...CAT, aree: [area("istruzione", 1, 30, 120)] })!;
-    expect(d.direzione).toBe("meno");
-    expect(d.rapporto).toBeCloseTo(4);
-  });
-  it("niente domanda se la spesa è concentrata: il pro capite non è confrontabile", () => {
-    expect(domanda(CONCENTRATA)).toBeNull();
-  });
-  it("ignora differenze piccole", () => {
-    expect(domanda({ ...CAT, aree: [area("rifiuti", 1, 185, 180), area("personale", 1, 223, 187)] })).toBeNull();
-  });
-});
-
 describe("avvertenze", () => {
   it("ci sono sempre, con l'anno e i comuni a confronto", () => {
-    for (const t of ["cento", "tre", "domanda"] as const) {
+    for (const t of ["cento", "tre", "confronto"] as const) {
       const a = avvertenza(DATI, t);
       expect(a).toContain("Dati di cassa 2024");
       expect(a).toContain("414 comuni");
     }
-    expect(avvertenza(DATI, "domanda")).toContain("Non è un’accusa: è una domanda.");
   });
   it("segnalano la spesa concentrata sulle card dei dati", () => {
     const conc = { ...DATI, categorie: CONCENTRATA };
@@ -163,18 +137,16 @@ describe("costruisci", () => {
     const c = costruisci(DATI);
     expect(Object.values(c).every(disponibile)).toBe(true);
     if (disponibile(c.cento)) expect(c.cento.file).toBe("parimetro-campobasso-ogni-100-euro");
-    if (disponibile(c.domanda)) expect(c.domanda.descrizione).toContain("208 €");
   });
   it("spiega perché una card non c'è", () => {
     const c = costruisci({ ...DATI, categorie: null });
     expect(disponibile(c.cento)).toBe(false);
-    expect(disponibile(c.domanda)).toBe(false);
     expect(disponibile(c.tre)).toBe(true);
-    expect((c.domanda as { motivo: string }).motivo.length).toBeGreaterThan(10);
+    expect((c.cento as { motivo: string }).motivo.length).toBeGreaterThan(10);
   });
-  it("con la spesa concentrata dice che la domanda non è affidabile", () => {
+  it("con la spesa concentrata dice che il confronto non è affidabile", () => {
     const c = costruisci({ ...DATI, categorie: CONCENTRATA });
-    expect((c.domanda as { motivo: string }).motivo).toContain("non è affidabile");
+    expect((c.confronto as { motivo: string }).motivo).toContain("non è affidabile");
     expect(disponibile(c.cento)).toBe(true);
   });
   it("il nome del file non porta accenti né apostrofi", () => {
@@ -233,8 +205,8 @@ describe("il testo del post", () => {
   });
   it("ogni 100 euro cita le due voci più grosse che dicono qualcosa", () => {
     const t = testoPost(DATI, card("cento"), "neutro", URL_PAGINA);
-    expect(t).toContain("17 € per funzionamento dell'ente");
-    expect(t).toContain("13 € per personale"); // "non attribuibile" e "tutto il resto" non fanno notizia
+    expect(t).toContain("17 € sono andati a «funzionamento dell'ente»");
+    expect(t).toContain("13 € a «personale»"); // "non attribuibile" e "tutto il resto" non fanno notizia
   });
 });
 
@@ -283,7 +255,7 @@ describe("disegno", () => {
 
   it("disegna tutte le card con le avvertenze e l'indirizzo", () => {
     const c = costruisci(DATI);
-    for (const t of ["cento", "tre", "confronto", "domanda"] as const) {
+    for (const t of ["cento", "tre", "confronto"] as const) {
       const cont = c[t];
       if (!disponibile(cont)) throw new Error("manca " + t);
       const { ctx, testi } = finto();
@@ -294,16 +266,6 @@ describe("disegno", () => {
       expect(tutto).toContain("Dati di cassa");
       expect(tutto.toLowerCase()).toContain("campobasso");
     }
-  });
-  it("la card della domanda scrive i due numeri e la domanda", () => {
-    const cont = costruisci(DATI).domanda;
-    if (!disponibile(cont)) throw new Error("manca");
-    const { ctx, testi } = finto();
-    disegna(ctx, cont, AMB);
-    const tutto = testi.join(" ");
-    expect(tutto).toContain("208 €");
-    expect(tutto).toContain("61 €");
-    expect(tutto).toContain("Cosa spiega la differenza");
   });
   it("la card del confronto scrive i due numeri e la differenza con il segno giusto", () => {
     const cont = costruisci(DATI).confronto;
@@ -328,7 +290,6 @@ describe("disegno", () => {
       cento: { w: 1080, h: 1080 },
       tre: { w: 1080, h: 1920 },
       confronto: { w: 1200, h: 630 },
-      domanda: { w: 1200, h: 630 },
     });
   });
   it("va a capo alle parole senza perderne", () => {

@@ -17,7 +17,6 @@ export const DIMENSIONI: Record<TipoCard, { w: number; h: number }> = {
   cento: { w: 1080, h: 1080 },
   tre: { w: 1080, h: 1920 },
   confronto: { w: 1200, h: 630 },
-  domanda: { w: 1200, h: 630 },
 };
 
 const CREMA = "#FFF6E5";
@@ -254,7 +253,7 @@ function tre(ctx: Ctx, c: ContenutoCard, a: Ambiente) {
   pillolaUrl(ctx, a, 1080 - P, 1850, 54, 24, CREMA, MIRTILLO);
 }
 
-// ---------------------------------------------------------------- larga: confronto (e domanda, spenta)
+// ---------------------------------------------------------------- larga: confronto
 function larga(ctx: Ctx, c: ContenutoCard, a: Ambiente) {
   const P = 56;
   ctx.fillStyle = CREMA;
@@ -262,21 +261,20 @@ function larga(ctx: Ctx, c: ContenutoCard, a: Ambiente) {
 
   segno(ctx, P, 40, 46, MIRTILLO, CREMA, LIMONE);
   testo(ctx, "Parimetro", P + 60, 40 + 33, `700 30px ${a.display}`, INCHIOSTRO);
-  const etichetta = c.tipo === "domanda" ? `UNA DOMANDA PER IL COMUNE DI ${c.titolo.toUpperCase()}` : `SPESA PER ABITANTE · ${c.anno}`;
-  testo(ctx, etichetta, 1200 - P, 40 + 28, `400 17px ${a.codice}`, GRIGIO, "right", 1.2);
+  testo(ctx, `SPESA PER ABITANTE · ${c.anno}`, 1200 - P, 40 + 28, `400 17px ${a.codice}`, GRIGIO, "right", 1.2);
 
   const k = c.confronto;
-  const d = c.domanda;
-  const verbo = k ? (k.direzione === "in linea" ? "spende quanto i" : `spende ${k.direzione} dei`) : "";
-  const titolo = k ? `${c.titolo} ${verbo} comuni come lui.` : `${d?.nome ?? ""} a ${c.titolo}`;
+  if (!k) return;
+  const verbo = k.direzione === "in linea" ? "spende quanto i" : `spende ${k.direzione} dei`;
+  const titolo = `${c.titolo} ${verbo} comuni come lui.`;
   const px = adatta(ctx, titolo, a.display, 700, 1200 - 2 * P, 56, 34);
   ctx.font = `700 ${px}px ${a.display}`;
   const righe = avvolgi(ctx, titolo, 1200 - 2 * P).slice(0, 2);
   righe.forEach((r, i) => testo(ctx, r, P, 160 + i * (px * 1.06), `700 ${px}px ${a.display}`, INCHIOSTRO));
   const yBarre = 160 + (righe.length - 1) * px * 1.06 + 44;
 
-  const v1 = k ? k.comune : d!.pc;
-  const v2 = k ? k.simili : d!.mediana;
+  const v1 = k.comune;
+  const v2 = k.simili;
   const max = Math.max(v1, v2);
   const wMax = 760;
   const w1 = Math.max(70, (wMax * v1) / max);
@@ -292,9 +290,9 @@ function larga(ctx: Ctx, c: ContenutoCard, a: Ambiente) {
   testo(ctx, euro(v1), P + 190 + w1 + 18, yBarre + 82 + 42, `700 38px ${a.display}`, INCHIOSTRO);
 
   // adesivo con la differenza
-  const diff = k ? k.differenza : Math.abs(v1 - v2);
-  const segnoDiff = k ? (k.direzione === "più" ? "+" : k.direzione === "meno" ? "−" : "") : v1 >= v2 ? "+" : "−";
-  const testoAdesivo = k && k.direzione === "in linea" ? "in linea" : `${segnoDiff}${euro(diff)}`;
+  const diff = k.differenza;
+  const segnoDiff = k.direzione === "più" ? "+" : k.direzione === "meno" ? "−" : "";
+  const testoAdesivo = k.direzione === "in linea" ? "in linea" : `${segnoDiff}${euro(diff)}`;
   const fa = `700 42px ${a.display}`;
   const wa = larghezzaTesto(ctx, testoAdesivo, fa) + 52;
   ctx.save();
@@ -309,14 +307,8 @@ function larga(ctx: Ctx, c: ContenutoCard, a: Ambiente) {
   ctx.restore();
 
   const yDopo = yBarre + 82 + H + 34;
-  if (d) {
-    rettangolo(ctx, P, yDopo, 1200 - 2 * P, 76, 22, INCHIOSTRO);
-    testo(ctx, "LA DOMANDA", P + 26, yDopo + 27, `400 14px ${a.codice}`, LIMONE, "left", 1.2);
-    testo(ctx, "Cosa spiega la differenza con i comuni simili?", P + 26, yDopo + 59, `600 30px ${a.display}`, CREMA);
-  } else {
-    // come si legge: serve a chi non conosce questo tipo di grafico
-    testo(ctx, "Pillola piena: il comune. Pillola vuota: la mediana dei comuni della sua dimensione.", P, yDopo + 10, `400 19px ${a.testo}`, TESTO2);
-  }
+  // come si legge: serve a chi non conosce questo tipo di grafico
+  testo(ctx, "Pillola piena: il comune. Pillola vuota: la mediana dei comuni della sua dimensione.", P, yDopo + 10, `400 19px ${a.testo}`, TESTO2);
 
   // fonte e avvertenze, sempre (mai tagliate, mai sotto l'indirizzo)
   const yPrima = avvertenzeInBasso(ctx, c.avvertenza, P, 604, 800, a.testo, GRIGIO, 14, 11, 3);

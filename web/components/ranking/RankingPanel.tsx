@@ -123,20 +123,20 @@ export default function RankingPanel({
   }, [q, caricaClassifica, chiave]);
 
   const sel =
-    "mt-1 w-full rounded-md border border-white/10 bg-slate-800/80 px-2 py-1 text-[11px] text-slate-200";
-  const etichetta = "mt-2 block text-[10px] uppercase tracking-wider text-slate-400";
+    "mt-1 w-full rounded-xl border border-[#E8DEC8] bg-crema px-2 py-1 text-xs text-inchiostro";
+  const etichetta = "mt-2 block text-xs uppercase tracking-wider text-grigio";
 
   return (
-    <div className="pointer-events-auto absolute left-4 top-4 flex max-h-[calc(100dvh-2rem)] w-72 flex-col rounded-xl border border-white/10 bg-slate-900/80 p-3 text-slate-200 backdrop-blur-md">
+    <div className="pointer-events-auto absolute left-4 top-4 flex max-h-[calc(100dvh-2rem)] w-72 flex-col rounded-3xl border border-[#E8DEC8] bg-crema p-3 text-inchiostro">
       <div className="flex items-center gap-2">
         <button
           onClick={onClose}
           aria-label="Torna ai controlli"
-          className="rounded-md p-1 text-slate-400 hover:bg-white/10 hover:text-slate-100"
+          className="rounded-xl p-1 text-grigio hover:bg-sabbia/30 hover:text-inchiostro"
         >
           <ArrowLeft size={14} />
         </button>
-        <h2 className="text-sm font-semibold">Classifiche</h2>
+        <h2 className="font-display text-xl font-semibold">Classifiche</h2>
       </div>
 
       <div className="flex gap-1 pt-1">
@@ -149,10 +149,10 @@ export default function RankingPanel({
           <button
             key={label}
             onClick={() => setQ((x) => ({ ...x, desc: v }))}
-            className={`flex-1 rounded-md px-2 py-1 text-[11px] transition-colors ${
+            className={`flex-1 rounded-xl px-2 py-1 text-xs transition-colors ${
               q.desc === v
-                ? "bg-white/15 text-white"
-                : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                ? "bg-mirtillo text-white"
+                : "text-grigio hover:bg-sabbia/30 hover:text-inchiostro"
             }`}
           >
             {label}
@@ -210,7 +210,7 @@ export default function RankingPanel({
         ))}
       </select>
 
-      <label className="mt-3 flex cursor-pointer items-start gap-2 text-[11px] leading-snug text-slate-300">
+      <label className="mt-3 flex cursor-pointer items-start gap-2 text-xs leading-snug text-inchiostro">
         <input
           type="checkbox"
           checked={nascondiConcentrate}
@@ -219,7 +219,7 @@ export default function RankingPanel({
         />
         <span>
           Nascondi i comuni con spesa concentrata
-          <span className="block text-[10px] text-slate-500">
+          <span className="block text-xs text-grigio">
             quelli in cui una sola voce supera il 40% dell&apos;anno (un immobile, una ricostruzione)
           </span>
         </span>
@@ -227,19 +227,19 @@ export default function RankingPanel({
 
       <div className="mt-3 min-h-0 flex-1 overflow-y-auto">
         {(errore ?? erroreFiltri) && (
-          <p className="text-[11px] text-red-300">
+          <p className="text-xs text-inchiostro">
             Classifica non disponibile: {errore ?? erroreFiltri}
           </p>
         )}
 
         {caricando && !errore && (
-          <div className="flex items-center gap-2 py-3 text-[11px] text-slate-400">
+          <div className="flex items-center gap-2 py-3 text-xs text-grigio">
             <Loader2 size={12} className="animate-spin" /> Calcolo…
           </div>
         )}
 
         {!caricando && !errore && !righe.length && (
-          <p className="py-3 text-[11px] text-slate-400">Nessun comune con questi filtri.</p>
+          <p className="py-3 text-xs text-grigio">Nessun comune con questi filtri.</p>
         )}
 
         {!caricando &&
@@ -247,24 +247,24 @@ export default function RankingPanel({
             <button
               key={r.istat}
               onClick={() => onSelect(r)}
-              className="flex w-full items-baseline gap-2 rounded-md px-1.5 py-1.5 text-left hover:bg-white/10"
+              className="flex w-full items-baseline gap-2 rounded-xl px-1.5 py-1.5 text-left hover:bg-sabbia/30"
             >
-              <span className="w-4 shrink-0 text-[11px] tabular-nums text-slate-500">
+              <span className="w-4 shrink-0 text-xs tabular-nums text-grigio">
                 {r.posizione}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[11px] text-slate-100">
+                <span className="block truncate text-xs text-inchiostro">
                   {r.name}
                   {eConcentrata(r.concentrata) && (
                     <span
                       title={`Il ${Math.round(Number(r.concentrata ?? 0))}% della spesa dell'anno è una sola voce: il pro capite non è confrontabile con i vicini.`}
-                      className="ml-1.5 rounded bg-amber-500/20 px-1 py-px text-[9px] font-medium text-amber-200"
+                      className="ml-1.5 rounded bg-limone/30 px-1 py-px text-xs font-medium text-inchiostro"
                     >
                       spesa concentrata
                     </span>
                   )}
                 </span>
-                <span className="block truncate text-[10px] text-slate-400">
+                <span className="block truncate text-xs text-grigio">
                   {r.province} · {num(r.population)} ab
                   {/* Con il rango il valore è uguale per decine di comuni:
                       l'autonomia è ciò che decide l'ordine, quindi va mostrata. */}
@@ -275,7 +275,7 @@ export default function RankingPanel({
                       : ""}
                 </span>
               </span>
-              <span className="shrink-0 text-[11px] font-medium tabular-nums text-slate-200">
+              <span className="shrink-0 text-xs font-medium tabular-nums text-inchiostro">
                 {formatta(q.metric, r.valore)}
               </span>
             </button>

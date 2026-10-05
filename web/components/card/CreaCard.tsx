@@ -19,19 +19,11 @@ import {
 import { DIMENSIONI, disegna, type Ambiente } from "@/lib/card/disegna";
 import { slugComune } from "@/lib/pagina/comune";
 
-/**
- * Le card offerte al pubblico. "domanda" e' pronta e testata ma resta spenta finche' il testo (e il rimando
- * all'accesso civico) non e' stato rivisto da chi ha competenza legale: per accenderla basta aggiungerla qui.
- */
-const ATTIVE: readonly TipoCard[] = ["cento", "tre", "confronto"];
-
-const TUTTE: { tipo: TipoCard; nome: string; testo: string }[] = [
+const SCELTE: { tipo: TipoCard; nome: string; testo: string }[] = [
   { tipo: "cento", nome: "Ogni 100 €", testo: "Quadrata, per i post." },
   { tipo: "tre", nome: "Tre numeri", testo: "Verticale, per le storie." },
   { tipo: "confronto", nome: "Confronto", testo: "Larga, per messaggi e link." },
-  { tipo: "domanda", nome: "Una domanda", testo: "Larga." },
 ];
-const SCELTE = TUTTE.filter((s) => ATTIVE.includes(s.tipo));
 
 const TONI: { tono: Tono; nome: string }[] = [
   { tono: "curioso", nome: "Curioso" },

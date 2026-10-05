@@ -13,17 +13,17 @@ export default function Fonti() {
   return (
     <>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex justify-center px-2 pb-1">
-        <p className="pointer-events-auto rounded bg-slate-950/60 px-2 py-0.5 text-center text-[10px] leading-tight text-slate-400 backdrop-blur-sm">
+        <p className="pointer-events-auto rounded bg-crema px-2 py-0.5 text-center text-xs leading-tight text-grigio">
           Dati ISTAT e BDAP/SIOPE (CC BY) · © OpenStreetMap · © CARTO ·{" "}
           <button
             onClick={() => setAperto(true)}
-            className="underline decoration-slate-600 underline-offset-2 hover:text-slate-200"
+            className="underline decoration-grigio underline-offset-2 hover:text-inchiostro"
           >
             Fonti e metodo
           </button>
           {" · "}
           {/* un link vero e crawlabile: porta all'elenco di tutti i comuni, da cui i motori di ricerca raggiungono ogni scheda */}
-          <a href="/comuni" className="underline decoration-slate-600 underline-offset-2 hover:text-slate-200">
+          <a href="/comuni" className="underline decoration-grigio underline-offset-2 hover:text-inchiostro">
             Tutti i comuni
           </a>
         </p>
@@ -31,92 +31,92 @@ export default function Fonti() {
 
       {aperto && (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 backdrop-blur-sm md:items-center"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-inchiostro/40 p-3 md:items-center"
           onClick={() => setAperto(false)}
           role="dialog"
           aria-modal="true"
           aria-label="Fonti e metodo"
         >
           <div
-            className="max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-white/10 bg-slate-900 p-5 text-sm leading-relaxed text-slate-300 shadow-2xl"
+            className="max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-[28px] border border-[#E8DEC8] bg-crema p-5 text-sm leading-relaxed text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.16)]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3">
-              <h2 className="text-base font-semibold text-slate-100">Fonti e metodo</h2>
+              <h2 className="text-base font-semibold text-inchiostro">Fonti e metodo</h2>
               <button
                 onClick={() => setAperto(false)}
                 aria-label="Chiudi"
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-slate-100"
+                className="rounded-2xl p-1.5 text-grigio hover:bg-sabbia/30 hover:text-inchiostro"
               >
                 <X size={16} />
               </button>
             </div>
 
-            <h3 className="mt-4 text-xs font-medium uppercase tracking-wider text-slate-400">
+            <h3 className="mt-4 text-sm font-medium uppercase tracking-wider text-grigio">
               Da dove vengono i numeri
             </h3>
             <ul className="mt-1 list-disc space-y-1 pl-5">
               <li>
-                <strong className="text-slate-100">ISTAT</strong>: confini comunali e popolazione
+                <strong className="text-inchiostro">ISTAT</strong>: confini comunali e popolazione
                 residente (licenza CC BY 4.0).
               </li>
               <li>
-                <strong className="text-slate-100">Italia Domani</strong> (progetti del PNRR) e{" "}
-                <strong className="text-slate-100">OpenCoesione</strong> (opere finanziate dalle politiche di
+                <strong className="text-inchiostro">Italia Domani</strong> (progetti del PNRR) e{" "}
+                <strong className="text-inchiostro">OpenCoesione</strong> (opere finanziate dalle politiche di
                 coesione), entrambe CC BY 4.0. Il PNRR non indica il comune: i progetti sono attribuiti solo
                 quando il comune è il soggetto che li realizza.
               </li>
               <li>
-                <strong className="text-slate-100">ANAC</strong>, Banca dati nazionale dei contratti pubblici (CC BY-SA
+                <strong className="text-inchiostro">ANAC</strong>, Banca dati nazionale dei contratti pubblici (CC BY-SA
                 4.0): le gare bandite dai comuni (2020-2025) e le loro aggiudicazioni, da cui il numero di offerte e il ribasso. L&apos;importo è quello a base di gara dichiarato, non il pagato, e
                 alcuni importi sono refusi: per questo i totali escludono i valori impossibili.
               </li>
               <li>
-                <strong className="text-slate-100">MEF, Dipartimento delle Finanze</strong>: dichiarazioni
+                <strong className="text-inchiostro">MEF, Dipartimento delle Finanze</strong>: dichiarazioni
                 IRPEF per comune (reddito imponibile, contribuenti, addizionale comunale). Dati aperti: le
                 celle con pochi contribuenti sono oscurate dal segreto statistico e qui risultano mancanti.
               </li>
               <li>
-                <strong className="text-slate-100">BDAP / SIOPE</strong>, Ragioneria Generale dello
+                <strong className="text-inchiostro">BDAP / SIOPE</strong>, Ragioneria Generale dello
                 Stato: incassi e pagamenti mensili di ogni comune, voce per voce (dati aperti, CC BY).
               </li>
               <li>Mappa di base: © OpenStreetMap contributors, © CARTO.</li>
               <li>
                 I dati che questo sito pubblica sono rilasciati con licenza{" "}
-                <strong className="text-slate-100">CC BY-SA 4.0</strong> (per via dei dati ANAC, che sono con
+                <strong className="text-inchiostro">CC BY-SA 4.0</strong> (per via dei dati ANAC, che sono con
                 condivisione alla pari): citando le fonti puoi riusarli, condividendo allo stesso modo ciò che ne ricavi.
               </li>
             </ul>
 
-            <h3 className="mt-4 text-xs font-medium uppercase tracking-wider text-slate-400">
+            <h3 className="mt-4 text-sm font-medium uppercase tracking-wider text-grigio">
               Cosa significano
             </h3>
             <ul className="mt-1 list-disc space-y-1 pl-5">
               <li>
-                <strong className="text-slate-100">Sono dati di cassa</strong>: soldi realmente
+                <strong className="text-inchiostro">Sono dati di cassa</strong>: soldi realmente
                 incassati e pagati nell&apos;anno, non accertamenti e impegni. Non coincidono col
                 rendiconto del comune, che è di competenza.
               </li>
               <li>
-                <strong className="text-slate-100">Il rango (0-100)</strong> dice dove sta il comune
+                <strong className="text-inchiostro">Il rango (0-100)</strong> dice dove sta il comune
                 fra quelli della sua fascia di popolazione, su autonomia finanziaria e saldo di
                 gestione (senza i prestiti accesi e rimborsati). Non è un voto alla
                 gestione: in una fascia dove tutti stanno male, qualcuno segna comunque 100.
               </li>
               <li>
-                <strong className="text-slate-100">Le aree di spesa</strong> (rifiuti, strade,
+                <strong className="text-inchiostro">Le aree di spesa</strong> (rifiuti, strade,
                 scuole…) sono una nostra classificazione delle voci del piano dei conti. Dove la
                 voce è generica (&ldquo;altri servizi&rdquo;) la spesa resta{" "}
                 <em>non attribuibile</em> e lo diciamo.
               </li>
               <li>
-                Una <strong className="text-slate-100">spesa concentrata</strong> (una sola voce sopra
+                Una <strong className="text-inchiostro">spesa concentrata</strong> (una sola voce sopra
                 il 40% dell&apos;anno) di solito è un investimento isolato: il pro capite di
                 quell&apos;anno non è confrontabile con i comuni vicini.
               </li>
             </ul>
 
-            <h3 className="mt-4 text-xs font-medium uppercase tracking-wider text-slate-400">
+            <h3 className="mt-4 text-sm font-medium uppercase tracking-wider text-grigio">
               Limiti
             </h3>
             <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -130,13 +130,13 @@ export default function Fonti() {
                 SIOPE) e Misiliscemi per il 2020-21.
               </li>
               <li>
-                Il <strong className="text-slate-100">reddito imponibile medio</strong> è per contribuente
+                Il <strong className="text-inchiostro">reddito imponibile medio</strong> è per contribuente
                 (chi presenta la dichiarazione): non è il tenore di vita e in un paese con pochi
                 contribuenti la media è instabile.
               </li>
               <li>Un dato anomalo non è per forza un errore: può essere un anno eccezionale.</li>
               <li>
-                <strong className="text-slate-100">Chat:</strong> le domande sono elaborate da modelli AI
+                <strong className="text-inchiostro">Chat:</strong> le domande sono elaborate da modelli AI
                 di terzi tramite OpenRouter. Il sito non le conserva e non chiede dati personali: non
                 scriverne nelle domande.
               </li>

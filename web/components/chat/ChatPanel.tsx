@@ -112,7 +112,7 @@ export default function ChatPanel({
       {!aperta && (
         <button
           onClick={() => setAperta(true)}
-          className={`absolute bottom-8 z-30 flex items-center gap-2 rounded-full border border-white/15 bg-sky-500/90 px-4 py-2.5 text-xs font-medium text-white shadow-lg backdrop-blur transition hover:bg-sky-400 ${
+          className={`absolute bottom-8 z-30 flex items-center gap-2 rounded-full border border-[#E8DEC8] bg-mirtillo px-4 py-2.5 text-sm font-medium text-white shadow-[0_8px_24px_rgba(27,26,46,0.16)] transition hover:brightness-95 ${
             spostaDaDestra ? "right-4 hidden md:flex md:right-[436px]" : "right-4"
           }`}
         >
@@ -123,38 +123,38 @@ export default function ChatPanel({
       {aperta && (
         <section
           aria-label="Chat"
-          className={`absolute bottom-8 z-40 flex max-h-[75vh] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 text-slate-100 shadow-2xl backdrop-blur-md ${
+          className={`absolute bottom-8 z-40 flex max-h-[75vh] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-[28px] border border-[#E8DEC8] bg-crema text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.16)] ${
             spostaDaDestra ? "right-4 md:right-[436px]" : "right-4"
           }`}
         >
-          <header className="flex items-center justify-between border-b border-white/10 px-3 py-2">
+          <header className="flex items-center justify-between border-b border-[#E8DEC8] px-3 py-2">
             <div>
               <h2 className="text-sm font-semibold">Chiedi a Parimetro</h2>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-xs text-grigio">
                 {contesto ? `Comune aperto: ${contesto.nome}` : "Chiedi di un comune, una classifica, una voce di spesa"}
               </p>
             </div>
             <button
               onClick={() => setAperta(false)}
               aria-label="Chiudi la chat"
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white"
+              className="rounded-2xl p-1.5 text-grigio hover:bg-sabbia/30 hover:text-inchiostro"
             >
               <X size={16} />
             </button>
           </header>
 
-          <div className="min-h-[120px] flex-1 space-y-3 overflow-y-auto p-3 text-xs leading-relaxed">
+          <div className="min-h-[120px] flex-1 space-y-3 overflow-y-auto p-3 text-sm leading-relaxed">
             {voci.length === 0 && (
               <div className="space-y-2">
-                <p className="text-slate-400">
-                  Un modello AI capisce la domanda e racconta la risposta; <strong className="text-slate-200">i numeri li
+                <p className="text-grigio">
+                  Un modello AI capisce la domanda e racconta la risposta; <strong className="text-inchiostro">i numeri li
                   calcola il sito</strong> dai dati ufficiali, e li trovi nella tabella. Prova:
                 </p>
                 {SUGGERIMENTI.map((s) => (
                   <button
                     key={s}
                     onClick={() => chiedi(s)}
-                    className="block w-full rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-left text-slate-200 hover:bg-white/10"
+                    className="block w-full rounded-2xl border border-[#E8DEC8] bg-carta px-2.5 py-1.5 text-left text-inchiostro hover:bg-sabbia/30"
                   >
                     {s}
                   </button>
@@ -164,11 +164,11 @@ export default function ChatPanel({
 
             {voci.map((voce, i) =>
               voce.chi === "utente" ? (
-                <div key={i} className="ml-8 rounded-xl bg-sky-500/20 px-3 py-2 text-sky-50">
+                <div key={i} className="ml-8 rounded-3xl bg-mirtillo px-3 py-2 text-white">
                   {voce.testo}
                 </div>
               ) : voce.chi === "errore" ? (
-                <div key={i} className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-red-200">
+                <div key={i} className="rounded-3xl border border-pomodoro bg-pomodoro/15 px-3 py-2 text-inchiostro">
                   {voce.testo}
                 </div>
               ) : (
@@ -177,7 +177,7 @@ export default function ChatPanel({
             )}
 
             {inCorso && (
-              <div className="flex items-center gap-2 text-slate-400">
+              <div className="flex items-center gap-2 text-grigio">
                 <Loader2 size={12} className="animate-spin" /> Sto cercando nei dati…
               </div>
             )}
@@ -189,7 +189,7 @@ export default function ChatPanel({
               e.preventDefault();
               chiedi(testo);
             }}
-            className="flex items-center gap-2 border-t border-white/10 p-2"
+            className="flex items-center gap-2 border-t border-[#E8DEC8] p-2"
           >
             <input
               value={testo}
@@ -197,18 +197,18 @@ export default function ChatPanel({
               maxLength={400}
               placeholder="Scrivi una domanda…"
               aria-label="Domanda"
-              className="min-w-0 flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-sky-400/50 focus:outline-none"
+              className="min-w-0 flex-1 rounded-2xl border border-[#E8DEC8] bg-carta px-3 py-2 text-sm text-inchiostro placeholder:text-grigio focus:border-mirtillo focus:outline-none"
             />
             <button
               type="submit"
               disabled={inCorso || !testo.trim()}
               aria-label="Invia"
-              className="rounded-lg bg-sky-500 p-2 text-white transition enabled:hover:bg-sky-400 disabled:opacity-40"
+              className="rounded-2xl bg-mirtillo p-2 text-white transition enabled:hover:brightness-95 disabled:opacity-40"
             >
               <Send size={14} />
             </button>
           </form>
-          <p className="border-t border-white/5 px-3 py-1.5 text-[10px] leading-snug text-slate-500">
+          <p className="border-t border-[#E8DEC8] px-3 py-1.5 text-xs leading-snug text-grigio">
             Risposte generate da un modello AI sui dati del sito (cassa, non competenza): controlla sempre la tabella. La domanda viene inviata a un fornitore di modelli AI (tramite OpenRouter): non scrivere dati personali.
           </p>
         </section>
@@ -228,8 +228,8 @@ function Risposta({
 }) {
   const conTabella = r.righe.length > 0;
   return (
-    <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
-      <p className="text-slate-100">{r.testo}</p>
+    <div className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+      <p className="text-inchiostro">{r.testo}</p>
 
       {r.candidati && (
         <div className="flex flex-wrap gap-1.5">
@@ -237,7 +237,7 @@ function Risposta({
             <button
               key={c.istat}
               onClick={() => onScegli(`Scheda del comune ${c.nome} codice ISTAT ${c.istat}`)}
-              className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] hover:bg-white/10"
+              className="rounded-full border border-[#E8DEC8] bg-carta px-2.5 py-1 text-xs hover:bg-sabbia/30"
             >
               {c.nome} ({c.provincia}) · {num(c.abitanti)} ab
             </button>
@@ -246,13 +246,13 @@ function Risposta({
       )}
 
       {conTabella && (
-        <div className="overflow-x-auto rounded-lg border border-white/10">
-          <p className="border-b border-white/10 bg-white/5 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-slate-400">
+        <div className="overflow-x-auto rounded-2xl border border-[#E8DEC8]">
+          <p className="border-b border-[#E8DEC8] bg-carta px-2 py-1 text-xs font-medium uppercase tracking-wide text-grigio">
             {r.titolo}
           </p>
-          <table className="w-full text-[11px]">
+          <table className="w-full text-xs">
             <thead>
-              <tr className="text-slate-400">
+              <tr className="text-grigio">
                 {r.colonne.map((c) => (
                   <th key={c.k} className={`px-2 py-1 font-medium ${c.dx ? "text-right" : "text-left"}`}>
                     {c.label}
@@ -267,13 +267,13 @@ function Risposta({
                   <tr
                     key={i}
                     onClick={typeof istat === "string" ? () => onApri(istat) : undefined}
-                    className={`border-t border-white/5 ${typeof istat === "string" ? "cursor-pointer hover:bg-white/10" : ""}`}
+                    className={`border-t border-[#E8DEC8] ${typeof istat === "string" ? "cursor-pointer hover:bg-sabbia/30" : ""}`}
                   >
                     {r.colonne.map((c) => (
                       <td
                         key={c.k}
                         className={`px-2 py-1 ${c.dx ? "text-right tabular-nums" : ""} ${
-                          c.k === "nota" ? "text-amber-300" : "text-slate-200"
+                          c.k === "nota" ? "text-inchiostro" : "text-inchiostro"
                         }`}
                       >
                         {riga[c.k]}
@@ -288,7 +288,7 @@ function Risposta({
       )}
 
       {r.note.map((n, i) => (
-        <p key={i} className="rounded-lg bg-amber-500/10 px-2 py-1.5 text-[11px] text-amber-100">
+        <p key={i} className="rounded-2xl bg-limone/30 px-2 py-1.5 text-xs text-inchiostro">
           {n}
         </p>
       ))}
@@ -298,7 +298,7 @@ function Risposta({
           {r.apri && (
             <button
               onClick={() => onApri(r.apri!)}
-              className="inline-flex items-center gap-1 rounded-lg border border-white/15 px-2 py-1 text-[11px] text-slate-200 hover:bg-white/10"
+              className="inline-flex items-center gap-1 rounded-2xl border border-[#E8DEC8] px-2 py-1 text-xs text-inchiostro hover:bg-sabbia/30"
             >
               <MapPin size={11} /> Apri sulla mappa
             </button>
@@ -306,7 +306,7 @@ function Risposta({
           {conTabella && (
             <button
               onClick={() => scaricaCsv(r.titolo, r.colonne, r.grezze)}
-              className="inline-flex items-center gap-1 rounded-lg border border-white/15 px-2 py-1 text-[11px] text-slate-200 hover:bg-white/10"
+              className="inline-flex items-center gap-1 rounded-2xl border border-[#E8DEC8] px-2 py-1 text-xs text-inchiostro hover:bg-sabbia/30"
             >
               <Download size={11} /> Esporta CSV
             </button>
@@ -314,7 +314,7 @@ function Risposta({
         </div>
       )}
       {!r.narrato && conTabella && (
-        <p className="text-[10px] text-slate-500">Testo generato dal sito (il modello AI non era disponibile).</p>
+        <p className="text-xs text-grigio">Testo generato dal sito (il modello AI non era disponibile).</p>
       )}
     </div>
   );

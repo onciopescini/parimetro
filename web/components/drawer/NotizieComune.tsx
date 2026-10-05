@@ -9,10 +9,10 @@ export default function NotizieComune({ notizie }: { notizie: NotizieComune | nu
   if (!notizie) return null;
   return (
     <div className="space-y-3">
-      <section className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
-        <h3 className="text-[11px] uppercase tracking-wider text-slate-400">Notizie sui conti del comune</h3>
+      <section className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+        <h3 className="text-xs uppercase tracking-wider text-grigio">Notizie sui conti del comune</h3>
         {notizie.notizie.length === 0 ? (
-          <p className="text-xs text-slate-400">
+          <p className="text-sm text-grigio">
             Negli ultimi mesi non ho trovato notizie su bilancio, tributi, appalti o fondi di questo comune.
           </p>
         ) : (
@@ -20,20 +20,20 @@ export default function NotizieComune({ notizie }: { notizie: NotizieComune | nu
             {notizie.notizie.map((n) => {
               const href = linkSicuro(n.url);
               return (
-                <li key={n.url} className="text-xs leading-snug">
+                <li key={n.url} className="text-sm leading-snug">
                   {href ? (
                     <a
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer nofollow"
-                      className="text-sky-300 underline-offset-2 hover:underline"
+                      className="text-inchiostro underline-offset-2 hover:underline"
                     >
                       {n.titolo}
                     </a>
                   ) : (
-                    <span className="text-slate-200">{n.titolo}</span>
+                    <span className="text-inchiostro">{n.titolo}</span>
                   )}
-                  <div className="text-[10px] text-slate-500">
+                  <div className="text-xs text-grigio">
                     {n.fonte} · {dataBreve(n.data)}
                   </div>
                 </li>
@@ -42,7 +42,7 @@ export default function NotizieComune({ notizie }: { notizie: NotizieComune | nu
           </ul>
         )}
       </section>
-      <p className="text-[10px] leading-snug text-slate-500">
+      <p className="text-xs leading-snug text-grigio">
         I link rimandano a testate esterne. Titoli e fonti sono scelti dal programma per parole chiave, non da una
         redazione, e Parimetro non ne verifica il contenuto: può includere articoli poco pertinenti o saltarne di
         importanti. Ultima ricerca: {dataBreve(notizie.raccolta_il)}.

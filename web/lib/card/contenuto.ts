@@ -2,7 +2,7 @@
 // il disegno sta in disegna.ts, la finestra in components/card/CreaCard.tsx.
 //
 // Principi, gli stessi del resto del sito: solo cio' che i dati dicono; mai un numero senza il suo confronto coi
-// comuni simili; le avvertenze e le fonti sono parte della card e non si tolgono; una domanda non e' un'accusa;
+// comuni simili; le avvertenze e le fonti sono parte della card e non si tolgono;
 // discussione si', rabbia no.
 
 import { AREE, type CategorieComune } from "../categorie";
@@ -11,7 +11,7 @@ import type { Investimenti } from "../investimenti";
 import type { RedditoAnno } from "../reddito";
 import { eConcentrata } from "../classifica";
 
-export type TipoCard = "cento" | "tre" | "confronto" | "domanda";
+export type TipoCard = "cento" | "tre" | "confronto";
 export type Tono = "curioso" | "neutro";
 
 export interface VoceCard {
@@ -207,60 +207,17 @@ export function confrontoSpesaCard(d: DatiCard): Confronto | null {
   return { comune: d.spesaPc, simili: d.simili.expenditure_pc, differenza: Math.abs(diff), direzione };
 }
 
-// ---------------------------------------------------------------- una domanda (spenta in attesa del parere legale)
-export interface Domanda {
-  area: string;
-  nome: string;
-  pc: number;
-  mediana: number;
-  /** "più" o "meno" della mediana dei simili */
-  direzione: "più" | "meno";
-  rapporto: number;
-}
-
-/** Aree dove un confronto per abitante dice poco o e' un artefatto contabile: non fanno domanda. */
-const NON_FANNO_DOMANDA = new Set(["non_attribuibile", "trasferimenti_imposte", "debito", "operazioni_finanziarie"]);
-
-/**
- * L'area dove il comune si discosta di piu' dai simili, in un senso o nell'altro. Niente domanda se la spesa e'
- * concentrata (il pro capite di quell'anno non e' confrontabile) o se i simili sono troppo pochi.
- */
-export function domanda(categorie: CategorieComune | null): Domanda | null {
-  if (!categorie || spesaConcentrata(categorie)) return null;
-  let migliore: Domanda | null = null;
-  let punteggio = 0;
-  for (const a of categorie.aree) {
-    if (NON_FANNO_DOMANDA.has(a.area) || a.n_simili < 10) continue;
-    if (!(a.pc >= 30) || !(a.mediana_pc >= 20)) continue; // sotto queste cifre il rapporto e' rumore
-    const rapporto = a.pc / a.mediana_pc;
-    const forza = rapporto >= 1 ? rapporto : 1 / rapporto;
-    if (forza < 1.5 || forza <= punteggio) continue;
-    punteggio = forza;
-    migliore = {
-      area: a.area,
-      nome: AREE[a.area] ?? a.area,
-      pc: a.pc,
-      mediana: a.mediana_pc,
-      direzione: rapporto >= 1 ? "più" : "meno",
-      rapporto: forza,
-    };
-  }
-  return migliore;
-}
-
 // ---------------------------------------------------------------- avvertenze, sempre sulla card
 export function avvertenza(d: DatiCard, tipo: TipoCard): string {
   const parti: string[] = [];
   const conc = spesaConcentrata(d.categorie);
-  if (tipo === "domanda") parti.push("Non è un’accusa: è una domanda.");
   if (tipo === "cento") parti.push("1 quadretto = 1 €.");
   parti.push(`Dati di cassa ${d.anno} (incassi e pagamenti), fonte SIOPE.`);
   if (d.simili) parti.push(`Confronto con ${nf.format(d.simili.n)} comuni della stessa fascia (${d.simili.fascia}).`);
   if (tipo === "tre" && (d.concorrenza || d.appalti)) parti.push("Gare: fonte ANAC, anno più recente.");
-  if (conc && tipo !== "domanda") {
+  if (conc) {
     parti.push(`Una sola voce pesa il ${conc.quota}% della spesa: di solito un investimento isolato, il pro capite non è confrontabile.`);
   }
-  if (tipo === "domanda") parti.push("Puoi chiederlo al Comune con l’accesso civico.");
   return parti.join(" ");
 }
 
@@ -273,7 +230,6 @@ export interface ContenutoCard {
   fette?: Fetta[];
   numeri?: Numero[];
   confronto?: Confronto;
-  domanda?: Domanda;
   avvertenza: string;
   /** Nome del file da scaricare, senza estensione */
   file: string;
@@ -335,22 +291,6 @@ export function costruisci(d: DatiCard): Record<TipoCard, ContenutoCard | { moti
           : "Per questo comune mancano la spesa o il confronto con i simili.",
       };
 
-  const dom = domanda(d.categorie);
-  out.domanda = dom
-    ? {
-        ...base,
-        tipo: "domanda",
-        titolo: d.voce.name,
-        domanda: dom,
-        avvertenza: avvertenza(d, "domanda"),
-        file: `parimetro-${slug(d.voce.name)}-una-domanda`,
-        descrizione: `${d.voce.name}, ${dom.nome}: ${euro(dom.pc)} per abitante contro ${euro(dom.mediana)} dei comuni simili. Cosa spiega la differenza?`,
-      }
-    : {
-        motivo: spesaConcentrata(d.categorie)
-          ? "Una sola voce pesa troppo sulla spesa di quest’anno: il confronto per abitante non è affidabile."
-          : "Nessuna voce di spesa si discosta abbastanza dai comuni simili per fare una domanda.",
-      };
   return out;
 }
 
@@ -373,7 +313,7 @@ export function testoPost(d: DatiCard, c: ContenutoCard, tono: Tono, indirizzo: 
     const [a, b] = voceNote(c.fette);
     const voce = (f: Fetta) => (f.chiave && AREE[f.chiave] ? AREE[f.chiave] : f.nome).toLowerCase();
     dato = a && b
-      ? `Su 100 € spesi da ${nome} nel ${c.anno}: ${a.euro} € per ${voce(a)}, ${b.euro} € per ${voce(b)}.`
+      ? `Su 100 € spesi da ${nome} nel ${c.anno}, ${a.euro} € sono andati a «${voce(a)}» e ${b.euro} € a «${voce(b)}».`
       : `Dove vanno i soldi di ${nome}: ogni 100 € spesi nel ${c.anno}, divisi per voce.`;
   } else if (c.tipo === "tre" && c.numeri) {
     dato = `${nome} in tre numeri: ${c.numeri.map((n) => `${n.valore} ${n.etichetta}`).join("; ")}.`;
@@ -382,9 +322,7 @@ export function testoPost(d: DatiCard, c: ContenutoCard, tono: Tono, indirizzo: 
     dato =
       k.direzione === "in linea"
         ? `${nome} spende ${euro(k.comune)} per abitante, in linea con i comuni della sua dimensione (${euro(k.simili)}).`
-        : `${nome} spende ${euro(k.comune)} per abitante; nei comuni della sua dimensione la mediana è ${euro(k.simili)}.`;
-  } else if (c.tipo === "domanda" && c.domanda) {
-    dato = `${nome}, ${c.domanda.nome.toLowerCase()}: ${euro(c.domanda.pc)} per abitante contro ${euro(c.domanda.mediana)} dei comuni simili. Cosa spiega la differenza?`;
+        : `${nome} spende ${euro(k.comune)} per abitante; nei comuni di dimensione simile la mediana è ${euro(k.simili)}.`;
   }
   const apertura = tono === "curioso" ? "Mi ha incuriosito questo confronto. " : "";
   const simili = d.simili ? ` Confronto con ${nf.format(d.simili.n)} comuni simili.` : "";

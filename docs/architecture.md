@@ -118,16 +118,13 @@ From a town's panel, "Crea la card da condividere" draws an image in the browser
 a server) and lets people download it, share it with the system share sheet, copy the page link or send it on
 WhatsApp, together with a ready-to-edit post text (two tones, curious or neutral), the sources with their links and a
 line to cite us. Cards: *where the money goes* (every 100 euro, 100 squares, 1080x1080), *three numbers against
-similar towns* (1080x1920) and *a question for the town* (1200x630). What goes on a card is decided by pure functions
+similar towns* (1080x1920) and *comparison* (1200x630). What goes on a card is decided by pure functions
 (`web/lib/card/contenuto.ts`), the drawing by `web/lib/card/disegna.ts`; both are tested without a browser.
 
 Rules that are part of the product: the warning line (cash basis, year, which towns it is compared with, source) is
-drawn on every card and cannot be removed; the "question" card picks the spending area that differs most from similar
-towns, in either direction, and is not offered when one item weighs 40% or more of the year's spending, because the
-per-capita figure is then not comparable; a card is simply unavailable (with the reason) when the data is missing.
-Cards never contain the user's name. The wording "non è un'accusa: è una domanda" and the mention of *accesso civico*
-should be reviewed by someone with legal competence: until then the "question" card is built and tested but switched
-off (`ATTIVE` in `web/components/card/CreaCard.tsx`), so only the first two cards are offered.
+drawn on every card and cannot be removed; the comparison is not offered when one item weighs 40% or more of the
+year's spending, because the per-capita figure is then not comparable; a card is simply unavailable (with the reason) when the data is missing.
+Cards never contain the user's name. The wording is soft on purpose: no accusations, no exclamation marks.
 
 ## Data contract between `etl/` and `web/`
 

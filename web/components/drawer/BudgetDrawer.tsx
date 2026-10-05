@@ -138,24 +138,19 @@ const eur = (v: number | null | undefined, compact = false) =>
 const num = (v: number | null | undefined) =>
   v == null ? "—" : new Intl.NumberFormat("it-IT").format(v);
 
-const fhiColor = (v: number | null | undefined) =>
-  v == null
-    ? "text-slate-400"
-    : v >= 70
-      ? "text-emerald-400"
-      : v >= 40
-        ? "text-amber-400"
-        : "text-red-400";
+// Il rango e' una pillola piena (testo scuro su colore chiaro: sempre leggibile)
+const fhiPill = (v: number | null | undefined) =>
+  v == null ? "bg-sabbia" : v >= 70 ? "bg-menta" : v >= 40 ? "bg-limone" : "bg-pesca";
 
-// Tema dark-slate per Recharts
-const GRID = "#1E293B";
-const TICK = { fill: "#94A3B8", fontSize: 11 };
+// Tema carta per Recharts
+const GRID = "#E8DEC8";
+const TICK = { fill: "#5A5873", fontSize: 12 };
 const TOOLTIP_STYLE = {
-  backgroundColor: "rgba(15,23,42,.92)",
-  border: "1px solid rgba(255,255,255,.12)",
-  borderRadius: 12,
-  color: "#E2E8F0",
-  fontSize: 12,
+  backgroundColor: "#FFFDF8",
+  border: "1px solid #E8DEC8",
+  borderRadius: 16,
+  color: "#1B1A2E",
+  fontSize: 13,
 };
 
 // ---------------------------------------------------------- //
@@ -178,13 +173,13 @@ function KpiCard({
 }) {
   const good = diff != null && (invert ? diff < 0 : diff > 0);
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-      <div className="text-[11px] uppercase tracking-wide text-slate-400">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-slate-100">{value}</div>
+    <div className="rounded-3xl border border-[#E8DEC8] bg-carta p-4">
+      <div className="text-xs uppercase tracking-wide text-grigio">{label}</div>
+      <div className="mt-1 font-display text-2xl font-semibold text-inchiostro">{value}</div>
       {diff != null && (
         <div
-          className={`mt-1 flex items-center gap-1 text-[11px] ${
-            good ? "text-emerald-400" : "text-red-400"
+          className={`mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium text-inchiostro ${
+            good ? "bg-menta/40" : "bg-pesca/60"
           }`}
         >
           {diff >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
@@ -351,13 +346,13 @@ export default function BudgetDrawer({
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", stiffness: 280, damping: 32 }}
-          className="fixed inset-x-0 bottom-0 z-40 flex max-h-[84vh] flex-col rounded-t-2xl border-t border-white/10 bg-slate-900/80 text-slate-100 shadow-2xl backdrop-blur-md md:inset-y-0 md:left-auto md:right-0 md:h-full md:max-h-none md:w-[420px] md:rounded-none md:border-l md:border-t-0"
+          className="fixed inset-x-0 bottom-0 z-40 flex max-h-[84vh] flex-col rounded-t-[32px] border-t border-[#E8DEC8] bg-crema text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.16)] md:inset-y-0 md:left-auto md:right-0 md:h-full md:max-h-none md:w-[440px] md:rounded-l-[32px] md:rounded-tr-none md:border-l md:border-t-0"
         >
           {/* ---------- Header ---------- */}
-          <header className="flex items-start justify-between gap-3 border-b border-white/10 p-4">
+          <header className="flex items-start justify-between gap-3 border-b border-[#E8DEC8] p-4">
             <div>
-              <h2 className="text-lg font-semibold leading-tight">{data.name}</h2>
-              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+              <h2 className="font-display text-3xl font-semibold leading-tight">{data.name}</h2>
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-grigio">
                 <span className="inline-flex items-center gap-1">
                   <MapPin size={12} /> {data.province} · {data.region}
                 </span>
@@ -372,7 +367,7 @@ export default function BudgetDrawer({
                   href={`/comune/${slugComune(data.name, data.istat)}`}
                   target="_blank"
                   rel="noopener"
-                  className="underline decoration-slate-600 underline-offset-2 hover:text-slate-200"
+                  className="underline decoration-grigio underline-offset-2 hover:text-inchiostro"
                 >
                   Pagina del comune
                 </a>
@@ -380,7 +375,7 @@ export default function BudgetDrawer({
               {datiCard && (
                 <button
                   onClick={() => setCreaCard(true)}
-                  className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-full bg-amber-400 px-4 text-sm font-semibold text-slate-950 hover:bg-amber-300"
+                  className="mt-3 inline-flex min-h-12 items-center gap-2 rounded-full bg-limone px-5 text-sm font-semibold text-inchiostro shadow-[0_4px_0_#1B1A2E] transition hover:brightness-95 active:translate-y-0.5 active:shadow-none"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
@@ -396,15 +391,15 @@ export default function BudgetDrawer({
                     ? `Posizione fra i ${num(peerAvg.n)} comuni della fascia ${peerAvg.fascia}: meglio del ${current.fhi ?? "—"}% di loro, su autonomia finanziaria e saldo di gestione (al netto dei prestiti).`
                     : "Posizione del comune fra quelli della sua fascia demografica (0-100)."
                 }
-                className={`rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-center ${fhiColor(current.fhi)}`}
+                className={`rounded-2xl px-3 py-1.5 text-center text-inchiostro ${fhiPill(current.fhi)}`}
               >
-                <div className="text-sm font-bold leading-none">{current.fhi ?? "—"}</div>
-                <div className="text-[9px] uppercase tracking-wider text-slate-400">Rango</div>
+                <div className="font-display text-xl font-bold leading-none">{current.fhi ?? "—"}</div>
+                <div className="text-xs uppercase tracking-wider">Rango</div>
               </div>
               <button
                 onClick={onClose}
                 aria-label="Chiudi pannello"
-                className="rounded-lg p-2 text-slate-400 transition hover:bg-white/10 hover:text-slate-100"
+                className="grid size-12 place-items-center rounded-full text-grigio transition hover:bg-sabbia/30 hover:text-inchiostro"
               >
                 <X size={18} />
               </button>
@@ -412,7 +407,7 @@ export default function BudgetDrawer({
           </header>
 
           {/* ---------- Tab bar ---------- */}
-          <nav className="flex gap-1 overflow-x-auto border-b border-white/10 p-2">
+          <nav className="flex gap-1.5 overflow-x-auto border-b border-[#E8DEC8] p-2.5">
             {(
               [
                 ["quadro", "Quadro"],
@@ -427,8 +422,8 @@ export default function BudgetDrawer({
               <button
                 key={id}
                 onClick={() => setTab(id)}
-                className={`shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-                  tab === id ? "bg-white/10 text-white" : "text-slate-400 hover:text-slate-200"
+                className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-semibold transition ${
+                  tab === id ? "bg-mirtillo text-white" : "text-grigio hover:bg-sabbia/30 hover:text-inchiostro"
                 }`}
               >
                 {label}
@@ -442,7 +437,7 @@ export default function BudgetDrawer({
               <>
                 {peerAvg && (
                   <div>
-                    <div className="flex gap-1 rounded-lg border border-white/10 bg-white/5 p-0.5">
+                    <div className="flex gap-1 rounded-full border border-[#E8DEC8] bg-carta p-1">
                       {(
                         [
                           ["simili", "Comuni simili"],
@@ -452,10 +447,10 @@ export default function BudgetDrawer({
                         <button
                           key={v}
                           onClick={() => setBase(v)}
-                          className={`flex-1 rounded-md px-2 py-1 text-[11px] transition-colors ${
+                          className={`min-h-10 flex-1 rounded-full px-3 text-sm font-medium transition-colors ${
                             base === v
-                              ? "bg-white/15 text-white"
-                              : "text-slate-400 hover:text-slate-200"
+                              ? "bg-mirtillo text-white"
+                              : "text-grigio hover:text-inchiostro"
                           }`}
                         >
                           {label}
@@ -463,9 +458,9 @@ export default function BudgetDrawer({
                       ))}
                     </div>
                     {usaSimili && (
-                      <p className="mt-1.5 text-[11px] leading-snug text-slate-400">
-                        Confronto con i <strong className="text-slate-300">{num(peerAvg.n)}</strong>{" "}
-                        comuni della fascia <strong className="text-slate-300">{peerAvg.fascia}</strong>,
+                      <p className="mt-1.5 text-xs leading-snug text-grigio">
+                        Confronto con i <strong className="text-inchiostro">{num(peerAvg.n)}</strong>{" "}
+                        comuni della fascia <strong className="text-inchiostro">{peerAvg.fascia}</strong>,
                         sulla mediana.
                       </p>
                     )}
@@ -514,8 +509,8 @@ export default function BudgetDrawer({
                 {/* Posizione dentro la fascia: dice più della differenza in %,
                     perché tiene conto di quanto è dispersa la fascia stessa. */}
                 {usaSimili && peerAvg && (
-                  <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
-                    <h3 className="text-[11px] uppercase tracking-wider text-slate-400">
+                  <div className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+                    <h3 className="text-xs uppercase tracking-wider text-grigio">
                       Posizione nella fascia
                     </h3>
                     {(
@@ -528,15 +523,15 @@ export default function BudgetDrawer({
                     ).map(([label, pct]) =>
                       pct == null ? null : (
                         <div key={label}>
-                          <div className="flex items-baseline justify-between text-[11px]">
-                            <span className="text-slate-300">{label}</span>
-                            <span className="text-slate-400">
+                          <div className="flex items-baseline justify-between text-xs">
+                            <span className="text-inchiostro">{label}</span>
+                            <span className="text-grigio">
                               più alto del {pct}% dei simili
                             </span>
                           </div>
-                          <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-700/60">
+                          <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-sabbia/50">
                             <div
-                              className="h-full rounded-full bg-sky-400/70"
+                              className="h-full rounded-full bg-mirtillo"
                               style={{ width: `${pct}%` }}
                             />
                           </div>
@@ -546,7 +541,7 @@ export default function BudgetDrawer({
                   </div>
                 )}
                 {current.revenue_total == null && (
-                  <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs leading-relaxed text-amber-100">
+                  <p className="rounded-3xl border border-limone bg-limone/30 p-3 text-sm leading-relaxed text-inchiostro">
                     Per il {current.year} SIOPE riporta i pagamenti di questo comune ma nessun
                     incasso (di solito il tesoriere non ha trasmesso le riscossioni). Entrate, saldo e
                     rango non sono calcolabili: non sono zero, sono dati mancanti.
@@ -557,7 +552,7 @@ export default function BudgetDrawer({
                   anno={current.year}
                   spesaPc={current.expenditure_pc}
                 />
-                <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs leading-relaxed text-slate-300">
+                <div className="rounded-3xl border border-[#E8DEC8] bg-carta p-3 text-sm leading-relaxed text-inchiostro">
                   Totali {current.year}: entrate {eur(current.revenue_total, true)} · spese{" "}
                   {eur(current.expenditure_total, true)}
                   {haDebito ? ` · debito ${eur(current.debt_total, true)}` : ""}.
@@ -577,10 +572,10 @@ export default function BudgetDrawer({
             {tab === "grafici" && (
               <>
                 <section>
-                  <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+                  <h3 className="mb-2 text-sm font-medium uppercase tracking-wider text-grigio">
                     Trend pluriennale
                   </h3>
-                  <div className="h-48 rounded-xl border border-white/10 bg-white/5 p-2">
+                  <div className="h-48 rounded-3xl border border-[#E8DEC8] bg-carta p-2">
                     <ResponsiveContainer width="100%" height="100%">
                       <ComposedChart data={trendData}>
                         <CartesianGrid stroke={GRID} strokeDasharray="3 3" vertical={false} />
@@ -596,20 +591,20 @@ export default function BudgetDrawer({
                           contentStyle={TOOLTIP_STYLE}
                           formatter={(v) => eur(v as number, true)}
                         />
-                        <Legend wrapperStyle={{ fontSize: 11 }} />
-                        <Line type="monotone" dataKey="Entrate" stroke="#10B981" strokeWidth={2} dot={false} />
-                        <Line type="monotone" dataKey="Spese" stroke="#38BDF8" strokeWidth={2} dot={false} />
-                        <Line type="monotone" dataKey="Debito" stroke="#EF4444" strokeWidth={2} dot={false} />
+                        <Legend wrapperStyle={{ fontSize: 12 }} />
+                        <Line type="monotone" dataKey="Entrate" stroke="#2DBE8B" strokeWidth={3} dot={false} />
+                        <Line type="monotone" dataKey="Spese" stroke="#3B3BD6" strokeWidth={2} dot={false} />
+                        <Line type="monotone" dataKey="Debito" stroke="#F0502D" strokeWidth={3} dot={false} />
                       </ComposedChart>
                     </ResponsiveContainer>
                   </div>
                 </section>
 
                 <section>
-                  <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+                  <h3 className="mb-2 text-sm font-medium uppercase tracking-wider text-grigio">
                     Composizione delle entrate
                   </h3>
-                  <div className="h-48 rounded-xl border border-white/10 bg-white/5 p-2">
+                  <div className="h-48 rounded-3xl border border-[#E8DEC8] bg-carta p-2">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={stackedData}>
                         <CartesianGrid stroke={GRID} strokeDasharray="3 3" vertical={false} />
@@ -623,12 +618,12 @@ export default function BudgetDrawer({
                         />
                         <Tooltip
                           contentStyle={TOOLTIP_STYLE}
-                          cursor={{ fill: "rgba(255,255,255,.04)" }}
+                          cursor={{ fill: "rgba(27,26,46,.05)" }}
                           formatter={(v) => eur(v as number, true)}
                         />
-                        <Legend wrapperStyle={{ fontSize: 11 }} />
-                        <Bar dataKey="Entrate correnti" stackId="a" fill="#10B981" />
-                        <Bar dataKey="Conto capitale" stackId="a" fill="#0EA5E9" radius={[4, 4, 0, 0]} />
+                        <Legend wrapperStyle={{ fontSize: 12 }} />
+                        <Bar dataKey="Entrate correnti" stackId="a" fill="#2DBE8B" />
+                        <Bar dataKey="Conto capitale" stackId="a" fill="#3B3BD6" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -642,10 +637,10 @@ export default function BudgetDrawer({
                     grafico verrebbe fuori con soli assi e nessuna curva. */}
                 {haDebito && (
                 <section>
-                  <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+                  <h3 className="mb-2 text-sm font-medium uppercase tracking-wider text-grigio">
                     Evoluzione del debito
                   </h3>
-                  <div className="h-40 rounded-xl border border-white/10 bg-white/5 p-2">
+                  <div className="h-40 rounded-3xl border border-[#E8DEC8] bg-carta p-2">
                     <ResponsiveContainer width="100%" height="100%">
                       <ComposedChart data={trendData}>
                         <CartesianGrid stroke={GRID} strokeDasharray="3 3" vertical={false} />
@@ -661,7 +656,7 @@ export default function BudgetDrawer({
                           contentStyle={TOOLTIP_STYLE}
                           formatter={(v) => eur(v as number, true)}
                         />
-                        <Line type="monotone" dataKey="Debito" stroke="#EF4444" strokeWidth={2} dot />
+                        <Line type="monotone" dataKey="Debito" stroke="#F0502D" strokeWidth={3} dot />
                       </ComposedChart>
                     </ResponsiveContainer>
                   </div>
@@ -669,25 +664,25 @@ export default function BudgetDrawer({
                 )}
 
                 {!haDebito && (
-                  <p className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs leading-relaxed text-slate-400">
+                  <p className="rounded-3xl border border-[#E8DEC8] bg-carta p-3 text-sm leading-relaxed text-grigio">
                     Il debito non è disponibile per questa sorgente: SIOPE registra
                     incassi e pagamenti, non lo stock di indebitamento.
                   </p>
                 )}
 
                 <section className="space-y-2">
-                  <h3 className="text-xs font-medium uppercase tracking-wider text-slate-400">
-                    Civic Intelligence
+                  <h3 className="text-sm font-medium uppercase tracking-wider text-grigio">
+                    Cosa osservare
                   </h3>
                   {alerts.map((a, i) => (
                     <div
                       key={i}
-                      className={`flex items-start gap-2 rounded-xl border p-3 text-xs leading-relaxed ${
+                      className={`flex items-start gap-2 rounded-3xl border p-3 text-sm leading-relaxed ${
                         a.level === "crit"
-                          ? "border-red-500/30 bg-red-500/10 text-red-200"
+                          ? "border-pomodoro bg-pomodoro/15 text-inchiostro"
                           : a.level === "warn"
-                            ? "border-amber-500/30 bg-amber-500/10 text-amber-100"
-                            : "border-emerald-500/30 bg-emerald-500/10 text-emerald-100"
+                            ? "border-limone bg-limone/30 text-inchiostro"
+                            : "border-menta bg-menta/25 text-inchiostro"
                       }`}
                     >
                       {a.level === "ok" ? (

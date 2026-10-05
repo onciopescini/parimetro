@@ -6,6 +6,7 @@
 // resto piu' preciso di quanto sia.
 
 import { AREE, NATURE, type CategorieComune } from "@/lib/categorie";
+import { COLORE_AREA } from "@/lib/card/contenuto";
 
 const eur = (v: number, compact = false) =>
   new Intl.NumberFormat("it-IT", {
@@ -24,7 +25,7 @@ export default function SpesaPerCategoria({
 }) {
   if (!categorie) {
     return (
-      <p className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs leading-relaxed text-slate-400">
+      <p className="rounded-3xl border border-[#E8DEC8] bg-carta p-3 text-sm leading-relaxed text-grigio">
         Il dettaglio per voce di spesa non è disponibile per il {year}.
       </p>
     );
@@ -44,7 +45,7 @@ export default function SpesaPerCategoria({
   return (
     <div className="space-y-4">
       {concentrata && (
-        <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs leading-relaxed text-amber-100">
+        <p className="rounded-3xl border border-limone bg-limone/30 p-3 text-sm leading-relaxed text-inchiostro">
           Il {Math.round((100 * concentrata.importo) / totale)}% della spesa dell&apos;anno è una sola
           voce (&ldquo;{concentrata.descrizione}&rdquo;, {eur(concentrata.importo, true)}): un
           investimento isolato, non la spesa corrente. I confronti con i comuni simili
@@ -54,15 +55,15 @@ export default function SpesaPerCategoria({
       {/* Indice di spesa non classificata: quanto di cio' che il comune ha pagato si
           riesce a ricondurre a un servizio e quanto no. Dice quanto fidarsi delle
           barre qui sotto, e vale per tutti i comuni, non solo per i casi estremi. */}
-      <section className="rounded-xl border border-white/10 bg-white/5 p-3">
-        <div className="flex items-baseline justify-between text-[11px]">
-          <span className="text-slate-300">Spesa riconducibile a un servizio</span>
-          <span className="font-semibold text-slate-100">{(100 - quotaNa).toFixed(0)}%</span>
+      <section className="rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+        <div className="flex items-baseline justify-between text-xs">
+          <span className="text-inchiostro">Spesa riconducibile a un servizio</span>
+          <span className="font-semibold text-inchiostro">{(100 - quotaNa).toFixed(0)}%</span>
         </div>
-        <div className="mt-1.5 flex h-1.5 overflow-hidden rounded-full bg-slate-700/60">
-          <div className="h-full bg-emerald-400/70" style={{ width: `${100 - quotaNa}%` }} />
+        <div className="mt-1.5 flex h-1.5 overflow-hidden rounded-full bg-sabbia/50">
+          <div className="h-full bg-menta" style={{ width: `${100 - quotaNa}%` }} />
         </div>
-        <p className="mt-1.5 text-[10px] leading-snug text-slate-500">
+        <p className="mt-1.5 text-xs leading-snug text-grigio">
           {quotaNa < 1
             ? "Quasi tutta la spesa ha una voce che dice a cosa serve."
             : `Il ${quotaNa.toFixed(0)}% (${eur(na!.importo, true)}) è registrato con voci generiche: non si può dire a quale servizio sia andato.`}{" "}
@@ -71,7 +72,7 @@ export default function SpesaPerCategoria({
       </section>
 
       <section>
-        <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+        <h3 className="mb-2 text-sm font-medium uppercase tracking-wider text-grigio">
           In cosa spende · pagamenti {year}
         </h3>
         <ul className="space-y-2.5">
@@ -79,22 +80,23 @@ export default function SpesaPerCategoria({
             const delta = a.mediana_pc > 0 ? ((a.pc - a.mediana_pc) / a.mediana_pc) * 100 : null;
             return (
               <li key={a.area}>
-                <div className="flex items-baseline justify-between gap-2 text-[11px]">
-                  <span className="text-slate-200">{AREE[a.area] ?? a.area}</span>
-                  <span className="shrink-0 text-slate-400">
+                <div className="flex items-baseline justify-between gap-2 text-xs">
+                  <span className="text-inchiostro">{AREE[a.area] ?? a.area}</span>
+                  <span className="shrink-0 text-grigio">
                     {eur(a.importo, true)} · {eur(a.pc)}/ab
                   </span>
                 </div>
-                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-700/60">
+                <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-sabbia/50">
                   <div
-                    className={`h-full rounded-full ${
-                      a.area === "non_attribuibile" ? "bg-slate-500" : "bg-sky-400/70"
-                    }`}
-                    style={{ width: `${(100 * a.importo) / massimo}%` }}
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${(100 * a.importo) / massimo}%`,
+                      backgroundColor: a.area === "non_attribuibile" ? "#CFC6B3" : (COLORE_AREA[a.area] ?? "#3B3BD6"),
+                    }}
                   />
                 </div>
                 {a.area !== "non_attribuibile" && a.n_simili > 1 && (
-                  <div className="mt-0.5 text-[10px] text-slate-500">
+                  <div className="mt-0.5 text-xs text-grigio">
                     mediana dei simili {eur(a.mediana_pc)}/ab
                     {delta != null && Math.abs(delta) >= 1 && (
                       <>
@@ -114,16 +116,16 @@ export default function SpesaPerCategoria({
       </section>
 
       <section>
-        <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+        <h3 className="mb-2 text-sm font-medium uppercase tracking-wider text-grigio">
           Per natura della spesa
         </h3>
         <ul className="space-y-1">
           {nature
             .filter((n) => n.importo > 0)
             .map((n) => (
-              <li key={n.natura} className="flex justify-between text-[11px]">
-                <span className="text-slate-300">{NATURE[n.natura] ?? n.natura}</span>
-                <span className="text-slate-400">
+              <li key={n.natura} className="flex justify-between text-xs">
+                <span className="text-inchiostro">{NATURE[n.natura] ?? n.natura}</span>
+                <span className="text-grigio">
                   {eur(n.importo, true)} · {((100 * n.importo) / totale).toFixed(0)}%
                 </span>
               </li>
@@ -132,24 +134,24 @@ export default function SpesaPerCategoria({
       </section>
 
       <section>
-        <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+        <h3 className="mb-2 text-sm font-medium uppercase tracking-wider text-grigio">
           Le voci più pesanti
         </h3>
         <ol className="space-y-1.5">
           {voci.slice(0, 10).map((v) => (
-            <li key={v.codice} className="text-[11px] leading-snug">
+            <li key={v.codice} className="text-xs leading-snug">
               <div className="flex justify-between gap-2">
-                <span className="text-slate-300">{v.descrizione}</span>
-                <span className="shrink-0 text-slate-400">{eur(v.importo, true)}</span>
+                <span className="text-inchiostro">{v.descrizione}</span>
+                <span className="shrink-0 text-grigio">{eur(v.importo, true)}</span>
               </div>
-              <div className="text-[10px] text-slate-500">
+              <div className="text-xs text-grigio">
                 {AREE[v.area] ?? v.area} · {v.codice}
               </div>
             </li>
           ))}
         </ol>
         {voci.length > 10 && (
-          <p className="mt-2 text-[10px] text-slate-500">
+          <p className="mt-2 text-xs text-grigio">
             Altre {voci.length - 10 + altre_voci.n} voci per {eur(
               voci.slice(10).reduce((s, v) => s + v.importo, 0) + altre_voci.importo,
               true,
@@ -158,7 +160,7 @@ export default function SpesaPerCategoria({
         )}
       </section>
 
-      <p className="text-[10px] leading-snug text-slate-500">
+      <p className="text-xs leading-snug text-grigio">
         Dati di cassa SIOPE (pagamenti). L&apos;attribuzione di ogni voce a un&apos;area è una scelta
         redazionale, pubblicata e verificabile nel repository.
       </p>
