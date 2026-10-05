@@ -25,6 +25,7 @@ import type { Appalti, Concorrenza } from "@/lib/appalti";
 import type { NotizieComune } from "@/lib/notizie";
 import ChatPanel from "@/components/chat/ChatPanel";
 import Fonti from "@/components/Fonti";
+import Guida from "@/components/guida/Guida";
 import BudgetDrawer, {
   type MunicipalityDetail,
   type NationalAverages,
@@ -201,6 +202,7 @@ function Mappa() {
 
   // ---- Classifiche ------------------------------------------------------ //
   const [classifiche, setClassifiche] = useState(false);
+  const [guida, setGuida] = useState(false);
 
   // Ogni combinazione di filtri e' un file pre-generato dall'ETL
   const caricaFiltri = useCallback(
@@ -355,7 +357,7 @@ function Mappa() {
           Contabilità di cassa: incassi e pagamenti, non accertamenti e impegni.
         </p>
 
-        <div className="relative mt-3">
+        <div className="relative mt-3" data-guida="cerca">
           <Search
             size={13}
             className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-grigio"
@@ -416,6 +418,7 @@ function Mappa() {
           ))}
         </div>
 
+        <div data-guida="metriche">
         <label
           className="mt-3 block text-xs uppercase tracking-wider text-grigio"
           htmlFor="height-metric"
@@ -453,8 +456,10 @@ function Mappa() {
             </option>
           ))}
         </select>
+        </div>
 
         <button
+          data-guida="procapite"
           onClick={() => setPerCapita((v) => !v)}
           className={`mt-3 w-full rounded-xl border px-2 py-1.5 text-xs transition-colors ${
             perCapita
@@ -485,10 +490,18 @@ function Mappa() {
         </button>
 
         <button
+          data-guida="classifiche"
           onClick={() => setClassifiche(true)}
           className="mt-1.5 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#E8DEC8] bg-carta px-2 py-1.5 text-xs text-inchiostro transition-colors hover:bg-sabbia/30"
         >
           <Trophy size={12} /> Classifiche
+        </button>
+
+        <button
+          onClick={() => setGuida(true)}
+          className="mt-1.5 w-full rounded-xl px-2 py-1.5 text-xs font-semibold text-mirtillo underline underline-offset-2 hover:bg-sabbia/30"
+        >
+          Come si legge
         </button>
 
         <p className="mt-3 text-xs leading-snug text-grigio">
@@ -504,6 +517,7 @@ function Mappa() {
       />
 
       <Fonti />
+      <Guida aperta={guida} onChiudi={() => setGuida(false)} />
 
       <BudgetDrawer
         data={detail}

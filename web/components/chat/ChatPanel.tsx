@@ -111,6 +111,7 @@ export default function ChatPanel({
     <>
       {!aperta && (
         <button
+          data-guida="chat"
           onClick={() => setAperta(true)}
           className={`absolute bottom-8 z-30 flex items-center gap-2 rounded-full border border-[#E8DEC8] bg-mirtillo px-4 py-2.5 text-sm font-medium text-white shadow-[0_8px_24px_rgba(27,26,46,0.16)] transition hover:brightness-95 ${
             spostaDaDestra ? "right-4 hidden md:flex md:right-[436px]" : "right-4"
