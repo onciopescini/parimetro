@@ -95,6 +95,8 @@ export interface Fetta {
   nome: string;
   euro: number;
   colore: string;
+  /** La chiave dell'area (per il nome intero nel testo del post); assente per "Tutto il resto" */
+  chiave?: string;
 }
 
 /**
@@ -107,8 +109,8 @@ export function ognicento(categorie: CategorieComune | null, quante = 6): Fetta[
   if (!aree.length) return null;
   const prime = aree.slice(0, quante);
   const resto = aree.slice(quante).reduce((s, a) => s + a.importo, 0);
-  const pezzi = [
-    ...prime.map((a) => ({ nome: nomeArea(a.area), valore: a.importo, colore: COLORE_AREA[a.area] ?? COLORE_RESTO })),
+  const pezzi: { nome: string; valore: number; colore: string; chiave?: string }[] = [
+    ...prime.map((a) => ({ nome: nomeArea(a.area), valore: a.importo, colore: COLORE_AREA[a.area] ?? COLORE_RESTO, chiave: a.area })),
     ...(resto > 0 ? [{ nome: "Tutto il resto", valore: resto, colore: COLORE_RESTO }] : []),
   ];
   const tot = pezzi.reduce((s, p) => s + p.valore, 0);
@@ -117,7 +119,7 @@ export function ognicento(categorie: CategorieComune | null, quante = 6): Fetta[
   let mancano = 100 - interi.reduce((s, v) => s + v, 0);
   const ordine = grezzi.map((g, i) => ({ i, r: g - interi[i] })).sort((a, b) => b.r - a.r);
   for (let k = 0; mancano > 0; k = (k + 1) % ordine.length, mancano--) interi[ordine[k].i]++;
-  return pezzi.map((p, i) => ({ nome: p.nome, euro: interi[i], colore: p.colore })).filter((f) => f.euro > 0);
+  return pezzi.map((p, i) => ({ nome: p.nome, euro: interi[i], colore: p.colore, chiave: p.chiave })).filter((f) => f.euro > 0);
 }
 
 /** Una sola voce che pesa il 40% o piu': di solito un investimento isolato, e il pro capite non e' confrontabile. */
@@ -369,8 +371,9 @@ export function testoPost(d: DatiCard, c: ContenutoCard, tono: Tono, indirizzo: 
   let dato = "";
   if (c.tipo === "cento" && c.fette) {
     const [a, b] = voceNote(c.fette);
+    const voce = (f: Fetta) => (f.chiave && AREE[f.chiave] ? AREE[f.chiave] : f.nome).toLowerCase();
     dato = a && b
-      ? `Su 100 € spesi da ${nome} nel ${c.anno}, ${a.euro} vanno a ${a.nome.toLowerCase()} e ${b.euro} a ${b.nome.toLowerCase()}.`
+      ? `Su 100 € spesi da ${nome} nel ${c.anno}: ${a.euro} € per ${voce(a)}, ${b.euro} € per ${voce(b)}.`
       : `Dove vanno i soldi di ${nome}: ogni 100 € spesi nel ${c.anno}, divisi per voce.`;
   } else if (c.tipo === "tre" && c.numeri) {
     dato = `${nome} in tre numeri: ${c.numeri.map((n) => `${n.valore} ${n.etichetta}`).join("; ")}.`;

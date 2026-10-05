@@ -233,8 +233,8 @@ describe("il testo del post", () => {
   });
   it("ogni 100 euro cita le due voci più grosse che dicono qualcosa", () => {
     const t = testoPost(DATI, card("cento"), "neutro", URL_PAGINA);
-    expect(t).toContain("17 vanno a funzionamento");
-    expect(t).toContain("13 a personale"); // "non attribuibile" e "tutto il resto" non fanno notizia
+    expect(t).toContain("17 € per funzionamento dell'ente");
+    expect(t).toContain("13 € per personale"); // "non attribuibile" e "tutto il resto" non fanno notizia
   });
 });
 
