@@ -126,6 +126,13 @@ drawn on every card and cannot be removed; the comparison is not offered when on
 year's spending, because the per-capita figure is then not comparable; a card is simply unavailable (with the reason) when the data is missing.
 Cards never contain the user's name. The wording is soft on purpose: no accusations, no exclamation marks.
 
+## Optional sign-in
+
+Everything works without signing in. Visitors who want to can sign in with an email link (no passwords) to save towns,
+get an email when a new year of data is published for them, and keep their card and chat history. State lives in
+Cloudflare D1, behind Pages Functions; codes and sessions are stored only as hashes. See [docs/accesso.md](accesso.md)
+and the user-facing page `/privacy`.
+
 ## Data contract between `etl/` and `web/`
 
 The exporter writes file names that the site recomputes (slugs, ranking paths). If the two

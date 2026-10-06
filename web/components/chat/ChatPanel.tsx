@@ -4,6 +4,7 @@
 // numeri li calcola il sito: la tabella sotto ogni risposta e' la fonte, il testo la
 // spiegazione. Ogni tabella si puo' esportare in CSV.
 
+import { account } from "@/lib/account/client";
 import { useEffect, useRef, useState } from "react";
 import { Download, Loader2, MapPin, MessageCircle, Send, X } from "lucide-react";
 import { toCsv } from "@/lib/chat/csv";
@@ -98,6 +99,7 @@ export default function ChatPanel({
       const j = await res.json();
       if (!res.ok) throw new Error(j.errore ?? `Errore ${res.status}`);
       setVoci((v) => [...v, { chi: "assistente", r: j as RispostaApi }]);
+      void account.registraDomanda(d);
     } catch (e) {
       setVoci((v) => [...v, { chi: "errore", testo: e instanceof Error ? e.message : "Errore di rete." }]);
     } finally {

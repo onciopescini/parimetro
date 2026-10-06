@@ -1,0 +1,12 @@
+# Configurazione di Cloudflare Pages: le "binding" che le funzioni usano.
+# I segreti (OPENROUTER_API_KEY, SEGRETO_ACCESSO, ADMIN_TOKEN, RESEND_API_KEY...) NON stanno qui: si impostano con
+# `wrangler pages secret put NOME --project-name parimetro`.
+name = "parimetro"
+pages_build_output_dir = "out"
+compatibility_date = "2026-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "parimetro"
+database_id = "89080860-1fb5-4135-a07f-bb56ad2857bc"
+migrations_dir = "migrations"

@@ -49,7 +49,10 @@ const PASSI: Passo[] = [
 ];
 
 // Chi arriva da un link a un comune e' venuto per quel comune: il benvenuto non gli si mette davanti.
-const daLinkAComune = () => new URLSearchParams(window.location.search).has("comune");
+const daLinkAComune = () => {
+  const q = new URLSearchParams(window.location.search);
+  return q.has("comune") || q.has("accesso");
+};
 
 const leggi = () => {
   try {

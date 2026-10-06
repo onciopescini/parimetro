@@ -20,6 +20,7 @@ import NotizieComune from "./NotizieComune";
 import CreaCard from "../card/CreaCard";
 import type { DatiCard } from "@/lib/card/contenuto";
 import { slugComune } from "@/lib/pagina/comune";
+import { account, useAccount } from "@/lib/account/client";
 import type { NotizieComune as NotizieDati } from "@/lib/notizie";
 import type { Investimenti } from "@/lib/investimenti";
 import type { RedditoAnno } from "@/lib/reddito";
@@ -29,6 +30,7 @@ import {
   AlertTriangle,
   Landmark,
   MapPin,
+  Star,
   ShieldCheck,
   TrendingDown,
   TrendingUp,
@@ -118,6 +120,8 @@ interface BudgetDrawerProps {
   concorrenza?: Concorrenza | null;
   open: boolean;
   onClose: () => void;
+  /** Chiede di entrare (la stella lo usa quando non si e' dentro) */
+  onChiediAccesso?: (motivo: string) => void;
 }
 
 type Tab = "quadro" | "spese" | "opere" | "appalti" | "notizie" | "grafici" | "debito";
@@ -206,7 +210,9 @@ export default function BudgetDrawer({
   concorrenza,
   open,
   onClose,
+  onChiediAccesso,
 }: BudgetDrawerProps) {
+  const acc = useAccount();
   const [tab, setTab] = useState<Tab>("quadro");
   const [creaCard, setCreaCard] = useState(false);
   // Passando a un comune senza notizie il tab non c'e' piu': si torna al quadro invece di mostrare il vuoto
@@ -372,6 +378,20 @@ export default function BudgetDrawer({
                   Pagina del comune
                 </a>
               </div>
+              {acc.stato !== "assente" && acc.stato !== "attesa" && (
+                <button
+                  onClick={async () => {
+                    if (acc.stato !== "dentro") return onChiediAccesso?.("Per salvare questo comune e ritrovarlo su ogni dispositivo.");
+                    if (acc.comuni.some((c) => c.istat === data.istat)) await account.togli(data.istat);
+                    else await account.salva(data.istat, data.name, data.history.length ? data.history[data.history.length - 1].year : null);
+                  }}
+                  aria-pressed={acc.comuni.some((c) => c.istat === data.istat)}
+                  className="mt-3 mr-2 inline-flex min-h-12 items-center gap-2 rounded-full border border-[#E8DEC8] bg-carta px-5 text-sm font-semibold text-inchiostro transition hover:bg-sabbia/30"
+                >
+                  <Star size={16} className={acc.comuni.some((c) => c.istat === data.istat) ? "fill-limone text-inchiostro" : ""} aria-hidden />
+                  {acc.comuni.some((c) => c.istat === data.istat) ? "Salvato" : "Salva il comune"}
+                </button>
+              )}
               {datiCard && (
                 <button
                   onClick={() => setCreaCard(true)}

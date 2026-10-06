@@ -18,6 +18,7 @@ import {
 } from "@/lib/card/contenuto";
 import { DIMENSIONI, disegna, type Ambiente } from "@/lib/card/disegna";
 import { slugComune } from "@/lib/pagina/comune";
+import { account } from "@/lib/account/client";
 
 const SCELTE: { tipo: TipoCard; nome: string; testo: string }[] = [
   { tipo: "cento", nome: "Ogni 100 €", testo: "Quadrata, per i post." },
@@ -130,6 +131,7 @@ export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: (
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    void account.registraCard(dati.voce.istat, dati.voce.name, tipo, dati.anno);
   }
 
   async function condividi() {
@@ -139,6 +141,7 @@ export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: (
     try {
       if (navigator.canShare({ files: [file] })) await navigator.share({ files: [file], title: `${dati.voce.name} · Parimetro`, text: testo });
       else await navigator.share({ title: `${dati.voce.name} · Parimetro`, text: testo, url: indirizzoPagina });
+      void account.registraCard(dati.voce.istat, dati.voce.name, tipo, dati.anno);
     } catch {
       /* l'utente ha chiuso il foglio di condivisione: niente da segnalare */
     }

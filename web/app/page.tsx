@@ -12,7 +12,7 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, Trophy, X } from "lucide-react";
+import { Search, Trophy, UserRound, X } from "lucide-react";
 import Map3D, {
   METRIC_LABELS,
   type MetricKey,
@@ -26,6 +26,9 @@ import type { NotizieComune } from "@/lib/notizie";
 import ChatPanel from "@/components/chat/ChatPanel";
 import Fonti from "@/components/Fonti";
 import Guida from "@/components/guida/Guida";
+import AccessoModal from "@/components/account/AccessoModal";
+import SpazioPersonale from "@/components/account/SpazioPersonale";
+import { useAccount } from "@/lib/account/client";
 import BudgetDrawer, {
   type MunicipalityDetail,
   type NationalAverages,
@@ -203,6 +206,23 @@ function Mappa() {
   // ---- Classifiche ------------------------------------------------------ //
   const [classifiche, setClassifiche] = useState(false);
   const [guida, setGuida] = useState(false);
+  const acc = useAccount();
+  const [accesso, setAccesso] = useState<string | null>(null); // il motivo con cui si apre, o null = chiuso
+  const [spazio, setSpazio] = useState(false);
+  const [benvenuto, setBenvenuto] = useState(false);
+  // Appena entrati dal link nell'email: un saluto breve, poi si toglie il segno dall'indirizzo
+  useEffect(() => {
+    const u = new URL(window.location.href);
+    if (u.searchParams.get("accesso") !== "ok") return;
+    u.searchParams.delete("accesso");
+    window.history.replaceState(null, "", u.pathname + (u.search ? u.search : ""));
+    const a = setTimeout(() => setBenvenuto(true), 0);
+    const b = setTimeout(() => setBenvenuto(false), 5000);
+    return () => {
+      clearTimeout(a);
+      clearTimeout(b);
+    };
+  }, []);
 
   // Ogni combinazione di filtri e' un file pre-generato dall'ETL
   const caricaFiltri = useCallback(
@@ -497,6 +517,15 @@ function Mappa() {
           <Trophy size={12} /> Classifiche
         </button>
 
+        {acc.stato !== "assente" && acc.stato !== "attesa" && (
+          <button
+            onClick={() => (acc.stato === "dentro" ? setSpazio(true) : setAccesso("Puoi usare tutto senza entrare."))}
+            className="mt-1.5 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#E8DEC8] bg-carta px-2 py-2 text-sm font-semibold text-inchiostro transition-colors hover:bg-sabbia/30"
+          >
+            <UserRound size={14} /> {acc.stato === "dentro" ? "Il mio spazio" : "Accedi (facoltativo)"}
+          </button>
+        )}
+
         <button
           onClick={() => setGuida(true)}
           className="mt-1.5 w-full rounded-xl px-2 py-1.5 text-xs font-semibold text-mirtillo underline underline-offset-2 hover:bg-sabbia/30"
@@ -518,6 +547,13 @@ function Mappa() {
 
       <Fonti />
       <Guida aperta={guida} onChiudi={() => setGuida(false)} />
+      {accesso !== null && <AccessoModal motivo={accesso} onClose={() => setAccesso(null)} />}
+      {spazio && <SpazioPersonale onClose={() => setSpazio(false)} onApri={apriDaChat} />}
+      {benvenuto && (
+        <div role="status" className="pointer-events-none fixed left-1/2 top-4 z-[70] -translate-x-1/2 rounded-full border border-menta bg-menta px-6 py-3 text-base font-semibold text-inchiostro shadow-[0_8px_24px_rgba(27,26,46,0.16)]">
+          Sei dentro. Bentornato!
+        </div>
+      )}
 
       <BudgetDrawer
         data={detail}
@@ -532,6 +568,7 @@ function Mappa() {
         concorrenza={concorrenza}
         open={open}
         onClose={() => setOpen(false)}
+        onChiediAccesso={(m) => setAccesso(m)}
       />
     </main>
   );
