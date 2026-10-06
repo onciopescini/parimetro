@@ -46,6 +46,18 @@ PERTINENTI = re.compile(
 )
 
 
+# Cronaca giudiziaria: arresti, indagini, mafia. Sono fatti veri, ma accanto a un comune in una scheda leggono come
+# un'accusa al comune e non come informazione sui conti. Si escludono (e' una scelta di impostazione, non un giudizio).
+CRONACA = re.compile(
+    r"\barrest\w*|\bindagat\w*|\binchiest\w*|\bin manette|\bavvisi? di garanzia|\brinvio a giudizio|\bsequestr\w*|\bmafi\w*|\bcamorr\w*|\bndranghet\w*|\bcosa nostra|\binfiltrazion\w* (mafios|criminal)\w*|\bcorruzion\w*|\btangent\w*|\bconcussion\w*|\bpeculat\w*|\bturbativa|\btruff\w*|\bfrod\w*|\bappalt\w* (truccat|pilotat|gonfiat)\w*|\bcricca|\bcondannat\w*|\bimputat\w*|\binterdittiv\w*|\bpm|\bprocura|\bguardia di finanza|\bcarabinier\w*|\bpolizia giudiziaria"
+)
+
+
+def cronaca(titolo: str, snippet: str | None = None) -> bool:
+    """Cronaca giudiziaria? Allora non e' una notizia sui conti e non si tiene."""
+    return bool(CRONACA.search(forma(f"{titolo} {snippet or ''}")))
+
+
 def pertinente(titolo: str, snippet: str | None = None) -> bool:
     """Parla di conti, tributi, appalti o fondi? Si guarda il titolo e, se c'e', il breve estratto."""
     t = IDIOMI.sub(" ", forma(f"{titolo} {snippet or ''}"))
@@ -137,6 +149,8 @@ def seleziona(risultati: list[dict], nome: str, provincia: str | None, ambiguo: 
         if d is None or not recente(d, oggi):
             continue
         if not cita_il_comune(titolo, snippet, nome, provincia, ambiguo) or not pertinente(titolo, snippet):
+            continue
+        if cronaca(titolo, snippet):
             continue
         tenute.append({"url": url, "titolo": titolo[:300], "fonte": fonte(url), "data": d})
     tenute.sort(key=lambda x: x["data"], reverse=True)

@@ -126,3 +126,23 @@ def test_banco_di_prova_a_mano_le_regole_non_peggiorano():
     assert giuste / len(vero) >= 0.85
     falsi_positivi = sum(p and not v for p, v in zip(pred, vero))
     assert falsi_positivi <= 3  # meglio perdere una notizia che mostrarne una fuori tema
+
+
+def test_la_cronaca_giudiziaria_non_e_una_notizia_sui_conti():
+    from notizie import cronaca
+
+    for titolo in (
+        "Scoperta a Messina la cricca degli appalti pubblici: sei persone arrestate",
+        "Roma, appalti truccati per i lavori stradali: un funzionario ai domiciliari, indagati due imprenditori",
+        "Inchiesta sul bilancio del Comune: la Procura apre un fascicolo",
+        "Mafia e appalti, sequestro di beni",
+    ):
+        assert cronaca(titolo), titolo
+    # i conti veri restano, anche quando c'entra la Corte dei conti o una gara
+    for titolo in (
+        "Il consiglio approva il bilancio di previsione: 53 milioni",
+        "Corte dei conti: il Comune deve riequilibrare il disavanzo",
+        "Appalto per la mensa scolastica: aggiudicata la gara con il ribasso del 12%",
+        "Tari, aumenti in vista: le tariffe 2026",
+    ):
+        assert not cronaca(titolo), titolo
