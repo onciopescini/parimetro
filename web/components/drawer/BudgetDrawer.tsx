@@ -594,7 +594,7 @@ export default function BudgetDrawer({
                         <Legend wrapperStyle={{ fontSize: 12 }} />
                         <Line type="monotone" dataKey="Entrate" stroke="#2DBE8B" strokeWidth={3} dot={false} />
                         <Line type="monotone" dataKey="Spese" stroke="#3B3BD6" strokeWidth={2} dot={false} />
-                        <Line type="monotone" dataKey="Debito" stroke="#F0502D" strokeWidth={3} dot={false} />
+                        {haDebito && <Line type="monotone" dataKey="Debito" stroke="#F0502D" strokeWidth={3} dot={false} />}
                       </ComposedChart>
                     </ResponsiveContainer>
                   </div>
