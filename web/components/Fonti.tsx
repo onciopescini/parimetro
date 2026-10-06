@@ -69,7 +69,9 @@ export default function Fonti() {
               <li>
                 <strong className="text-inchiostro">ANAC</strong>, Banca dati nazionale dei contratti pubblici (CC BY-SA
                 4.0): le gare bandite dai comuni (2020-2025) e le loro aggiudicazioni, da cui il numero di offerte e il ribasso. L&apos;importo è quello a base di gara dichiarato, non il pagato, e
-                alcuni importi sono refusi: per questo i totali escludono i valori impossibili.
+                alcuni importi sono refusi: per questo i totali escludono i valori impossibili. La ripartizione dei lotti per area
+                di spesa (&ldquo;A cosa servono le gare&rdquo;) non è un dato ANAC: la fa in automatico un modello di
+                intelligenza artificiale (Jev, di TypeSafe) leggendo l&apos;oggetto di ciascun lotto, e può sbagliare.
               </li>
               <li>
                 <strong className="text-inchiostro">MEF, Dipartimento delle Finanze</strong>: dichiarazioni

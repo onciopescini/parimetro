@@ -61,6 +61,10 @@ python 09_import_anac.py --dir ../../etl-data/anac/cig --ipa ../../etl-data/pnrr
 python scarica_anac.py --dest ../../etl-data/anac/aggiudicazioni --dataset aggiudicazioni
 python 11_import_aggiudicazioni.py --zip ../../etl-data/anac/aggiudicazioni/aggiudicazioni_csv.zip
 
+# 6b · A cosa servono le gare: classifica ogni lotto in un'area di spesa con Jev (TypeSafe). Chiave in JEV_API_KEY (.env).
+python 13_classifica_lotti.py --anno 2024                # stima (richieste, ore, costo): non spende nulla
+python 13_classifica_lotti.py --anno 2024 --esegui       # si puo' fermare e riprendere; ~2 ore e ~3,5 $ per il 2024
+
 # 7 · Notizie sui conti (Firecrawl, facoltativo). La chiave sta in FIRECRAWL_API_KEY, mai in un file del repo.
 python 10_raccogli_notizie.py                          # solo la stima dei crediti (~4 a comune: due ricerche; ~32.000 in tutto)
 python 10_raccogli_notizie.py --esegui --min-abitanti 20000 --limite 20   # una prova

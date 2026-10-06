@@ -36,12 +36,49 @@ export interface LottoGrande {
   cig: string;
 }
 
+/** A cosa servono i lotti di un anno, secondo la classificazione automatica (Jev): get_appalti_comune() -> "aree". */
+export interface AreeAnno {
+  /** Lotti (non adesioni) dell'anno */
+  lotti: number;
+  /** Quelli a cui il modello ha dato un'area con confidenza sufficiente */
+  classificati: number;
+  voci: { area: string; n: number; importo: number | null }[];
+}
+
 export interface Appalti {
   anni: Record<string, AppaltiAnno>;
   tipi: Record<string, number>;
   famiglie: Record<string, number>;
   maggiori: LottoGrande[];
+  /** Solo gli anni gia' classificati; assente nei file vecchi */
+  aree?: Record<string, AreeAnno>;
 }
+
+export interface VoceArea {
+  area: string;
+  n: number;
+  /** Quota dei lotti dell'anno, 0-100 (un decimale) */
+  quota: number;
+  importo: number | null;
+}
+
+/**
+ * Le voci da mostrare: le aree in ordine di numero di lotti, con "non classificabili" sempre in fondo (non e' un'area,
+ * e' cio' che il modello non ha saputo dire). Le quote sono sui lotti, non sugli importi: gli importi dei lotti sono
+ * troppo irregolari per fare da misura.
+ */
+export function vociAree(a: AreeAnno): VoceArea[] {
+  const tot = a.voci.reduce((s, v) => s + v.n, 0);
+  if (tot <= 0) return [];
+  const voci = a.voci.map((v) => ({ area: v.area, n: v.n, importo: v.importo, quota: Math.round((1000 * v.n) / tot) / 10 }));
+  return [
+    ...voci.filter((v) => v.area !== "non_classificabile").sort((x, y) => y.n - x.n),
+    ...voci.filter((v) => v.area === "non_classificabile"),
+  ];
+}
+
+/** Quanta parte dei lotti ha un'area, in percentuale intera. */
+export const copertura = (a: AreeAnno) => (a.lotti > 0 ? Math.round((100 * a.classificati) / a.lotti) : 0);
 
 /** Concorrenza nelle gare vere (aperte, ristrette, negoziate) di un anno: get_concorrenza_comune(). */
 export interface ConcorrenzaAnno {

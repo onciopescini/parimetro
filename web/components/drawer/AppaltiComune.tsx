@@ -8,11 +8,14 @@
 import { useState } from "react";
 import {
   annoDisponibile,
+  copertura,
   FAMIGLIE,
   nuovaRilevazione,
+  vociAree,
   type Appalti,
   type Concorrenza,
 } from "@/lib/appalti";
+import { COLORE_AREA, nomeArea } from "@/lib/card/contenuto";
 
 const eurBreve = (v: number | null | undefined) =>
   v == null
@@ -45,6 +48,8 @@ export default function AppaltiComune({
   if (a_ == null || !a) return null;
   const serie = Object.entries(appalti.anni).sort(([x], [y]) => Number(x) - Number(y));
   const conc = concorrenza?.[String(a_)] ?? null;
+  const aree = appalti.aree?.[String(a_)] ?? null;
+  const voci = aree ? vociAree(aree) : [];
   const confrontabile = a.mediana_quota_diretti != null && a.quota_diretti != null && a.rango_diretti != null;
 
   return (
@@ -124,6 +129,32 @@ export default function AppaltiComune({
           </p>
         )}
       </section>
+
+      {aree && voci.length > 0 && (
+        <section className="space-y-3 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+          <h3 className="text-xs uppercase tracking-wider text-grigio">A cosa servono le gare · {a_}</h3>
+          <div className="flex h-4 overflow-hidden rounded-full bg-sabbia/50" role="img" aria-label={`Lotti per area: ${voci.map((v) => `${v.area === "non_classificabile" ? "non classificabili" : nomeArea(v.area)} ${v.quota}%`).join(", ")}.`}>
+            {voci.map((v) => (
+              <div key={v.area} style={{ width: `${v.quota}%`, backgroundColor: v.area === "non_classificabile" ? "#CFC6B3" : (COLORE_AREA[v.area] ?? "#E8DEC8") }} />
+            ))}
+          </div>
+          <ul className="space-y-1.5">
+            {voci.map((v) => (
+              <li key={v.area} className="flex items-center gap-2 text-sm">
+                <i className="size-3 shrink-0 rounded-full" style={{ backgroundColor: v.area === "non_classificabile" ? "#CFC6B3" : (COLORE_AREA[v.area] ?? "#E8DEC8") }} aria-hidden />
+                <span className="min-w-0 flex-1 truncate text-inchiostro">{v.area === "non_classificabile" ? "Non classificabili" : nomeArea(v.area)}</span>
+                <span className="shrink-0 text-grigio">{num(v.n)} {v.n === 1 ? "lotto" : "lotti"} · {v.quota.toLocaleString("it-IT")}%</span>
+                <span className="w-16 shrink-0 text-right text-grigio">{v.area === "non_classificabile" ? "" : eurBreve(v.importo)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs leading-snug text-grigio">
+            Classificazione <strong className="text-inchiostro">automatica</strong>: un modello di intelligenza artificiale (Jev, di TypeSafe) legge l&apos;oggetto di ogni lotto e lo
+            assegna a un&apos;area di spesa. Non è un dato ANAC e può sbagliare, soprattutto sui lotti ambigui. Il modello ha dato un'area al {copertura(aree)}% dei {num(aree.lotti)} lotti
+            (escluse le adesioni a convenzioni). Le quote sono sul numero di lotti; gli importi sommano solo i lotti attendibili.
+          </p>
+        </section>
+      )}
 
       {conc && (
         <section className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
