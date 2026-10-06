@@ -150,7 +150,7 @@ export default function AppaltiComune({
           </ul>
           <p className="text-xs leading-snug text-grigio">
             Classificazione <strong className="text-inchiostro">automatica</strong>: un modello di intelligenza artificiale (Jev, di TypeSafe) legge l&apos;oggetto di ogni lotto e lo
-            assegna a un&apos;area di spesa. Non è un dato ANAC e può sbagliare, soprattutto sui lotti ambigui. Il modello ha dato un'area al {copertura(aree)}% dei {num(aree.lotti)} lotti
+            assegna a un&apos;area di spesa. Non è un dato ANAC e può sbagliare, soprattutto sui lotti ambigui. Il modello ha dato un&apos;area al {copertura(aree)}% dei {num(aree.lotti)} lotti
             (escluse le adesioni a convenzioni). Le quote sono sul numero di lotti; gli importi sommano solo i lotti attendibili.
           </p>
         </section>
