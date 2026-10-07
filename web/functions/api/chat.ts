@@ -7,6 +7,7 @@ import { MODELLI_PREDEFINITI } from "../../lib/chat/llm";
 import { MAX_DOMANDA } from "../../lib/chat/intento";
 import { rispondi } from "../../lib/chat/rispondi";
 import type { Contesto } from "../../lib/chat/tipi";
+import { dentroIlTetto, leggiTetto, memoriaCloudflare, type DbTetto } from "../../lib/chat/tetto";
 
 // Tipi minimi: non servono @cloudflare/workers-types solo per questo file
 interface Env {
@@ -15,6 +16,10 @@ interface Env {
   JEV_API_KEY?: string;
   /** Solo prove in locale: un server finto al posto di Jev */
   JEV_URL?: string;
+  /** Chiamate a Jev al giorno prima che si fermi (predefinito 3000: circa 0,15 $ al giorno). 0 = Jev spento */
+  JEV_MAX_GIORNO?: string;
+  /** Il database (D1): serve al contatore giornaliero. Senza, Jev resta spento: nel dubbio non si spende */
+  DB?: DbTetto;
   /** Elenco di modelli separati da virgola, per cambiarli senza ripubblicare il codice */
   CHAT_MODELLI?: string;
   /** Solo prove in locale: un server finto al posto di OpenRouter */
@@ -48,6 +53,23 @@ async function superaLimite(request: Request): Promise<boolean> {
     new Response(String(attuale + 1), { headers: { "Cache-Control": "max-age=3700" } }),
   );
   return false;
+}
+
+/** Jev con le sue protezioni: cache di 24 ore e tetto giornaliero. Senza il contatore (nessun database) resta spento. */
+function jevOpzioni(env: Env) {
+  if (!env.JEV_API_KEY) return undefined;
+  const db = env.DB;
+  if (!db) {
+    console.warn("jev spento: manca il database per il tetto giornaliero");
+    return undefined;
+  }
+  const massimo = leggiTetto(env.JEV_MAX_GIORNO);
+  return {
+    chiave: env.JEV_API_KEY,
+    url: env.JEV_URL,
+    memoria: memoriaCloudflare(),
+    puoChiamare: () => dentroIlTetto(db, "jev", massimo),
+  };
 }
 
 export async function onRequestPost({ request, env }: Ctx): Promise<Response> {
@@ -102,7 +124,7 @@ export async function onRequestPost({ request, env }: Ctx): Promise<Response> {
     contesto,
     leggi,
     { chiave: env.OPENROUTER_API_KEY ?? "", modelli, referer: base, url: env.OPENROUTER_URL },
-    env.JEV_API_KEY ? { chiave: env.JEV_API_KEY, url: env.JEV_URL } : undefined,
+    jevOpzioni(env),
   );
   if ("errore" in esito) return json({ errore: esito.errore }, 502);
   return json({

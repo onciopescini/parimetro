@@ -45,6 +45,34 @@ export interface AreeAnno {
   voci: { area: string; n: number; importo: number | null }[];
 }
 
+/** Che cosa si compra, secondo la classificazione automatica (Jev): get_appalti_comune() -> "interventi". */
+export interface InterventiAnno {
+  lotti: number;
+  classificati: number;
+  voci: { intervento: string; n: number; importo: number | null }[];
+}
+
+export const NOME_INTERVENTO: Record<string, string> = {
+  nuova_opera: "Nuove opere",
+  manutenzione: "Manutenzione",
+  fornitura: "Forniture",
+  servizio: "Servizi",
+  incarico_tecnico: "Incarichi tecnici",
+  non_classificabile: "Non classificabili",
+};
+
+/** Sempre nello stesso ordine, perche' si confrontino a colpo d'occhio un comune e l'altro; i non classificabili in fondo. */
+const ORDINE_INTERVENTI = ["nuova_opera", "manutenzione", "fornitura", "servizio", "incarico_tecnico", "non_classificabile"];
+
+export function vociInterventi(a: InterventiAnno): VoceArea[] {
+  const tot = a.voci.reduce((s, v) => s + v.n, 0);
+  if (tot <= 0) return [];
+  return a.voci
+    .filter((v) => v.intervento in NOME_INTERVENTO)
+    .map((v) => ({ area: v.intervento, n: v.n, importo: v.importo, quota: Math.round((1000 * v.n) / tot) / 10 }))
+    .sort((x, y) => ORDINE_INTERVENTI.indexOf(x.area) - ORDINE_INTERVENTI.indexOf(y.area));
+}
+
 export interface Appalti {
   anni: Record<string, AppaltiAnno>;
   tipi: Record<string, number>;
@@ -52,6 +80,8 @@ export interface Appalti {
   maggiori: LottoGrande[];
   /** Solo gli anni gia' classificati; assente nei file vecchi */
   aree?: Record<string, AreeAnno>;
+  /** Solo gli anni con il tipo di intervento */
+  interventi?: Record<string, InterventiAnno>;
 }
 
 export interface VoceArea {

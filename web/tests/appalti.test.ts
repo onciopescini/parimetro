@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { annoDisponibile, copertura, nuovaRilevazione, vociAree } from "../lib/appalti";
+import { annoDisponibile, copertura, nuovaRilevazione, vociAree, vociInterventi } from "../lib/appalti";
 
 describe("nuovaRilevazione", () => {
   it("dal 2024 la serie ANAC non e' confrontabile con prima", () => {
@@ -40,5 +40,24 @@ describe("a cosa servono le gare", () => {
     expect(vociAree({ lotti: 0, classificati: 0, voci: [] })).toEqual([]);
     expect(copertura(anno)).toBe(85);
     expect(copertura({ lotti: 0, classificati: 0, voci: [] })).toBe(0);
+  });
+});
+
+
+describe("che cosa si compra", () => {
+  it("le voci hanno sempre lo stesso ordine, con i non classificabili in fondo, e ignorano chiavi sconosciute", () => {
+    const v = vociInterventi({
+      lotti: 100,
+      classificati: 90,
+      voci: [
+        { intervento: "non_classificabile", n: 10, importo: 1 },
+        { intervento: "servizio", n: 50, importo: 100 },
+        { intervento: "inventato", n: 3, importo: 1 },
+        { intervento: "nuova_opera", n: 20, importo: 900 },
+        { intervento: "fornitura", n: 20, importo: 50 },
+      ],
+    });
+    expect(v.map((x) => x.area)).toEqual(["nuova_opera", "fornitura", "servizio", "non_classificabile"]);
+    expect(vociInterventi({ lotti: 0, classificati: 0, voci: [] })).toEqual([]);
   });
 });

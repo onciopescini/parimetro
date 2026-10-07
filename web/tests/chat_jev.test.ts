@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { chiediJev, probabilitaScelta } from "../lib/chat/jev";
+import { beforeEach } from "vitest";
+import { chiediJev, probabilitaScelta, riattivaJev } from "../lib/chat/jev";
 import { intentoConJev, preparaRiferimenti, statoPerJev } from "../lib/chat/intentoJev";
 import { preparaIndice, trovaAnno, trovaComuni, trovaRegione } from "../lib/chat/menzioni";
 import { rispondi } from "../lib/chat/rispondi";
@@ -22,6 +23,7 @@ const INDICE: VoceIndice[] = [
   v("021008", "Bolzano/Bozen", "Bolzano", 106_000, "Trentino-Alto Adige"),
   v("016024", "Reggio nell'Emilia", "Reggio Emilia", 170_000, "Emilia-Romagna"),
 ];
+beforeEach(() => riattivaJev());
 const FORME = preparaIndice(INDICE);
 const REGIONI = [...new Set(INDICE.map((x) => x.region))];
 const nomi = (d: string) => trovaComuni(d, FORME).comuni.map((c) => c.comune);

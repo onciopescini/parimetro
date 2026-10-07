@@ -47,6 +47,10 @@ same `validaIntento`, so a wrong answer can only pick a different known question
 npx wrangler pages secret put JEV_API_KEY --project-name <your-project>   # optional
 ```
 
+Cost guards (see `docs/costi.md`): answers are cached for 24 h by a hash of the request (no question is stored); Jev stops after
+`JEV_MAX_GIORNO` paid calls per UTC day (default 3000, counter in D1 table `tetto_giornaliero`; without the database Jev stays off);
+on 401/402/403 (no credits, bad key) Jev is suspended for 10 minutes. In every case the chat falls back to the previous translator.
+
 ## Running it
 
 `web/functions/api/chat.ts` is a Cloudflare Pages Function. It reads the data files through
