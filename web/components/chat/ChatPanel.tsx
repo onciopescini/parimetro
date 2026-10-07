@@ -212,7 +212,7 @@ export default function ChatPanel({
             </button>
           </form>
           <p className="border-t border-[#E8DEC8] px-3 py-1.5 text-xs leading-snug text-grigio">
-            Risposte generate da un modello AI sui dati del sito (cassa, non competenza): controlla sempre la tabella. La domanda viene inviata a un fornitore di modelli AI (tramite OpenRouter): non scrivere dati personali.
+            Risposte generate da un modello AI sui dati del sito (cassa, non competenza): controlla sempre la tabella. La domanda viene inviata a fornitori esterni di modelli AI (OpenRouter e TypeSafe): non scrivere dati personali.
           </p>
         </section>
       )}

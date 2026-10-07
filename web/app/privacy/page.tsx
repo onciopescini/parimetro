@@ -73,8 +73,9 @@ export default function Privacy() {
             Un <strong>servizio di invio email</strong> recapita i link di accesso e gli avvisi.
           </li>
           <li>
-            Le domande alla <strong>chat</strong> sono inviate a un fornitore di modelli di linguaggio (tramite OpenRouter) per capirne l&apos;intento. Succede anche se
-            non sei entrato: per questo nella chat ti chiediamo di non scrivere dati personali.
+            Le domande alla <strong>chat</strong> sono inviate a fornitori esterni di modelli di intelligenza artificiale: <strong>TypeSafe</strong> (modello Jev, che
+            capisce quale domanda stai facendo) e <strong>OpenRouter</strong> (per scrivere il testo della risposta). Succede anche se non sei entrato: per questo nella chat ti
+            chiediamo di non scrivere dati personali. Le risposte di TypeSafe possono essere tenute in memoria da noi per 24 ore, senza il testo della domanda.
           </li>
         </ul>
 

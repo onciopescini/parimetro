@@ -72,7 +72,7 @@ check. For serious traffic add a Cloudflare rate-limiting rule.
 
 ## Privacy
 
-The question text is sent to a third-party model provider via OpenRouter. The site stores
+The question text is sent to third-party model providers: TypeSafe (Jev, when configured) and OpenRouter. The site stores
 nothing. The UI tells users not to type personal data.
 
 ## Testing

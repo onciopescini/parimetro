@@ -75,9 +75,11 @@ see package-lock.json and etl/requirements.txt.
 
 AI chat
 -------
-The optional chat sends the user's question to a third-party model provider through
-OpenRouter. The numbers shown in answers are always computed by this code from the
-published data files, never by the model.
+The optional chat sends the user's question to third-party model providers: TypeSafe
+(Jev, which only chooses between closed options) and OpenRouter (to phrase the answer).
+The numbers shown in answers are always computed by this code from the published data
+files, never by the model. Lot classifications in the procurement tab (area of spending,
+type of intervention) are produced automatically with Jev and are labelled as such.
 
 Fonts
 -----
