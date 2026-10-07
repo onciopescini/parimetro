@@ -50,3 +50,45 @@ def risposta_valida(r: dict) -> tuple[str, float] | None:
     except (TypeError, ValueError):
         return None
     return area, max(0.0, min(1.0, conf))
+
+
+# ------------------------------------------------------------------ che cosa si compra (stessa chiamata, due domande in piu')
+INTERVENTI = {
+    "nuova_opera": "construction of a new building, road, plant or infrastructure; new works and redevelopment projects",
+    "manutenzione": "maintenance, repair, renovation or restoration of existing buildings, roads, systems or equipment",
+    "fornitura": "purchase or supply of goods: equipment, vehicles, furniture, materials, fuel, energy, food, supplies",
+    "servizio": "ongoing or recurring services for the municipality: cleaning, waste collection, canteen, transport, social services, IT, events, insurance",
+    "incarico_tecnico": "professional or technical appointments: design, works supervision, safety coordination, studies, consulting, legal or accounting advice",
+    "altro": "none of the above or unclear",
+}
+
+# Una domanda a una cosa sola, come raccomanda TypeSafe: l'area, il tipo di intervento e se la descrizione e' troppo vaga.
+DOMANDE_INTERVENTO = {
+    "intervento": {
+        "type": "choice",
+        "instructions": "What is the municipality buying or doing with this public procurement lot?",
+        "criteria": INTERVENTI,
+    },
+    "vago": {
+        "type": "noul",
+        "instructions": ("The description is too vague to tell what is being bought or done "
+                         "(for example only a legal reference, a generic word like 'direct award', or a code)."),
+    },
+}
+DOMANDE_COMPLETE = {**DOMANDA, **DOMANDE_INTERVENTO}
+SOGLIA_VAGO = 0.7  # sopra, il lotto conta come "non classificabile" per il tipo di intervento (uguale in SQL)
+
+
+def risposta_intervento(r: dict) -> tuple[str, float, float] | None:
+    """(intervento, confidenza, vago) se le risposte sono usabili; altrimenti None."""
+    i = r.get("intervento") or {}
+    v = r.get("vago") or {}
+    scelta = i.get("choice")
+    if scelta not in INTERVENTI:
+        return None
+    try:
+        conf = max(0.0, min(1.0, float(i.get("confidence", 1.0))))
+        vago = max(0.0, min(1.0, float(v.get("noul", 0.0))))
+    except (TypeError, ValueError):
+        return None
+    return scelta, conf, vago

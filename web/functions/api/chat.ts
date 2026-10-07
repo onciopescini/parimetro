@@ -11,6 +11,10 @@ import type { Contesto } from "../../lib/chat/tipi";
 // Tipi minimi: non servono @cloudflare/workers-types solo per questo file
 interface Env {
   OPENROUTER_API_KEY?: string;
+  /** Jev (TypeSafe): capisce la domanda scegliendo tra opzioni chiuse. Con la chiave e' lui il primo tentativo; senza, si usa il modello di sempre */
+  JEV_API_KEY?: string;
+  /** Solo prove in locale: un server finto al posto di Jev */
+  JEV_URL?: string;
   /** Elenco di modelli separati da virgola, per cambiarli senza ripubblicare il codice */
   CHAT_MODELLI?: string;
   /** Solo prove in locale: un server finto al posto di OpenRouter */
@@ -52,7 +56,7 @@ export async function onRequestPost({ request, env }: Ctx): Promise<Response> {
   if (origin && new URL(origin).host !== new URL(request.url).host) {
     return json({ errore: "Origine non consentita." }, 403);
   }
-  if (!env.OPENROUTER_API_KEY) {
+  if (!env.OPENROUTER_API_KEY && !env.JEV_API_KEY) {
     return json({ errore: "La chat non è ancora attiva su questo sito." }, 503);
   }
   if (await superaLimite(request)) {
@@ -89,13 +93,17 @@ export async function onRequestPost({ request, env }: Ctx): Promise<Response> {
     return p;
   };
 
-  const modelli = env.CHAT_MODELLI?.split(",").map((m) => m.trim()).filter(Boolean) ?? MODELLI_PREDEFINITI;
-  const esito = await rispondi(corpo.domanda, contesto, leggi, {
-    chiave: env.OPENROUTER_API_KEY,
-    modelli,
-    referer: base,
-    url: env.OPENROUTER_URL,
-  });
+  // Senza chiave OpenRouter non ci sono modelli: la risposta e' il riassunto scritto dal codice, la domanda la capisce Jev
+  const modelli = env.OPENROUTER_API_KEY
+    ? (env.CHAT_MODELLI?.split(",").map((m) => m.trim()).filter(Boolean) ?? MODELLI_PREDEFINITI)
+    : [];
+  const esito = await rispondi(
+    corpo.domanda,
+    contesto,
+    leggi,
+    { chiave: env.OPENROUTER_API_KEY ?? "", modelli, referer: base, url: env.OPENROUTER_URL },
+    env.JEV_API_KEY ? { chiave: env.JEV_API_KEY, url: env.JEV_URL } : undefined,
+  );
   if ("errore" in esito) return json({ errore: esito.errore }, 502);
   return json({
     testo: esito.testo,
@@ -107,11 +115,12 @@ export async function onRequestPost({ request, env }: Ctx): Promise<Response> {
     note: esito.risultato.note,
     apri: esito.risultato.apri,
     candidati: esito.risultato.candidati,
+    via: esito.via,
   });
 }
 
 // GET: dice solo se la chat e' attiva, cosi' il sito mostra il pulsante soltanto quando funziona
-export const onRequestGet = ({ env }: Ctx) => json({ attiva: !!env.OPENROUTER_API_KEY });
+export const onRequestGet = ({ env }: Ctx) => json({ attiva: !!(env.OPENROUTER_API_KEY || env.JEV_API_KEY) });
 
 // Qualunque altro metodo: niente
 export const onRequest = () => json({ errore: "Usa POST." }, 405);
