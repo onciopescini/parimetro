@@ -25,8 +25,16 @@ export default function Privacy() {
 
         <h2 className={H2}>Se non entri</h2>
         <p className="mt-3">
-          Non ti chiediamo nulla e non facciamo profilazione. Il sito non usa cookie pubblicitari né strumenti di analisi di terze parti. Il tuo browser
+          Non ti chiediamo nulla e non facciamo profilazione. Il sito non usa cookie pubblicitari né strumenti che ti seguono da un sito all&apos;altro. Le visite sono misurate in forma aggregata, come spieghiamo qui sotto. Il tuo browser
           ricorda solo, sul tuo dispositivo, che hai già visto il giro guidato.
+        </p>
+
+        <h2 className={H2}>Misurare le visite</h2>
+        <p className="mt-3">
+          Per capire quali pagine sono utili usiamo <strong>Cloudflare Web Analytics</strong>. Non usa cookie, non riconosce le persone e non le segue da
+          un sito all&apos;altro. Registra solo totali aggregati: quante visite ci sono, quali pagine si guardano, da quale paese e con quale tipo di
+          dispositivo o browser si arriva. Non ci servono e non conserviamo il tuo nome o la tua email. Se il tuo browser blocca le misure di terze parti,
+          la visita semplicemente non viene contata.
         </p>
 
         <h2 className={H2}>Se entri</h2>
@@ -68,6 +76,9 @@ export default function Privacy() {
         <ul className="mt-3 list-disc space-y-1 pl-6">
           <li>
             <strong>Cloudflare</strong> ospita il sito e il piccolo archivio degli account.
+          </li>
+          <li>
+            <strong>Cloudflare Web Analytics</strong> misura le visite in forma aggregata, senza cookie (vedi sopra).
           </li>
           <li>
             Un <strong>servizio di invio email</strong> recapita i link di accesso e gli avvisi.
