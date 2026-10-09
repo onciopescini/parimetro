@@ -35,8 +35,6 @@ Plain text built by code (`lib/mcp/risposta.ts`): title, deterministic summary, 
   separate counter from the chat (`lib/limite.ts`).
 - Reads the same static JSON files as the site through the `ASSETS` binding: no database, no secrets.
 - Errors never expose internal details; failed data reads return a generic message.
-- Known gap: the sentence about "senza di loro" in the concentrated-spending warning is written for the
-  chat; an assistant should call `classifica` with `senza_concentrate: true` instead.
 - Cloudflare free plan: 10 ms CPU per request is the constraint to watch after deployment. Local
   `wrangler pages dev` does not measure it.
 

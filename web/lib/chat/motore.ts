@@ -376,7 +376,7 @@ async function classifica(
   };
   if (visibili.some((r) => eConcentrata(r.concentrata))) {
     note.push(
-      "Alcuni comuni hanno una sola voce di spesa sopra il 40% dell'anno (un investimento isolato): il loro pro capite non è confrontabile. Puoi chiedermi la classifica senza di loro.",
+      "Alcuni comuni hanno una sola voce di spesa sopra il 40% dell'anno (un investimento isolato): il loro pro capite non è confrontabile. Il filtro «Nascondi i comuni con spesa concentrata» nelle classifiche li esclude.",
     );
   }
   if (i.metrica === "fhi") {

@@ -66,6 +66,13 @@ describe("strumenti", () => {
     expect(t).toContain("Lecce");
   });
 
+  it("avvertenza sulla spesa concentrata: nomina il filtro del sito, non una domanda alla chat", async () => {
+    const r = await chiama("classifica", { metrica: "expenditure_pc", ordine: "alto" });
+    const t = r.result.content[0].text;
+    expect(t).toContain("Nascondi i comuni con spesa concentrata");
+    expect(t).not.toContain("chiedermi");
+  });
+
   it("classifica con fascia scritta a parole: la normalizza", async () => {
     const r = await chiama("classifica", { metrica: "expenditure_pc", ordine: "alto", fascia: "oltre 250.000 abitanti" });
     expect(r.result.isError).toBe(false);
