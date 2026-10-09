@@ -142,8 +142,8 @@ export default function RankingPanel({
       <div className="flex gap-1 pt-1">
         {(
           [
-            [true, "Migliori"],
-            [false, "Peggiori"],
+            [true, "Valori più alti"],
+            [false, "Valori più bassi"],
           ] as [boolean, string][]
         ).map(([v, label]) => (
           <button
