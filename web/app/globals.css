@@ -40,3 +40,43 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ---- Movimento: sottile, una volta sola, e spento per chi chiede di ridurlo ---- */
+@keyframes sale {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pillola {
+  from { transform: scaleX(0); transform-origin: left center; }
+  to { transform: scaleX(1); transform-origin: left center; }
+}
+@keyframes scende {
+  from { transform: translateY(-18px) rotate(-6deg); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes galleggia {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes esce {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.sale { animation: sale 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.pillola { animation: pillola 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.scende { animation: scende 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.galleggia { animation: galleggia 6s ease-in-out infinite; }
+.esce { animation: esce 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.ritardo-1 { animation-delay: 0.08s; }
+.ritardo-2 { animation-delay: 0.16s; }
+.ritardo-3 { animation-delay: 0.24s; }
+.ritardo-4 { animation-delay: 0.32s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

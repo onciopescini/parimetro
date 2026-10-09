@@ -10,6 +10,18 @@ const H2 = "font-display text-3xl font-semibold leading-tight sm:text-4xl";
 const CARD = "rounded-[32px] border border-[#E8DEC8] bg-carta p-6";
 const BOTTONE = "inline-flex min-h-14 items-center justify-center gap-2 rounded-full px-7 text-lg font-semibold transition active:translate-y-0.5";
 
+// Tre forme dell'identita' che si compongono una volta sola, poi restano ferme o appena in movimento
+function ComposizioneHero() {
+  return (
+    <svg viewBox="0 0 320 90" className="mb-6 h-auto w-full max-w-xs" aria-hidden="true" focusable="false">
+      <rect x="0" y="20" width="120" height="30" rx="15" className="pillola fill-mirtillo" />
+      <circle cx="170" cy="35" r="18" className="scende ritardo-1 fill-limone" />
+      <rect x="200" y="52" width="90" height="22" rx="11" className="pillola ritardo-2 fill-menta" style={{ transformBox: "fill-box" }} />
+      <circle cx="302" cy="20" r="11" className="esce ritardo-3 fill-pomodoro" />
+    </svg>
+  );
+}
+
 export default function Home() {
   return (
     <main className="min-h-dvh bg-crema px-4 pb-16 font-testo text-lg leading-relaxed text-inchiostro sm:px-6">
@@ -31,15 +43,16 @@ export default function Home() {
 
         {/* Presentazione */}
         <section className="pt-14 sm:pt-20">
-          <p className="inline-flex rounded-full bg-limone px-4 py-1.5 text-sm font-semibold">Dati ufficiali dei comuni italiani</p>
-          <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.05] sm:text-6xl">
+          <ComposizioneHero />
+          <p className="sale inline-flex rounded-full bg-limone px-4 py-1.5 text-sm font-semibold">Dati ufficiali dei comuni italiani</p>
+          <h1 className="sale ritardo-1 mt-5 font-display text-5xl font-semibold leading-[1.05] sm:text-6xl">
             In cosa spende il tuo comune, e come si colloca.
           </h1>
-          <p className="mt-6 max-w-2xl text-xl leading-relaxed">
+          <p className="sale ritardo-2 mt-6 max-w-2xl text-xl leading-relaxed">
             Parimetro mostra la spesa e le entrate di ogni comune italiano, e le confronta con i comuni di dimensione simile. Ogni numero ha la sua fonte
             accanto. Non ti diciamo se un&apos;amministrazione è brava o no: ti diamo i dati, e tu decidi che cosa pensarne.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="sale ritardo-3 mt-8 flex flex-wrap gap-3">
             <Link href="/mappa" className={`${BOTTONE} bg-limone text-inchiostro shadow-[0_4px_0_#1B1A2E] hover:brightness-95`}>
               Apri la mappa
             </Link>

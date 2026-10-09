@@ -8,6 +8,29 @@ import Condividi from "@/components/viralita/Condividi";
 const NUMERO = 5;
 const URL_GIOCO = "https://parimetro.it/gioco";
 
+// La cifra vera sale da zero fino al valore: un momento breve, che si ferma subito se chi legge chiede di ridurre il movimento
+function CountUp({ valore }: { valore: number }) {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    const ridotto = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (ridotto) {
+      setV(valore);
+      return;
+    }
+    const inizio = performance.now();
+    const durata = 900;
+    let frame = 0;
+    const passo = (t: number) => {
+      const p = Math.min(1, (t - inizio) / durata);
+      setV(Math.round(valore * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) frame = requestAnimationFrame(passo);
+    };
+    frame = requestAnimationFrame(passo);
+    return () => cancelAnimationFrame(frame);
+  }, [valore]);
+  return <strong className="font-display text-2xl">{euro(v)}</strong>;
+}
+
 const mescola = <T,>(xs: T[]): T[] => {
   const copia = [...xs];
   for (let i = copia.length - 1; i > 0; i--) {
@@ -104,9 +127,9 @@ export default function Gioco() {
             </div>
 
             {scelta !== null && (
-              <div className="mt-6 rounded-3xl bg-sabbia/30 p-5 text-base">
+              <div className="esce mt-6 rounded-3xl bg-sabbia/30 p-5 text-base">
                 <p>
-                  Il dato vero è <strong>{euro(q.vero)}</strong> per abitante.{" "}
+                  Il dato vero è <CountUp valore={q.vero} /> per abitante.{" "}
                   {scelta === q.vero
                     ? "Hai indovinato."
                     : `Il tuo valore era ${Math.round(Math.abs(scelta - q.vero) / q.vero * 100)}% ${scelta > q.vero ? "più alto" : "più basso"} di quello vero.`}
@@ -133,9 +156,9 @@ export default function Gioco() {
         )}
 
         {finita && (
-          <section className="mt-10 rounded-[32px] border border-[#E8DEC8] bg-carta p-5 text-center sm:p-8">
+          <section className="esce mt-10 rounded-[32px] border border-[#E8DEC8] bg-carta p-5 text-center sm:p-8">
             <p className="font-codice text-sm uppercase tracking-wide text-grigio">Risultato</p>
-            <p className="mt-3 font-display text-5xl font-semibold">
+            <p className="sale mt-3 font-display text-5xl font-semibold">
               {punti} su {NUMERO}
             </p>
             <p className="mt-3 text-lg text-grigio">

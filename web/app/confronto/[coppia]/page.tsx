@@ -82,7 +82,7 @@ export default async function Confronto({ params }: { params: Promise<{ coppia: 
           Dati di cassa 2024: quanto incassano e pagano i due comuni, e come si confrontano con i comuni della loro fascia.
         </p>
 
-        <div className="mt-8 overflow-hidden rounded-[28px] border border-[#E8DEC8] bg-carta">
+        <div className="sale mt-8 overflow-hidden rounded-[28px] border border-[#E8DEC8] bg-carta">
           <table className="w-full text-base">
             <thead>
               <tr className="border-b border-[#E8DEC8] text-left text-sm uppercase tracking-wide text-grigio">

@@ -45,11 +45,11 @@ export default function Scoperte() {
         </p>
 
         <ol className="mt-10 space-y-5">
-          {fatti.map((f) => {
+          {fatti.map((f, n) => {
             const nome = f.istat ? nomePer.get(f.istat) : undefined;
             const url = `https://parimetro.it/${f.istat ? `comune/${slugComune(nomePer.get(f.istat) ?? "", f.istat)}` : "mappa"}`;
             return (
-              <li key={f.id} className="rounded-[28px] border border-[#E8DEC8] bg-carta p-6">
+              <li key={f.id} className="sale rounded-[28px] border border-[#E8DEC8] bg-carta p-6" style={{ animationDelay: `${n * 0.08}s` }}>
                 <h2 className="font-display text-2xl font-semibold">{f.titolo}</h2>
                 <p className="mt-2 text-lg">{f.testo}</p>
                 <div className="mt-4 flex flex-wrap items-center gap-3">
