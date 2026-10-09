@@ -73,6 +73,6 @@ Calcolati sui dati del 7 ottobre 2026. Sono domande da cui partire, non conclusi
 
 ## Prima di scrivere a chiunque
 
-- Completare `/privacy` con titolare e contatto e far rivedere i testi (`docs/revisione-legale.md`).
+- Completare `/privacy` con titolare e contatto e far rivedere i testi (documento di revisione tenuto fuori dal repo).
 - Parole delle classifiche: "Valori più alti" / "Valori più bassi" (decisione presa).
 - Finire la classificazione 2024 se vuoi mostrare "Che cosa si compra" (richiede la ricarica di Jev).
