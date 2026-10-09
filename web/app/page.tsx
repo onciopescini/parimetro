@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import Passi from "@/components/home/Passi";
+import Prova, { type ProvaDati } from "@/components/home/Prova";
 
 export const metadata: Metadata = {
   title: "Parimetro · i bilanci dei comuni italiani",
@@ -22,7 +26,27 @@ function ComposizioneHero() {
   );
 }
 
+// La prova in home: un comune reale, letto a tempo di build dai file pubblicati (il sito resta statico)
+function provaReale(): ProvaDati {
+  const leggi = <T,>(p: string) => JSON.parse(readFileSync(join(process.cwd(), "public", p), "utf8")) as T;
+  const voce = leggi<{ istat: string; name: string; province: string }[]>("dati/indice.json").find((v) => v.istat === "015146")!;
+  const d = leggi<{ history: { year: number; expenditure_pc: number; autonomia: number | null }[]; peers: Record<string, { expenditure_pc: number | null }> }>(
+    `dati/comune/${voce.istat}.json`,
+  );
+  const riga = d.history.find((r) => r.year === 2024)!;
+  return {
+    nome: voce.name,
+    provincia: voce.province,
+    anno: 2024,
+    spesa: Math.round(riga.expenditure_pc),
+    mediana: Math.round(d.peers["2024"].expenditure_pc!),
+    autonomia: riga.autonomia,
+    istat: voce.istat,
+  };
+}
+
 export default function Home() {
+  const prova = provaReale();
   return (
     <main className="min-h-dvh bg-crema px-4 pb-16 font-testo text-lg leading-relaxed text-inchiostro sm:px-6">
       <div className="mx-auto max-w-3xl">
@@ -62,28 +86,19 @@ export default function Home() {
           </div>
         </section>
 
+        {/* La prova: un comune reale, subito dopo il gancio */}
+        <section className="mt-20" aria-labelledby="prova">
+          <h2 id="prova" className={H2}>Vedi come funziona su un comune</h2>
+          <p className="mt-4 text-lg text-grigio">Milano, come esempio. Le barre crescono quando arrivi qui.</p>
+          <div className="mt-8">
+            <Prova dati={prova} />
+          </div>
+        </section>
+
         {/* Come si usa */}
         <section className="mt-20" aria-labelledby="come-si-usa">
           <h2 id="come-si-usa" className={H2}>Come si usa, in tre passi</h2>
-          <ol className="mt-8 grid gap-4 sm:grid-cols-3">
-            <li className={CARD}>
-              <span className="grid size-12 place-items-center rounded-full bg-mirtillo font-display text-xl font-bold text-white">1</span>
-              <h3 className="mt-4 font-display text-2xl font-semibold">Trova il tuo comune</h3>
-              <p className="mt-2 text-base text-grigio">Cerca il nome nella mappa. Ogni comune è un blocco: più è alto, più spende per abitante.</p>
-            </li>
-            <li className={CARD}>
-              <span className="grid size-12 place-items-center rounded-full bg-limone font-display text-xl font-bold text-inchiostro">2</span>
-              <h3 className="mt-4 font-display text-2xl font-semibold">Leggi la scheda</h3>
-              <p className="mt-2 text-base text-grigio">Dove vanno i soldi, come sono andati i conti negli anni e come si confronta con i comuni simili.</p>
-            </li>
-            <li className={CARD}>
-              <span className="grid size-12 place-items-center rounded-full bg-menta font-display text-xl font-bold text-inchiostro">3</span>
-              <h3 className="mt-4 font-display text-2xl font-semibold">Fai una domanda</h3>
-              <p className="mt-2 text-base text-grigio">
-                Chiedi alla chat, per esempio: «Quanto spende Roma per i rifiuti?». Puoi anche creare una card da condividere.
-              </p>
-            </li>
-          </ol>
+          <Passi />
         </section>
 
         {/* Cosa non e' */}

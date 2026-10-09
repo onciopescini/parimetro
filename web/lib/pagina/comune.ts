@@ -133,6 +133,16 @@ th,td{border-bottom:1px solid var(--line);padding:.55rem .8rem;text-align:right}
 thead th{color:var(--mut);font-size:.82rem;text-transform:uppercase;letter-spacing:.05em}
 .avviso{background:var(--acc);color:#1B1A2E;padding:.8rem 1.1rem;border-radius:22px}
 .nota{color:var(--mut);font-size:.92rem}
+.barre{margin:1rem 0 1.4rem}.riga-barra{margin:.7rem 0}
+.etichetta{display:flex;justify-content:space-between;gap:1rem;font-size:1rem}.etichetta b{font-family:Fraunces,Georgia,serif;font-weight:700}
+.pista{height:1.1rem;border-radius:99px;background:var(--line);overflow:hidden;margin-top:.35rem}
+.riempi{height:100%;width:var(--w);border-radius:99px}
+.riempi.comune{background:var(--link)}.riempi.mediana{background:#CFC6B3}
+@supports (animation-timeline:view()){
+  @keyframes cresce{from{width:0}to{width:var(--w)}}
+  .riempi{animation:cresce linear both;animation-timeline:view();animation-range:entry 0% cover 45%}
+}
+@media (prefers-reduced-motion:reduce){.riempi{animation:none!important}}
 .breve,.avvertenze,.parole{border-radius:24px;padding:1rem 1.25rem;margin:1.2rem 0}
 .breve{background:var(--carta);border:1px solid var(--line)}.breve ul{margin:.4rem 0 0;padding-left:1.2rem}.breve li{margin:.35rem 0}
 .avvertenze{background:var(--acc);color:#1B1A2E}.avvertenze h2,.breve h2,.parole h2{margin:.2rem 0 .4rem;font-size:1.3rem}
@@ -258,6 +268,20 @@ export function paginaComune(v: VoceComune, d: DatiComune, origine: string, comu
     }
     if (ult.autonomia != null) {
       righe.push(`<p>L'autonomia finanziaria, cioè la quota delle entrate correnti che il comune raccoglie da sé, è ${pct(ult.autonomia)}.</p>`);
+    }
+    // Le barre della scheda: spesa per abitante del comune contro la mediana dei simili.
+    // Crescono mentre si scorre dove il browser lo supporta (animation-timeline); altrove restano al valore finale.
+    if (ult.expenditure_pc != null && simili?.expenditure_pc != null) {
+      const massimo = Math.max(ult.expenditure_pc, simili.expenditure_pc) * 1.1;
+      const barra = (etichetta: string, valore: number, classe: string) =>
+        `<div class="riga-barra"><div class="etichetta"><span>${esc(etichetta)}</span><b>${eur(valore)}</b></div>` +
+        `<div class="pista"><div class="riempi ${classe}" style="--w:${Math.round((valore / massimo) * 100)}%"></div></div></div>`;
+      righe.push(
+        `<div class="barre" role="img" aria-label="Spesa per abitante ${esc(v.name)}: ${eur(ult.expenditure_pc)}; mediana dei comuni simili: ${eur(simili.expenditure_pc)}.">` +
+          barra(v.name, ult.expenditure_pc, "comune") +
+          barra("Mediana dei comuni simili", simili.expenditure_pc, "mediana") +
+          `</div>`,
+      );
     }
     sezioni.push(`<h2>Entrate e spese</h2>${righe.join("")}`);
 

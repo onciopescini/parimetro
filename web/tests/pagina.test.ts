@@ -118,6 +118,11 @@ describe("pagina di un comune", () => {
     const g = JSON.parse(m![1].replace(/\u003c/g, "<"));
     expect(g["@graph"].map((x: { "@type": string }) => x["@type"])).toContain("FAQPage");
   });
+  it("barre: spesa del comune contro la mediana dei simili, con etichetta accessibile", () => {
+    expect(p.html).toContain('class="riempi comune"');
+    expect(p.html).toContain('class="riempi mediana"');
+    expect(p.html).toContain('role="img" aria-label="Spesa per abitante Campobasso');
+  });
   it("rimanda alla mappa interattiva", () => {
     expect(p.html).toContain(`href="${O}/mappa?comune=070006"`);
   });
