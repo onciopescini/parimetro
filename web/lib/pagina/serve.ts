@@ -1,7 +1,7 @@
 // Il lato "server" delle pagine dei comuni: legge gli stessi JSON della mappa (binding ASSETS di Cloudflare Pages)
 // e risponde con HTML, sitemap, robots e llms.txt. Separato dalle funzioni di Cloudflare per poterlo provare in
 // locale con un finto ASSETS.
-import { esc, istatDaSlug, llmsTxt, paginaComune, paginaElenco, robots, sitemap, slugComune, type DatiComune, type VoceComune } from "./comune";
+import { comuniSimili, esc, istatDaSlug, llmsTxt, paginaComune, paginaElenco, robots, sitemap, slugComune, type DatiComune, type VoceComune } from "./comune";
 
 export interface Assets {
   fetch(req: Request): Promise<Response>;
@@ -68,7 +68,7 @@ export async function serviComune(request: Request, assets: Assets, slug: string
   const r = await assets.fetch(new Request(`${origine}/dati/comune/${istat}.json`));
   if (!r.ok) return nonTrovata(origine);
   const dati = (await r.json()) as DatiComune;
-  return risposta(paginaComune(voce, dati, origine).html, HTML);
+  return risposta(paginaComune(voce, dati, origine, comuniSimili(await indice(assets, origine), voce)).html, HTML);
 }
 
 export async function serviElenco(request: Request, assets: Assets): Promise<Response> {

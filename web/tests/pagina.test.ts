@@ -1,6 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
+  comuniSimili,
+  indiceFascia,
   esc,
   istatDaSlug,
   llmsTxt,
@@ -99,14 +101,22 @@ describe("pagina di un comune", () => {
     const m = p.html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)!;
     const g = JSON.parse(m[1]);
     const tipi = g["@graph"].map((x: { "@type": string }) => x["@type"]);
-    expect(tipi).toEqual(["Place", "Dataset"]);
-    expect(g["@graph"][1].license).toContain("by-sa/4.0");
-    expect(g["@graph"][1].distribution.contentUrl).toBe(`${O}/dati/comune/070006.json`);
+    expect(tipi).toEqual(["Place", "FAQPage", "Dataset"]);
+    const dataset = g["@graph"][2];
+    expect(dataset.license).toContain("by-sa/4.0");
+    expect(dataset.distribution.contentUrl).toBe(`${O}/dati/comune/070006.json`);
     expect(g["@graph"][0].geo.latitude).toBe(41.565);
   });
   it("ha il codice di misura Cloudflare, senza cookie", () => {
     expect(p.html).toContain("https://static.cloudflareinsights.com/beacon.min.js");
     expect(p.html).toContain("2e4e8a6c62b2406ab899e715a9f15563");
+  });
+  it("domande frequenti con i numeri del comune, anche nei dati strutturati", () => {
+    expect(p.html).toContain("<h2>Domande frequenti</h2>");
+    expect(p.html).toContain("<dt>Quanto spende Campobasso per abitante?</dt>");
+    const m = p.html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+    const g = JSON.parse(m![1].replace(/\u003c/g, "<"));
+    expect(g["@graph"].map((x: { "@type": string }) => x["@type"])).toContain("FAQPage");
   });
   it("rimanda alla mappa interattiva", () => {
     expect(p.html).toContain(`href="${O}/mappa?comune=070006"`);
@@ -170,6 +180,29 @@ describe("pagina di un comune", () => {
     expect(cattivo.html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
     expect(cattivo.html).not.toContain('href="javascript:');
     expect(esc('a<b>"c"&')).toBe("a&lt;b&gt;&quot;c&quot;&amp;");
+  });
+});
+
+describe("comuni simili", () => {
+  const VICINO: VoceComune = { istat: "070010", name: "Larino", region: "Molise", province: "Campobasso", population: 30000, lon: 14.8, lat: 41.7 };
+  const MOLTO_GRANDE: VoceComune = { istat: "058091", name: "Roma", region: "Lazio", province: "Roma", population: 2750000, lon: 12.5, lat: 41.9 };
+  it("le fasce seguono le soglie della mappa", () => {
+    expect(indiceFascia(999)).toBe(0);
+    expect(indiceFascia(1000)).toBe(1);
+    expect(indiceFascia(5000)).toBe(2);
+    expect(indiceFascia(250000)).toBe(5);
+  });
+  it("sceglie solo comuni della stessa fascia, escluso il comune stesso, dal piu' vicino", () => {
+    const indice = [VOCE, VICINO, ALTRA, MOLTO_GRANDE];
+    const r = comuniSimili(indice, VOCE);
+    expect(r.map((c) => c.istat)).not.toContain(VOCE.istat);
+    expect(r.every((c) => indiceFascia(c.population) === indiceFascia(VOCE.population))).toBe(true);
+    expect(r.map((c) => c.istat)).toEqual([VICINO.istat]);
+  });
+  it("la pagina elenca i comuni simili con il link alla loro scheda", () => {
+    const p = paginaComune(VOCE, DATI, O, [VICINO]);
+    expect(p.html).toContain("<h2>Comuni simili</h2>");
+    expect(p.html).toContain(`href="${O}/comune/larino-070010"`);
   });
 });
 

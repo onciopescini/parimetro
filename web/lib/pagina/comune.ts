@@ -13,6 +13,7 @@ import type { Appalti, Concorrenza } from "../appalti";
 import type { Investimenti } from "../investimenti";
 import type { NotizieComune } from "../notizie";
 import { eConcentrata } from "../classifica";
+import { FASCE } from "../chat/fasce";
 import { pochiContribuenti, type RedditoAnno } from "../reddito";
 
 export interface VoceComune {
@@ -136,6 +137,8 @@ thead th{color:var(--mut);font-size:.82rem;text-transform:uppercase;letter-spaci
 .breve{background:var(--carta);border:1px solid var(--line)}.breve ul{margin:.4rem 0 0;padding-left:1.2rem}.breve li{margin:.35rem 0}
 .avvertenze{background:var(--acc);color:#1B1A2E}.avvertenze h2,.breve h2,.parole h2{margin:.2rem 0 .4rem;font-size:1.3rem}
 .avvertenze ul{margin:0;padding-left:1.2rem}.avvertenze li{margin:.3rem 0}
+.faq dt{font-weight:700;margin-top:.8rem}.faq dd{margin:.2rem 0 0}
+.simili ul{margin:.4rem 0 0;padding-left:1.2rem}.simili li{margin:.3rem 0}
 .parole dt{font-weight:700;margin-top:.7rem}.parole dd{margin:.15rem 0 0;color:var(--mut)}
 .cta{display:inline-block;margin:.4rem 0 1rem;padding:.8rem 1.5rem;border-radius:99px;background:var(--link);color:#fff;text-decoration:none;font-weight:700}
 @media (prefers-color-scheme:dark){.cta{color:#1B1A2E}}
@@ -161,7 +164,26 @@ export interface Pagina {
   html: string;
 }
 
-export function paginaComune(v: VoceComune, d: DatiComune, origine: string): Pagina {
+/** Indice della fascia di popolazione (0..5), con le stesse soglie di FASCE. */
+export function indiceFascia(abitanti: number): number {
+  if (abitanti < 1000) return 0;
+  if (abitanti < 5000) return 1;
+  if (abitanti < 20000) return 2;
+  if (abitanti < 60000) return 3;
+  if (abitanti < 250000) return 4;
+  return 5;
+}
+
+/** I comuni simili a `v`: stessa fascia di popolazione, quelli con la dimensione piu' vicina. */
+export function comuniSimili(indice: VoceComune[], v: VoceComune, n = 8): VoceComune[] {
+  const fascia = indiceFascia(v.population);
+  return indice
+    .filter((c) => c.istat !== v.istat && indiceFascia(c.population) === fascia)
+    .sort((a, b) => Math.abs(a.population - v.population) - Math.abs(b.population - v.population))
+    .slice(0, n);
+}
+
+export function paginaComune(v: VoceComune, d: DatiComune, origine: string, comuniVicini: VoceComune[] = []): Pagina {
   const url = `${origine}/comune/${slugComune(v.name, v.istat)}`;
   const mappa = `${origine}/mappa?comune=${v.istat}`;
   const storico = (d.history ?? []).filter((r) => r.expenditure_pc != null || r.revenue_pc != null);
@@ -347,6 +369,53 @@ export function paginaComune(v: VoceComune, d: DatiComune, origine: string): Pag
     );
   }
 
+  // -------- domande frequenti: risposte con i numeri del comune (e lo stesso testo nei dati strutturati)
+  const domande: [string, string][] = [];
+  if (sezioni.length && ult) {
+    if (ult.expenditure_pc != null) {
+      let r = `Nel ${ult.year} ${v.name} ha speso ${eur(ult.expenditure_pc)} per abitante`;
+      if (simili?.expenditure_pc != null) r += `, contro una mediana di ${eur(simili.expenditure_pc)} dei comuni della sua fascia`;
+      domande.push([`Quanto spende ${v.name} per abitante?`, r + "."]);
+    }
+    if (ult.autonomia != null) {
+      domande.push([
+        `Quanta parte delle entrate di ${v.name} viene dal comune stesso?`,
+        `Nel ${ult.year} l'autonomia finanziaria è ${pct(ult.autonomia)}: è la quota delle entrate correnti che il comune raccoglie da sé, invece di riceverla da altri enti.`,
+      ]);
+    }
+    const top = d.categorie?.[String(ult.year)]?.aree
+      ?.filter((a) => a.area !== "non_attribuibile" && a.pc != null)
+      .sort((a, b) => (b.pc ?? 0) - (a.pc ?? 0))[0];
+    if (top) {
+      domande.push([`Su cosa spende di più ${v.name}?`, `Nel ${ult.year} la voce più pesante è «${AREE[top.area] ?? top.area}»: ${eur(top.pc)} per abitante.`]);
+    }
+    if (domande.length) {
+      sezioni.push(
+        `<section class="faq"><h2>Domande frequenti</h2><dl>` +
+          domande.map(([q, a]) => `<dt>${esc(q)}</dt><dd>${esc(a)}</dd>`).join("") +
+          `</dl></section>`,
+      );
+    }
+  }
+
+  // -------- comuni simili: la rete di link tra le schede (e un confronto da fare a mano)
+  if (sezioni.length && comuniVicini.length) {
+    const fascia = FASCE[indiceFascia(v.population)];
+    sezioni.push(
+      `<section class="simili"><h2>Comuni simili</h2>` +
+        `<p>Comuni della stessa fascia di popolazione (${esc(fascia)}), con dimensione vicina a ${esc(v.name)}. Puoi confrontarli dalle loro schede.</p>` +
+        `<ul>` +
+        comuniVicini
+          .map(
+            (c) =>
+              `<li><a href="${esc(origine)}/comune/${esc(slugComune(c.name, c.istat))}">${esc(c.name)}</a> ` +
+              `<span class="nota">${esc(c.province)} · ${n0(c.population)} abitanti</span></li>`,
+          )
+          .join("") +
+        `</ul></section>`,
+    );
+  }
+
   // -------- parole da sapere, con il link al metodo (solo se la pagina ha dati)
   if (sezioni.length) sezioni.push(
     `<section class="parole"><h2>Parole da sapere</h2><dl>` +
@@ -365,6 +434,15 @@ export function paginaComune(v: VoceComune, d: DatiComune, origine: string): Pag
         address: { "@type": "PostalAddress", addressLocality: v.name, addressRegion: v.region, addressCountry: "IT" },
         geo: { "@type": "GeoCoordinates", latitude: v.lat, longitude: v.lon },
       },
+      ...(domande.length
+        ? [
+            {
+              "@type": "FAQPage",
+              "@id": `${url}#faq`,
+              mainEntity: domande.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+            },
+          ]
+        : []),
       {
         "@type": "Dataset",
         "@id": `${url}#dati`,
