@@ -539,11 +539,11 @@ ${corpo}
 ${SCRIPT_MISURA}</body></html>`;
 }
 
-export function sitemap(indice: VoceComune[], origine: string): string {
+export function sitemap(indice: VoceComune[], origine: string, pagineExtra: string[] = []): string {
   const url = (p: string) => `<url><loc>${esc(origine)}${esc(p)}</loc></url>`;
   return (
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` +
-    url("/") + url("/mappa") + url("/comuni") + url("/privacy") +
+    url("/") + url("/mappa") + url("/comuni") + url("/privacy") + url("/metodo") + pagineExtra.map(url).join("") +
     indice.map((v) => url(`/comune/${slugComune(v.name, v.istat)}`)).join("") +
     `</urlset>`
   );

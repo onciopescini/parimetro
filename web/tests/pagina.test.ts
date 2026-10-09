@@ -221,7 +221,8 @@ describe("elenco, sitemap, robots, llms.txt", () => {
     expect(s).toContain(`<loc>${O}/comuni</loc>`);
     expect(s).toContain(`<loc>${O}/privacy</loc>`);
     expect(s).toContain(`<loc>${O}/comune/castro-075099</loc>`);
-    expect((s.match(/<url>/g) ?? []).length).toBe(6);
+    expect(s).toContain(`<loc>${O}/metodo</loc>`);
+    expect((s.match(/<url>/g) ?? []).length).toBe(7);
   });
   it("robots indica la sitemap e tiene fuori l'API", () => {
     const r = robots(O);

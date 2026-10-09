@@ -9,8 +9,9 @@
     "lint": "eslint",
     "test": "vitest run",
     "predev": "node scripts/copia-worker-maplibre.mjs",
-    "prebuild": "node scripts/copia-worker-maplibre.mjs",
-    "fixture": "node scripts/genera-fixture.mjs"
+    "prebuild": "node scripts/copia-worker-maplibre.mjs && node scripts/genera-viralita.mjs",
+    "fixture": "node scripts/genera-fixture.mjs",
+    "viralita": "node scripts/genera-viralita.mjs"
   },
   "dependencies": {
     "deck.gl": "^9.4.0",

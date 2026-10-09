@@ -78,7 +78,13 @@ export async function serviElenco(request: Request, assets: Assets): Promise<Res
 
 export async function serviSitemap(request: Request, assets: Assets): Promise<Response> {
   const origine = new URL(request.url).origin;
-  return risposta(sitemap(await indice(assets, origine), origine), "application/xml; charset=utf-8");
+  // Gioco, scoperte e confronti: se il file dei confronti manca, la sitemap resta valida senza
+  const confronti = await assets
+    .fetch(new Request(`${origine}/viralita/confronti.json`))
+    .then((r) => (r.ok ? (r.json() as Promise<{ slug: string }[]>) : []))
+    .catch(() => []);
+  const extra = ["/gioco", "/scoperte", ...confronti.map((c) => `/confronto/${c.slug}`)];
+  return risposta(sitemap(await indice(assets, origine), origine, extra), "application/xml; charset=utf-8");
 }
 
 export async function serviRobots(request: Request): Promise<Response> {

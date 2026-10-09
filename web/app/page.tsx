@@ -23,6 +23,7 @@ export default function Home() {
           </p>
           <nav className="flex items-center gap-4 text-base font-semibold">
             <Link href="/comuni" className="underline-offset-4 hover:underline">Comuni</Link>
+            <Link href="/gioco" className="underline-offset-4 hover:underline">Gioco</Link>
             <Link href="/metodo" className="underline-offset-4 hover:underline">Metodo</Link>
             <Link href="/privacy" className="underline-offset-4 hover:underline">Privacy</Link>
           </nav>
@@ -118,6 +119,23 @@ export default function Home() {
                 <p className="mt-1">{descrizione}</p>
               </li>
             ))}
+          </ul>
+        </section>
+
+        {/* Prova anche */}
+        <section className="mt-20" aria-labelledby="prova-anche">
+          <h2 id="prova-anche" className={H2}>Prova anche</h2>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+            <li className={CARD}>
+              <h3 className="font-display text-2xl font-semibold">Indovina quanto spende il tuo comune</h3>
+              <p className="mt-2 text-base text-grigio">Cinque domande, poi il dato vero, con la fonte.</p>
+              <Link href="/gioco" className="mt-4 inline-flex font-semibold text-mirtillo underline underline-offset-2">Gioca</Link>
+            </li>
+            <li className={CARD}>
+              <h3 className="font-display text-2xl font-semibold">Scoperte dai bilanci</h3>
+              <p className="mt-2 text-base text-grigio">Qualche dato sorprendente, e i confronti tra i capoluoghi.</p>
+              <Link href="/scoperte" className="mt-4 inline-flex font-semibold text-mirtillo underline underline-offset-2">Leggi</Link>
+            </li>
           </ul>
         </section>
 
