@@ -34,10 +34,10 @@ export default function Home() {
             <span className="ml-1 font-display text-xl font-bold">Parimetro</span>
           </p>
           <nav className="flex items-center gap-4 text-base font-semibold">
-            <Link href="/comuni" className="underline-offset-4 hover:underline">Comuni</Link>
-            <Link href="/gioco" className="underline-offset-4 hover:underline">Gioco</Link>
-            <Link href="/metodo" className="underline-offset-4 hover:underline">Metodo</Link>
-            <Link href="/privacy" className="underline-offset-4 hover:underline">Privacy</Link>
+            <Link href="/comuni" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Comuni</Link>
+            <Link href="/gioco" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Gioco</Link>
+            <Link href="/metodo" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Metodo</Link>
+            <Link href="/privacy" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Privacy</Link>
           </nav>
         </header>
 
@@ -142,12 +142,12 @@ export default function Home() {
             <li className={CARD}>
               <h3 className="font-display text-2xl font-semibold">Indovina quanto spende il tuo comune</h3>
               <p className="mt-2 text-base text-grigio">Cinque domande, poi il dato vero, con la fonte.</p>
-              <Link href="/gioco" className="mt-4 inline-flex font-semibold text-mirtillo underline underline-offset-2">Gioca</Link>
+              <Link href="/gioco" className="mt-4 inline-flex min-h-11 items-center font-semibold text-mirtillo underline underline-offset-2">Gioca</Link>
             </li>
             <li className={CARD}>
               <h3 className="font-display text-2xl font-semibold">Scoperte dai bilanci</h3>
               <p className="mt-2 text-base text-grigio">Qualche dato sorprendente, e i confronti tra i capoluoghi.</p>
-              <Link href="/scoperte" className="mt-4 inline-flex font-semibold text-mirtillo underline underline-offset-2">Leggi</Link>
+              <Link href="/scoperte" className="mt-4 inline-flex min-h-11 items-center font-semibold text-mirtillo underline underline-offset-2">Leggi</Link>
             </li>
           </ul>
         </section>
@@ -166,8 +166,8 @@ export default function Home() {
         <footer className="mt-20 border-t border-[#E8DEC8] pt-6 text-sm text-grigio">
           <p>
             Codice pubblicato con licenza MIT · dati pubblicati con licenza CC BY-SA 4.0 ·{" "}
-            <a className="font-semibold underline underline-offset-2" href="https://github.com/onciopescini/parimetro">GitHub</a> ·{" "}
-            <Link className="font-semibold underline underline-offset-2" href="/privacy">Privacy</Link>
+            <a className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2" href="https://github.com/onciopescini/parimetro">GitHub</a> ·{" "}
+            <Link className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2" href="/privacy">Privacy</Link>
           </p>
         </footer>
       </div>

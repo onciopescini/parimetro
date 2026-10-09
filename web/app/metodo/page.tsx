@@ -23,8 +23,8 @@ export default function Metodo() {
             <span className="ml-1 font-display text-xl font-bold">Parimetro</span>
           </Link>
           <nav className="flex items-center gap-4 text-base font-semibold">
-            <Link href="/mappa" className="underline-offset-4 hover:underline">Mappa</Link>
-            <Link href="/comuni" className="underline-offset-4 hover:underline">Comuni</Link>
+            <Link href="/mappa" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Mappa</Link>
+            <Link href="/comuni" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Comuni</Link>
           </nav>
         </header>
 

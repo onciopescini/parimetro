@@ -36,7 +36,7 @@ export default function Scoperte() {
             <span className="h-3.5 w-7 rounded-full bg-limone" aria-hidden="true" />
             <span className="ml-1 font-display text-xl font-bold">Parimetro</span>
           </Link>
-          <Link href="/gioco" className="text-base font-semibold underline-offset-4 hover:underline">Gioco</Link>
+          <Link href="/gioco" className="inline-flex min-h-11 items-center text-base font-semibold underline-offset-4 hover:underline">Gioco</Link>
         </header>
 
         <h1 className="mt-10 font-display text-4xl font-semibold leading-tight sm:text-5xl">Scoperte dai bilanci dei comuni</h1>
