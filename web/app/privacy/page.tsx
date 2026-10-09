@@ -87,6 +87,13 @@ export default function Privacy() {
           </a>
           . Per qualsiasi richiesta sui tuoi dati, o se qualcosa non ti torna, apri una segnalazione lì.
         </p>
+        <p className="mt-3">
+          Il titolare del trattamento è <strong>Alfonso Pescini</strong>. Puoi scrivergli a{" "}
+          <a className="font-semibold text-mirtillo underline underline-offset-2" href="mailto:alfonso@pescini.org">
+            alfonso@pescini.org
+          </a>{" "}
+          per esercitare i tuoi diritti (accesso, copia, cancellazione, rettifica).
+        </p>
 
         <p className="mt-10">
           <Link href="/" className="inline-flex min-h-12 items-center rounded-full bg-mirtillo px-6 font-semibold text-white">
