@@ -62,7 +62,7 @@ function pagina(titolo: string, corpo: string, status = 200): Response {
 <body style="margin:0;background:#FFF6E5;color:#1B1A2E;font-family:Figtree,system-ui,sans-serif;font-size:18px;line-height:1.5">
 <main style="max-width:480px;margin:0 auto;padding:40px 20px"><p style="margin:0 0 24px"><span style="display:inline-block;width:44px;height:12px;border-radius:6px;background:#3B3BD6"></span> <span style="display:inline-block;width:26px;height:12px;border-radius:6px;background:#FFD23F"></span> <strong>Parimetro</strong></p>
 <div style="background:#FFFDF8;border:1px solid #E8DEC8;border-radius:28px;padding:28px">${corpo}</div>
-<p style="margin:20px 4px"><a href="/" style="color:#3B3BD6">Torna alla mappa</a></p></main></body></html>`,
+<p style="margin:20px 4px"><a href="/mappa" style="color:#3B3BD6">Torna alla mappa</a></p></main></body></html>`,
     { status, headers: { "Content-Type": "text/html; charset=utf-8", ...intestazioniBase } },
   );
 }

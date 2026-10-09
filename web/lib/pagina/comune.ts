@@ -131,12 +131,29 @@ th,td{border-bottom:1px solid var(--line);padding:.55rem .8rem;text-align:right}
 thead th{color:var(--mut);font-size:.82rem;text-transform:uppercase;letter-spacing:.05em}
 .avviso{background:var(--acc);color:#1B1A2E;padding:.8rem 1.1rem;border-radius:22px}
 .nota{color:var(--mut);font-size:.92rem}
+.breve,.avvertenze,.parole{border-radius:24px;padding:1rem 1.25rem;margin:1.2rem 0}
+.breve{background:var(--carta);border:1px solid var(--line)}.breve ul{margin:.4rem 0 0;padding-left:1.2rem}.breve li{margin:.35rem 0}
+.avvertenze{background:var(--acc);color:#1B1A2E}.avvertenze h2,.breve h2,.parole h2{margin:.2rem 0 .4rem;font-size:1.3rem}
+.avvertenze ul{margin:0;padding-left:1.2rem}.avvertenze li{margin:.3rem 0}
+.parole dt{font-weight:700;margin-top:.7rem}.parole dd{margin:.15rem 0 0;color:var(--mut)}
 .cta{display:inline-block;margin:.4rem 0 1rem;padding:.8rem 1.5rem;border-radius:99px;background:var(--link);color:#fff;text-decoration:none;font-weight:700}
 @media (prefers-color-scheme:dark){.cta{color:#1B1A2E}}
 footer{padding-bottom:3.5rem;color:var(--mut);font-size:.92rem}
 `;
 
 // ---------------------------------------------------------------- contenuto
+// Il lessico della pagina: pochi termini, spiegati con parole semplici (la pagina si legge anche a 70 anni)
+const PAROLE: [string, string][] = [
+  ["Cassa", "Soldi realmente incassati e pagati dal comune nell'anno. Non sono gli accertamenti (le entrate dovute) né gli impegni (le spese decise ma non ancora pagate)."],
+  ["Per abitante", "Il totale diviso per il numero di abitanti: permette di confrontare comuni di dimensioni diverse."],
+  ["Comuni simili", "I comuni della stessa fascia di popolazione (per esempio da 5.000 a 20.000 abitanti)."],
+  ["Mediana", "Il valore al centro: metà dei comuni simili sta sopra e metà sotto. Non è influenzata da pochi casi molto diversi."],
+  ["Rango", "La posizione del comune nella sua fascia, da 0 a 100, su un indicatore di salute finanziaria (autonomia e saldo di gestione). Non è una pagella dell'amministrazione."],
+  ["Autonomia finanziaria", "La quota delle entrate correnti che il comune raccoglie da sé (tributi ed entrate proprie), invece di riceverla da altri enti."],
+  ["Spesa concentrata", "Una sola voce supera il 40% della spesa dell'anno, di solito un investimento isolato. Il pro capite di quell'anno non è confrontabile."],
+  ["Non attribuibile", "Le spese che il codice del bilancio non permette di assegnare con sicurezza a un'area."],
+]
+
 export interface Pagina {
   title: string;
   description: string;
@@ -145,7 +162,7 @@ export interface Pagina {
 
 export function paginaComune(v: VoceComune, d: DatiComune, origine: string): Pagina {
   const url = `${origine}/comune/${slugComune(v.name, v.istat)}`;
-  const mappa = `${origine}/?comune=${v.istat}`;
+  const mappa = `${origine}/mappa?comune=${v.istat}`;
   const storico = (d.history ?? []).filter((r) => r.expenditure_pc != null || r.revenue_pc != null);
   const ult = storico.length ? storico[storico.length - 1] : null;
   const simili = ult ? d.peers?.[String(ult.year)] ?? null : null;
@@ -163,6 +180,30 @@ export function paginaComune(v: VoceComune, d: DatiComune, origine: string): Pag
     `PNRR e appalti, confrontati con i comuni della stessa fascia.`.replace(/\s+/g, " ");
 
   const sezioni: string[] = [];
+
+  // -------- in breve e avvertenze: la prima cosa che si legge
+  if (ult) {
+    const punti: string[] = [];
+    if (simili) {
+      const c = rispettoAllaMediana(ult.expenditure_pc, simili.expenditure_pc);
+      if (c) punti.push(`La spesa per abitante nel ${ult.year} è ${c} dei comuni simili: ${eur(ult.expenditure_pc)}, contro una mediana di ${eur(simili.expenditure_pc)}.`);
+      if (simili.pct_expenditure != null) {
+        punti.push(`Supera la spesa del ${simili.pct_expenditure}% dei ${n0(simili.n)} comuni della sua fascia demografica (${esc(simili.fascia)}).`);
+      }
+    }
+    const top = d.categorie?.[String(ult.year)]?.aree
+      ?.filter((a) => a.area !== "non_attribuibile" && a.pc != null)
+      .sort((a, b) => (b.pc ?? 0) - (a.pc ?? 0))[0];
+    if (top) punti.push(`La voce di spesa più pesante è «${esc(AREE[top.area] ?? top.area)}»: ${eur(top.pc)} per abitante.`);
+    if (punti.length) sezioni.push(`<section class="breve"><h2>In breve</h2><ul>${punti.map((x) => `<li>${x}</li>`).join("")}</ul></section>`);
+    sezioni.push(
+      `<aside class="avvertenze"><h2>Prima di leggere</h2><ul>` +
+        "<li>Sono dati di cassa: incassi e pagamenti effettivi. Un anno può sembrare diverso da quello che ti aspetti.</li>" +
+        "<li>Il confronto è con i comuni della stessa fascia di popolazione. Non è un giudizio sull'amministrazione.</li>" +
+        "<li>Il rango è una posizione da 0 a 100, non una pagella.</li>" +
+        `</ul></aside>`,
+    );
+  }
 
   // -------- conti
   if (ult) {
@@ -216,7 +257,7 @@ export function paginaComune(v: VoceComune, d: DatiComune, origine: string): Pag
     const aree = [...cat[1].aree].filter((a) => a.pc != null).sort((a, b) => (b.pc ?? 0) - (a.pc ?? 0)).slice(0, 8);
     sezioni.push(
       `<h2>In cosa spende</h2><p>Le voci di spesa principali nel ${esc(cat[0])}, per abitante, confrontate con la mediana dei comuni simili. ` +
-        `Le voci generiche restano in «Non attribuibile»: nessuna è indovinata.</p>` +
+        `Le spese che non si possono assegnare con sicurezza a un'area restano in «Non attribuibile».</p>` +
         `<table><thead><tr><th scope="col">Area</th><th scope="col">Per abitante</th><th scope="col">Mediana dei simili</th></tr></thead><tbody>` +
         aree
           .map((a) => `<tr><th scope="row">${esc(AREE[a.area] ?? a.area)}</th><td>${eur(a.pc)}</td><td>${eur(a.mediana_pc)}</td></tr>`)
@@ -305,6 +346,13 @@ export function paginaComune(v: VoceComune, d: DatiComune, origine: string): Pag
     );
   }
 
+  // -------- parole da sapere, con il link al metodo (solo se la pagina ha dati)
+  if (sezioni.length) sezioni.push(
+    `<section class="parole"><h2>Parole da sapere</h2><dl>` +
+      PAROLE.map(([t, spiegazione]) => `<dt>${esc(t)}</dt><dd>${esc(spiegazione)}</dd>`).join("") +
+      `</dl><p><a href="${esc(origine)}/metodo">Come sono calcolati i numeri</a></p></section>`,
+  );
+
   // -------- dati strutturati
   const grafo = {
     "@context": "https://schema.org",
@@ -356,7 +404,7 @@ export function paginaComune(v: VoceComune, d: DatiComune, origine: string): Pag
 <style>${STILE}</style>
 </head>
 <body>
-<header><a class="marchio" href="${esc(origine)}/">${SEGNO}<span>Parimetro</span></a><a href="${esc(origine)}/comuni">Tutti i comuni</a></header>
+<header><a class="marchio" href="${esc(origine)}/">${SEGNO}<span>Parimetro</span></a><a href="${esc(origine)}/comuni">Tutti i comuni</a><a href="${esc(origine)}/metodo">Metodo</a></header>
 <main>
 <h1>Bilancio del Comune di ${esc(v.name)} (${esc(v.province)}): entrate e spese per abitante</h1>
 <a class="cta" href="${esc(mappa)}">Apri nella mappa 3D interattiva</a>
@@ -415,7 +463,7 @@ export function sitemap(indice: VoceComune[], origine: string): string {
   const url = (p: string) => `<url><loc>${esc(origine)}${esc(p)}</loc></url>`;
   return (
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` +
-    url("/") + url("/comuni") +
+    url("/") + url("/mappa") + url("/comuni") + url("/privacy") +
     indice.map((v) => url(`/comune/${slugComune(v.name, v.istat)}`)).join("") +
     `</urlset>`
   );

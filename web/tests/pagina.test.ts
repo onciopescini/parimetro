@@ -105,7 +105,27 @@ describe("pagina di un comune", () => {
     expect(g["@graph"][0].geo.latitude).toBe(41.565);
   });
   it("rimanda alla mappa interattiva", () => {
-    expect(p.html).toContain(`href="${O}/?comune=070006"`);
+    expect(p.html).toContain(`href="${O}/mappa?comune=070006"`);
+  });
+  it("in breve: riassume confronto e voce piu' pesante, prima dei conti", () => {
+    const breve = p.html.indexOf('<section class="breve">');
+    expect(breve).toBeGreaterThan(-1);
+    expect(breve).toBeLessThan(p.html.indexOf("<h2>Entrate e spese</h2>"));
+    expect(p.html).toContain("comuni simili");
+  });
+  it("avvertenze in primo piano, prima della tabella dei conti", () => {
+    const avv = p.html.indexOf('<aside class="avvertenze">');
+    expect(avv).toBeGreaterThan(-1);
+    expect(avv).toBeLessThan(p.html.indexOf("<h2>Entrate e spese</h2>"));
+    expect(p.html).toContain("Non è un giudizio sull&#39;amministrazione".replace("&#39;", "'"));
+  });
+  it("parole da sapere e link al metodo", () => {
+    expect(p.html).toContain("<h2>Parole da sapere</h2>");
+    expect(p.html).toContain("<dt>Mediana</dt>");
+    expect(p.html).toContain(`href="${O}/metodo"`);
+  });
+  it("niente frasi di tono approssimativo nella sezione spesa", () => {
+    expect(p.html).not.toContain("nessuna è indovinata");
   });
   it("avverte quando una sola voce pesa piu' del 40% della spesa (investimento isolato)", () => {
     const concentrata = paginaComune(
@@ -157,12 +177,14 @@ describe("elenco, sitemap, robots, llms.txt", () => {
     expect(h).toContain(`href="${O}/comune/castro-075099"`);
     expect(h).toContain("<h2 id=\"molise\">Molise</h2>");
   });
-  it("la sitemap elenca home, elenco e ogni comune con indirizzo assoluto", () => {
+  it("la sitemap elenca home, mappa, elenco, privacy e ogni comune con indirizzo assoluto", () => {
     const s = sitemap(indice, O);
     expect(s).toContain(`<loc>${O}/</loc>`);
+    expect(s).toContain(`<loc>${O}/mappa</loc>`);
     expect(s).toContain(`<loc>${O}/comuni</loc>`);
+    expect(s).toContain(`<loc>${O}/privacy</loc>`);
     expect(s).toContain(`<loc>${O}/comune/castro-075099</loc>`);
-    expect((s.match(/<url>/g) ?? []).length).toBe(4);
+    expect((s.match(/<url>/g) ?? []).length).toBe(6);
   });
   it("robots indica la sitemap e tiene fuori l'API", () => {
     const r = robots(O);

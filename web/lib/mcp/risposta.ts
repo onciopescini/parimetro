@@ -28,7 +28,7 @@ export function testoRisultato(r: Risultato): string {
 
   parti.push(
     "",
-    r.apri ? `Scheda sulla mappa: ${SITO}/?comune=${r.apri}` : `Mappa: ${SITO}`,
+    r.apri ? `Scheda sulla mappa: ${SITO}/mappa?comune=${r.apri}` : `Mappa: ${SITO}/mappa`,
     `Fonte: Parimetro, dati aperti ISTAT e SIOPE (cassa) e le altre fonti indicate su ${SITO}.`,
   );
   return parti.join("\n");

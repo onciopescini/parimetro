@@ -54,7 +54,7 @@ describe("strumenti", () => {
     expect(r.result.isError).toBe(false);
     const t = r.result.content[0].text;
     expect(t).toContain("Roma");
-    expect(t).toContain("https://parimetro.it/?comune=058091");
+    expect(t).toContain("https://parimetro.it/mappa?comune=058091");
     expect(t).toMatch(/Fonte: Parimetro, dati aperti ISTAT e SIOPE/);
   });
 

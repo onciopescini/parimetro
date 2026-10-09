@@ -96,7 +96,7 @@ export default function Privacy() {
         </p>
 
         <p className="mt-10">
-          <Link href="/" className="inline-flex min-h-12 items-center rounded-full bg-mirtillo px-6 font-semibold text-white">
+          <Link href="/mappa" className="inline-flex min-h-12 items-center rounded-full bg-mirtillo px-6 font-semibold text-white">
             Torna alla mappa
           </Link>
         </p>
