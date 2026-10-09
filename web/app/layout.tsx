@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Mono, Figtree, Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import { TOKEN_MISURA } from "@/lib/misura";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,7 +43,10 @@ export default function RootLayout({
       lang="it"
       className={`${geistSans.variable} ${geistMono.variable} ${display.variable} ${testo.variable} ${codice.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={`{"token": "${TOKEN_MISURA}"}`} />
+      </body>
     </html>
   );
 }

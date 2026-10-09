@@ -6,6 +6,7 @@
 // simili, non un voto; sotto 100 contribuenti la media del reddito e' instabile; gli importi dei lotti sono a
 // base di gara). Niente giudizi.
 
+import { SCRIPT_MISURA } from "../misura";
 import { AREE } from "../categorie";
 import { senzaAccenti } from "../dati";
 import type { Appalti, Concorrenza } from "../appalti";
@@ -416,6 +417,7 @@ I dati pubblicati da Parimetro sono offerti sotto licenza <a href="https://creat
 il codice è MIT. Contabilità di cassa: incassi e pagamenti, non accertamenti e impegni. I confronti sono con i comuni della stessa fascia di popolazione.</p>
 <p><a href="${esc(origine)}/dati/comune/${esc(v.istat)}.json" rel="nofollow">Scarica i dati di questo comune (JSON)</a></p>
 </footer>
+${SCRIPT_MISURA}
 </body>
 </html>`;
 
@@ -456,7 +458,7 @@ export function paginaElenco(indice: VoceComune[], origine: string): string {
 <p>Ogni scheda confronta il comune con quelli della sua fascia di popolazione: entrate e spese per abitante, spesa per categoria, reddito dei residenti, PNRR e appalti.</p>
 ${corpo}
 </main>
-</body></html>`;
+${SCRIPT_MISURA}</body></html>`;
 }
 
 export function sitemap(indice: VoceComune[], origine: string): string {

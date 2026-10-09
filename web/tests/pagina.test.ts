@@ -104,6 +104,10 @@ describe("pagina di un comune", () => {
     expect(g["@graph"][1].distribution.contentUrl).toBe(`${O}/dati/comune/070006.json`);
     expect(g["@graph"][0].geo.latitude).toBe(41.565);
   });
+  it("ha il codice di misura Cloudflare, senza cookie", () => {
+    expect(p.html).toContain("https://static.cloudflareinsights.com/beacon.min.js");
+    expect(p.html).toContain("2e4e8a6c62b2406ab899e715a9f15563");
+  });
   it("rimanda alla mappa interattiva", () => {
     expect(p.html).toContain(`href="${O}/mappa?comune=070006"`);
   });
