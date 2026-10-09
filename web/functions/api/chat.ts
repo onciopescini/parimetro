@@ -8,6 +8,7 @@ import { MAX_DOMANDA } from "../../lib/chat/intento";
 import { rispondi } from "../../lib/chat/rispondi";
 import type { Contesto } from "../../lib/chat/tipi";
 import { dentroIlTetto, leggiTetto, memoriaCloudflare, type DbTetto } from "../../lib/chat/tetto";
+import { superaLimite } from "../../lib/limite";
 
 // Tipi minimi: non servono @cloudflare/workers-types solo per questo file
 interface Env {
@@ -40,21 +41,6 @@ const json = (corpo: unknown, status = 200) =>
     headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
   });
 
-// Conteggio per IP nella cache locale del datacenter: approssimativo ma senza servizi da pagare.
-async function superaLimite(request: Request): Promise<boolean> {
-  const ip = request.headers.get("CF-Connecting-IP") ?? "ignoto";
-  const ora = Math.floor(Date.now() / 3_600_000);
-  const cache = (caches as unknown as { default: Cache }).default;
-  const chiave = new Request(`https://limite.interno/${encodeURIComponent(ip)}/${ora}`);
-  const attuale = Number((await (await cache.match(chiave))?.text()) ?? 0);
-  if (attuale >= LIMITE_ORARIO) return true;
-  await cache.put(
-    chiave,
-    new Response(String(attuale + 1), { headers: { "Cache-Control": "max-age=3700" } }),
-  );
-  return false;
-}
-
 /** Jev con le sue protezioni: cache di 24 ore e tetto giornaliero. Senza il contatore (nessun database) resta spento. */
 function jevOpzioni(env: Env) {
   if (!env.JEV_API_KEY) return undefined;
@@ -81,7 +67,7 @@ export async function onRequestPost({ request, env }: Ctx): Promise<Response> {
   if (!env.OPENROUTER_API_KEY && !env.JEV_API_KEY) {
     return json({ errore: "La chat non è ancora attiva su questo sito." }, 503);
   }
-  if (await superaLimite(request)) {
+  if (await superaLimite(request, "chat", LIMITE_ORARIO)) {
     return json({ errore: "Hai fatto molte domande in poco tempo. Riprova tra un'ora." }, 429);
   }
 
