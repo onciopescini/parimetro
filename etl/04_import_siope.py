@@ -383,6 +383,18 @@ def main() -> None:
         )
         conn.commit()
 
+        # I comuni nati da fusioni recenti non sono ancora nel file POSAS: l'anagrafica ha popolazione 0 e le viste
+        # (PNRR, coesione, classifiche) li escluderebbero. Si usa la popolazione dell'ultimo bilancio importato.
+        cur.execute(
+            """update municipalities m set population = b.population
+               from (select distinct on (municipality_id) municipality_id, population
+                     from budget_records where population > 0 order by municipality_id, year desc) b
+               where b.municipality_id = m.id and coalesce(m.population, 0) = 0"""
+        )
+        if cur.rowcount:
+            print(f"→ popolazione presa dal bilancio per {cur.rowcount} comuni senza popolazione in anagrafica")
+        conn.commit()
+
         # L'indice è il percentile nella fascia demografica, quindi si calcola
         # per coorte e non riga per riga: niente trigger, va lanciato qui.
         cur.execute("select refresh_fhi(%s)", (a.year,))
