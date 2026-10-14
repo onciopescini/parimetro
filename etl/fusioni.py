@@ -33,6 +33,17 @@ FUSIONI: dict[str, tuple[list[str], int]] = {
     "028108": (["028022", "028098"], 2099),            # Carceri + Vighizzolo d'Este
 }
 
+# (codice SIOPE, nome dell'ente in maiuscolo) -> codice ISTAT corretto
+CODICI_CONDIVISI: dict[tuple[str, str], str] = {
+    ("021073", "COMUNE DI CAINES"): "021014",
+}
+
+
+def codice_ente(codice: str, ente: str) -> str:
+    """Il codice ISTAT di un ente SIOPE: quello del file, salvo gli enti che ne usano uno non loro."""
+    return CODICI_CONDIVISI.get((codice, (ente or "").strip().upper()), codice)
+
+
 _NUOVO_DI = {vecchio: nuovo for nuovo, (vecchi, _) in FUSIONI.items() for vecchio in vecchi}
 
 

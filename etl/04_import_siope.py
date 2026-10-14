@@ -42,7 +42,7 @@ import psycopg
 from dotenv import load_dotenv
 
 from categorie_spesa import AREE, classifica
-from fusioni import fondi, popolazione_fusa
+from fusioni import CODICI_CONDIVISI, codice_ente, fondi, popolazione_fusa
 from config import (
     SIOPE,
     TITOLI_CAPITALE,
@@ -65,7 +65,7 @@ CHUNK = 300_000
 def leggi(path: str):
     """Genera i chunk di un CSV SIOPE con le sole colonne che servono."""
     c = SIOPE
-    need = [c["col_prov"], c["col_com"], c["col_tipo"],
+    need = [c["col_prov"], c["col_com"], c["col_tipo"], c["col_ente"],
             c["col_periodo"], c["col_titolo"], c["col_importo"]]
     testa = pd.read_csv(path, sep=c["sep"], encoding=c["encoding"], nrows=0)
     mancanti = [x for x in need if x not in testa.columns]
@@ -76,6 +76,14 @@ def leggi(path: str):
         )
     return pd.read_csv(path, sep=c["sep"], encoding=c["encoding"], dtype=str,
                        usecols=need, chunksize=CHUNK)
+
+
+def correggi_codici(ist: pd.Series, ente: pd.Series) -> pd.Series:
+    """Dove un ente usa il codice di un altro comune (CODICI_CONDIVISI) gli rende il suo, dal nome dell'ente."""
+    nome = ente.astype(str).str.strip().str.upper()
+    for (codice, nome_ente), giusto in CODICI_CONDIVISI.items():
+        ist = ist.mask((ist == codice) & (nome == nome_ente), giusto)
+    return ist
 
 
 def aggrega(paths: list[str]) -> dict:
@@ -90,6 +98,7 @@ def aggrega(paths: list[str]) -> dict:
                 continue
             ist = (ch[c["col_prov"]].astype(str).str.strip().str.zfill(3)
                    + ch[c["col_com"]].astype(str).str.strip().str.zfill(3))
+            ist = correggi_codici(ist, ch[c["col_ente"]])
             # "2024/07" -> 7
             mese = pd.to_numeric(
                 ch[c["col_periodo"]].astype(str).str.split("/").str[-1], errors="coerce"
@@ -139,7 +148,7 @@ def voci_per_comune(paths: list[str]) -> tuple[dict, dict, int]:
     somma esattamente a cio' che e' contato come pagamenti.
     """
     c = SIOPE
-    need = [c["col_prov"], c["col_com"], c["col_tipo"], c["col_periodo"], c["col_titolo"],
+    need = [c["col_prov"], c["col_com"], c["col_tipo"], c["col_ente"], c["col_periodo"], c["col_titolo"],
             c["col_importo"], c["col_gestionale"], c["col_descr"]]
     risultato: dict = {}
     descrizioni: dict = {}
@@ -159,8 +168,8 @@ def voci_per_comune(paths: list[str]) -> tuple[dict, dict, int]:
             if ch.empty:
                 continue
             df = pd.DataFrame({
-                "i": (ch[c["col_prov"]].astype(str).str.strip().str.zfill(3)
-                      + ch[c["col_com"]].astype(str).str.strip().str.zfill(3)),
+                "i": correggi_codici(ch[c["col_prov"]].astype(str).str.strip().str.zfill(3)
+                                     + ch[c["col_com"]].astype(str).str.strip().str.zfill(3), ch[c["col_ente"]]),
                 "m": pd.to_numeric(ch[c["col_periodo"]].astype(str).str.split("/").str[-1],
                                    errors="coerce"),
                 "t": ch[c["col_titolo"]].astype(str).str.extract(r"[A-Za-z](\d)", expand=False),

@@ -374,7 +374,7 @@ export default function BudgetDrawer({
                   href={`/comune/${slugComune(data.name, data.istat)}`}
                   target="_blank"
                   rel="noopener"
-                  className="underline decoration-grigio underline-offset-2 hover:text-inchiostro"
+                  className="inline-flex min-h-11 items-center underline decoration-grigio underline-offset-2 hover:text-inchiostro"
                 >
                   Pagina del comune
                 </a>
@@ -382,7 +382,7 @@ export default function BudgetDrawer({
                   href={`/segnala?comune=${encodeURIComponent(data.name)}`}
                   target="_blank"
                   rel="noopener"
-                  className="underline decoration-grigio underline-offset-2 hover:text-inchiostro"
+                  className="inline-flex min-h-11 items-center underline decoration-grigio underline-offset-2 hover:text-inchiostro"
                 >
                   Segnala un errore
                 </a>
@@ -461,7 +461,7 @@ export default function BudgetDrawer({
               <button
                 key={id}
                 onClick={() => setTab(id)}
-                className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-semibold transition ${
+                className={`inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full px-4 text-sm font-semibold transition ${
                   tab === id ? "bg-mirtillo text-white" : "text-grigio hover:bg-sabbia/30 hover:text-inchiostro"
                 }`}
               >
@@ -486,7 +486,7 @@ export default function BudgetDrawer({
                         <button
                           key={v}
                           onClick={() => setBase(v)}
-                          className={`min-h-10 flex-1 rounded-full px-3 text-sm font-medium transition-colors ${
+                          className={`min-h-11 flex-1 rounded-full px-3 text-sm font-medium transition-colors ${
                             base === v
                               ? "bg-mirtillo text-white"
                               : "text-grigio hover:text-inchiostro"

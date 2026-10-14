@@ -32,6 +32,13 @@ def somma_dicembre(percorso: str) -> dict[str, float]:
         c_com = next(c for c in cols if "istat comune" in c.lower())
         c_imp = next(c for c in cols if c.lower().startswith("importo cumulato"))
         c_tipo = next(c for c in cols if "tipologia ente" in c.lower())
+        c_ente = next(c for c in cols if "descrizione ente" in c.lower())
+
+        def chiave(r):
+            k = r[c_prov].strip().zfill(3) + r[c_com].strip().zfill(3)
+            # SIOPE dà a "COMUNE DI CAINES" il codice di Rifiano (021073): qui si separano dal nome dell'ente
+            return "021014" if k == "021073" and "CAINES" in r[c_ente].upper() else k
+
         c_mese = next(c for c in cols if "anno/mese" in c.lower())
         c_desc = next(c for c in cols if "descrizione titolo" in c.lower())
         # Fuori dal totale (come dichiarato nel metodo): anticipazioni di tesoreria, partite di giro e conto terzi, sospesi da regolarizzare
@@ -39,10 +46,10 @@ def somma_dicembre(percorso: str) -> dict[str, float]:
         righe = [r for r in rd if r[c_tipo].strip() == "CO" and not any(k in r[c_desc].lower() for k in FUORI)]
         ultimo: dict[str, str] = {}
         for r in righe:
-            k = r[c_prov].strip().zfill(3) + r[c_com].strip().zfill(3)
+            k = chiave(r)
             ultimo[k] = max(ultimo.get(k, ""), r[c_mese])
         for r in righe:
-            k = r[c_prov].strip().zfill(3) + r[c_com].strip().zfill(3)
+            k = chiave(r)
             if r[c_mese] == ultimo[k]:
                 tot[k] += float(r[c_imp].replace(",", "."))
     return tot

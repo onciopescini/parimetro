@@ -76,6 +76,7 @@ SIOPE = {
     "col_prov":    "Codice istat provincia",   # 3 cifre; va concatenato…
     "col_com":     "Codice istat comune",      # …a queste altre 3 → codice a 6
     "col_tipo":    "Codice Tipologia Ente BDAP",
+    "col_ente":    "Descrizione Ente BDAP",    # "COMUNE DI CAINES": serve dove due enti hanno lo stesso codice
     "tipo_comuni": "CO",             # tiene solo i Comuni, scarta province e altri enti
     "col_periodo": "Anno/Mese calendario",     # "2024/01" … "2024/12"
     "col_titolo":  "Codice Titolo CG",         # "E1000000000" → titolo 1
