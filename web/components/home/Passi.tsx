@@ -3,7 +3,7 @@
 import { useInView } from "./useInView";
 
 const PASSI: { n: string; titolo: string; testo: string; colore: string }[] = [
-  { n: "1", titolo: "Trova il tuo comune", testo: "Cerca il nome nella mappa. Ogni comune è un blocco: più è alto, più spende per abitante.", colore: "bg-mirtillo text-white" },
+  { n: "1", titolo: "Trova il tuo comune", testo: "Cerca il nome nella mappa. Ogni comune è un blocco: più è alto, più spende. Con «Valori pro capite» il confronto tiene conto degli abitanti.", colore: "bg-mirtillo text-white" },
   { n: "2", titolo: "Leggi la scheda", testo: "Dove vanno i soldi, come sono andati i conti negli anni e come si confronta con i comuni simili.", colore: "bg-limone text-inchiostro" },
   { n: "3", titolo: "Fai una domanda", testo: "Chiedi alla chat, per esempio: «Quanto spende Roma per i rifiuti?». Puoi anche creare una card da condividere.", colore: "bg-menta text-inchiostro" },
 ];

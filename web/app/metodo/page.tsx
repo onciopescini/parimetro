@@ -94,10 +94,12 @@ export default function Metodo() {
           </p>
           <p className="mt-3">
             <strong>PNRR:</strong> un progetto risulta al comune solo se il comune ne è il soggetto attuatore. I progetti di regioni o di enti nazionali
-            non vengono attribuiti a un comune.
+            non vengono attribuiti a un comune. Un progetto (CUP) finanziato da due misure diverse del PNRR conta una volta per ciascuna misura, con il
+            finanziamento di ciascuna; se nella stessa misura lo stesso progetto compare con più righe, teniamo la prima. Per questo il numero di progetti può
+            superare di poco quello dei CUP distinti.
           </p>
           <p className="mt-3">
-            <strong>Fondi di coesione (OpenCoesione):</strong> contiamo solo i progetti che riguardano un solo comune.
+            <strong>Fondi di coesione (OpenCoesione):</strong> contiamo solo i progetti che riguardano un solo comune e che il portale pubblica; il finanziamento è il totale pubblico netto.
           </p>
         </div>
 

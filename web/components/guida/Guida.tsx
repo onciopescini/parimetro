@@ -29,12 +29,12 @@ const PASSI: Passo[] = [
   {
     bersaglio: "procapite",
     titolo: "Per abitante",
-    testo: "Un comune grande spende di più solo perché ha più abitanti. “Pro capite” divide per i residenti, così il confronto è giusto.",
+    testo: "Un comune grande spende di più solo perché ha più abitanti. “Valori pro capite” divide per i residenti, così il confronto è giusto.",
   },
   {
     bersaglio: "classifiche",
     titolo: "Le classifiche",
-    testo: "Chi spende di più per abitante, chi ha più opere del PNRR, chi fa più gare con offerte vere. Si filtrano per dimensione e regione.",
+    testo: "Chi spende di più per abitante, chi riceve più fondi del PNRR, chi ha il reddito medio più alto o più autonomia finanziaria. Si filtrano per dimensione e regione.",
   },
   {
     bersaglio: "chat",
