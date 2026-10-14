@@ -16,3 +16,4 @@ __pycache__/
 # artefatti di `pip install ./ogr2ogr-shim`
 build/
 *.egg-info/
+_siope_tmp/
