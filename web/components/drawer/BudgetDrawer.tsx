@@ -356,8 +356,8 @@ export default function BudgetDrawer({
           className="fixed inset-x-0 bottom-0 z-40 flex max-h-[84vh] flex-col rounded-t-[32px] border-t border-[#E8DEC8] bg-crema text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.16)] md:inset-y-0 md:left-auto md:right-0 md:h-full md:max-h-none md:w-[440px] md:rounded-l-[32px] md:rounded-tr-none md:border-l md:border-t-0"
         >
           {/* ---------- Header ---------- */}
-          <header className="flex shrink-0 items-start justify-between gap-3 border-b border-[#E8DEC8] p-4">
-            <div>
+          <header className="flex shrink-0 flex-wrap items-start justify-between gap-3 border-b border-[#E8DEC8] p-4">
+            <div className="min-w-0 flex-1">
               <h2 className="font-display text-3xl font-semibold leading-tight">{data.name}</h2>
               <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-grigio">
                 <span className="inline-flex items-center gap-1">
@@ -382,43 +382,10 @@ export default function BudgetDrawer({
                   href={`/segnala?comune=${encodeURIComponent(data.name)}`}
                   target="_blank"
                   rel="noopener"
-                  className="ml-3 underline decoration-grigio underline-offset-2 hover:text-inchiostro"
+                  className="underline decoration-grigio underline-offset-2 hover:text-inchiostro"
                 >
                   Segnala un errore
                 </a>
-              </div>
-              {acc.stato !== "assente" && acc.stato !== "attesa" && (
-                <button
-                  onClick={async () => {
-                    if (acc.stato !== "dentro") return onChiediAccesso?.("Per salvare questo comune e ritrovarlo su ogni dispositivo.");
-                    if (acc.comuni.some((c) => c.istat === data.istat)) await account.togli(data.istat);
-                    else await account.salva(data.istat, data.name, data.history.length ? data.history[data.history.length - 1].year : null);
-                  }}
-                  aria-pressed={acc.comuni.some((c) => c.istat === data.istat)}
-                  className="mt-3 mr-2 inline-flex min-h-12 items-center gap-2 rounded-full border border-[#E8DEC8] bg-carta px-5 text-sm font-semibold text-inchiostro transition hover:bg-sabbia/30"
-                >
-                  <Star size={16} className={acc.comuni.some((c) => c.istat === data.istat) ? "fill-limone text-inchiostro" : ""} aria-hidden />
-                  {acc.comuni.some((c) => c.istat === data.istat) ? "Salvato" : "Salva il comune"}
-                </button>
-              )}
-              {datiCard && (
-                <button
-                  onClick={() => setCreaCard(true)}
-                  className="mt-3 inline-flex min-h-12 items-center gap-2 rounded-full bg-limone px-5 text-sm font-semibold text-inchiostro shadow-[0_4px_0_#1B1A2E] transition hover:brightness-95 active:translate-y-0.5 active:shadow-none"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
-                  </svg>
-                  Crea la card da condividere
-                </button>
-              )}
-              <div className="mt-3">
-                <Condividi
-                  testo={`${data.name}: come spende il comune, con i dati ufficiali.`}
-                  url={`https://parimetro.it/comune/${slugComune(data.name, data.istat)}`}
-                  etichetta="Condividi il comune"
-                  compatto
-                />
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -440,6 +407,41 @@ export default function BudgetDrawer({
               >
                 <X size={18} />
               </button>
+            </div>
+            <div className="flex w-full flex-wrap items-center gap-2">
+              {acc.stato !== "assente" && acc.stato !== "attesa" && (
+                <button
+                  onClick={async () => {
+                    if (acc.stato !== "dentro") return onChiediAccesso?.("Per salvare questo comune e ritrovarlo su ogni dispositivo.");
+                    if (acc.comuni.some((c) => c.istat === data.istat)) await account.togli(data.istat);
+                    else await account.salva(data.istat, data.name, data.history.length ? data.history[data.history.length - 1].year : null);
+                  }}
+                  aria-pressed={acc.comuni.some((c) => c.istat === data.istat)}
+                  className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[#E8DEC8] bg-carta px-5 text-sm font-semibold text-inchiostro transition hover:bg-sabbia/30"
+                >
+                  <Star size={16} className={acc.comuni.some((c) => c.istat === data.istat) ? "fill-limone text-inchiostro" : ""} aria-hidden />
+                  {acc.comuni.some((c) => c.istat === data.istat) ? "Salvato" : "Salva il comune"}
+                </button>
+              )}
+              {datiCard && (
+                <button
+                  onClick={() => setCreaCard(true)}
+                  className="inline-flex min-h-12 items-center gap-2 rounded-full bg-limone px-5 text-sm font-semibold text-inchiostro shadow-[0_4px_0_#1B1A2E] transition hover:brightness-95 active:translate-y-0.5 active:shadow-none"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
+                  </svg>
+                  Crea la card
+                </button>
+              )}
+              <div>
+                <Condividi
+                  testo={`${data.name}: come spende il comune, con i dati ufficiali.`}
+                  url={`https://parimetro.it/comune/${slugComune(data.name, data.istat)}`}
+                  etichetta="Condividi"
+                  compatto
+                />
+              </div>
             </div>
           </header>
 
