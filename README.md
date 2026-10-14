@@ -57,6 +57,10 @@ makes hosting nearly free and the site very fast. See [`docs/architecture.md`](d
 | `selfhost/` | Docker Compose + scripts to run the database workshop and publish |
 | `docs/` | Architecture, data contract, chat design, how to adapt it to your country |
 
+## Use it from an AI assistant
+
+A read-only MCP server is live at `https://parimetro.it/mcp` (no account, no model on our side). Add it as a remote connector in any MCP-capable assistant. See [`docs/mcp.md`](docs/mcp.md).
+
 ## Try it in 2 minutes (no database)
 
 ```bash

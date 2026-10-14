@@ -597,4 +597,7 @@ export const llmsTxt = (origine: string, n: number) => `# Parimetro
 ## Dati grezzi
 - Per comune, in JSON: ${origine}/dati/comune/{codice ISTAT}.json (storico, confronto coi simili, spesa per categoria, reddito, investimenti, appalti, concorrenza)
 - Indice dei comuni: ${origine}/dati/indice.json
+
+## Per assistenti AI
+- Server MCP in sola lettura (JSON-RPC, senza account): ${origine}/mcp. Strumenti: scheda_comune, confronta_comuni, classifica, spesa_area, storico_comune, investimenti_comune, appalti_comune. Istruzioni: ${origine}/stampa
 `;

@@ -80,6 +80,19 @@ export default function Stampa() {
           </p>
         </div>
 
+        <h2 className={H2}>Per chi lavora con un assistente AI</h2>
+        <div className={CARD}>
+          <p>
+            Parimetro ha un server MCP in sola lettura: un assistente che supporta i connettori remoti (Claude, ChatGPT e altri) può interrogare i dati con il
+            proprio account, e a noi non costa nulla. Indirizzo da aggiungere come connettore:
+          </p>
+          <p className="mt-3 rounded-2xl bg-sabbia/40 p-4 font-mono text-base">https://parimetro.it/mcp</p>
+          <p className="mt-3">
+            Gli strumenti sono sette: scheda di un comune, confronto tra comuni, classifica, spesa per area, storico, investimenti e appalti. Rispondono con
+            le stesse cifre, note e cautele del sito. Non richiede registrazione; c&apos;è un limite di 300 richieste all&apos;ora per indirizzo.
+          </p>
+        </div>
+
         <h2 className={H2}>Spunti da cui partire</h2>
         <div className={CARD}>
           <p>

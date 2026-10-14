@@ -17,7 +17,7 @@ import {
 } from "./formati";
 import type { RedditoAnno } from "../reddito";
 import { CICLI, GENERI_ALTRI, ordinaCicli, quotaDelPrimo, type Investimenti } from "../investimenti";
-import { annoDisponibile, nuovaRilevazione, type Appalti, type Concorrenza } from "../appalti";
+import { annoDisponibile, NOME_INTERVENTO, nuovaRilevazione, vociAree, vociInterventi, type Appalti, type Concorrenza } from "../appalti";
 import type { Colonna, Contesto, Fatto, Intento, Leggi, RifComune, Risultato } from "./tipi";
 
 interface RigaStorico {
@@ -608,6 +608,14 @@ async function appaltiComune(
   }
   if (conc?.ribasso_mediano != null) aggiungi("Ribasso mediano nelle gare", fPct(conc.ribasso_mediano), conc.ribasso_mediano);
 
+  // Classificazione automatica dei lotti (Jev): solo gli anni gia' classificati
+  const interventi = s.appalti.interventi?.[String(anno)];
+  const vInt = interventi ? vociInterventi(interventi) : [];
+  for (const v of vInt) aggiungi(`Lotti: ${NOME_INTERVENTO[v.area].toLowerCase()}`, fPct(v.quota), v.quota);
+  const aree = s.appalti.aree?.[String(anno)];
+  const vAree = aree ? vociAree(aree).filter((v) => v.area !== "non_classificabile").slice(0, 3) : [];
+  for (const v of vAree) aggiungi(`Lotti per area: ${(AREE as Record<string, string>)[v.area]?.toLowerCase() ?? v.area}`, fPct(v.quota), v.quota);
+
   const note: string[] = [];
   if (richiesto != null && richiesto !== anno && richiesto !== Number.MAX_SAFE_INTEGER) {
     note.push(`Per il ${richiesto} non ci sono dati: ti mostro il ${anno}.`);
@@ -619,6 +627,9 @@ async function appaltiComune(
   if (a.n_adesioni > 0) note.push("L'importo delle adesioni a convenzioni e accordi quadro è il massimale dell'accordo, non una spesa del comune: non è sommato.");
   if (conc?.quota_offerta_unica != null) {
     note.push("Le gare sono le procedure aperte, ristrette e negoziate già aggiudicate: quelle dell'anno più recente possono non esserlo ancora. Gli affidamenti diretti non contano.");
+  }
+  if (vInt.length || vAree.length) {
+    note.push("Le quote per tipo di intervento e per area sono sui lotti classificati dal modello Jev (TypeSafe): sono classificazioni automatiche, non un dato ANAC, e possono sbagliare.");
   }
   note.push("Sono i lotti banditi dal comune stesso, con l'importo a base di gara dichiarato, non quanto è stato pagato.");
 
