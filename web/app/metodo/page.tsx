@@ -17,7 +17,7 @@ export default function Metodo() {
     <main className="min-h-dvh bg-crema px-4 pb-16 font-testo text-lg leading-relaxed text-inchiostro sm:px-6">
       <div className="mx-auto max-w-2xl">
         <header className="flex items-center justify-between pt-6">
-          <Link href="/" className="flex items-center gap-2" aria-label="Parimetro, torna alla home">
+          <Link href="/" className="flex min-h-11 items-center gap-2" aria-label="Parimetro, torna alla home">
             <span className="h-3.5 w-12 rounded-full bg-mirtillo" aria-hidden="true" />
             <span className="h-3.5 w-7 rounded-full bg-limone" aria-hidden="true" />
             <span className="ml-1 font-display text-xl font-bold">Parimetro</span>

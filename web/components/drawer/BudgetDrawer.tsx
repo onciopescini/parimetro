@@ -417,6 +417,7 @@ export default function BudgetDrawer({
                   testo={`${data.name}: come spende il comune, con i dati ufficiali.`}
                   url={`https://parimetro.it/comune/${slugComune(data.name, data.istat)}`}
                   etichetta="Condividi il comune"
+                  compatto
                 />
               </div>
             </div>

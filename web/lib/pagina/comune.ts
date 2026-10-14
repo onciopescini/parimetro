@@ -123,7 +123,7 @@ export const STILE = `
 @media (prefers-color-scheme:dark){:root{--fg:#FFF6E5;--bg:#1B1A2E;--carta:#26243F;--mut:#B9B5D6;--line:#3A3860;--link:#B8A1FF}}
 body{margin:0;background:var(--bg);color:var(--fg);font:18px/1.65 Figtree,system-ui,sans-serif}
 main,header,footer{max-width:46rem;margin:0 auto;padding:0 1.25rem}
-header{padding-top:1.1rem;display:flex;justify-content:space-between;align-items:center;font-weight:600}
+header{padding-top:.6rem;display:flex;justify-content:space-between;align-items:center;font-weight:600}header a{display:inline-flex;align-items:center;min-height:44px}
 a{color:var(--link);text-underline-offset:3px}.marchio{display:flex;align-items:center;gap:.6rem;color:var(--fg);text-decoration:none;font:700 1.5rem/1 Fraunces,Georgia,serif;letter-spacing:-.02em}
 h1,h2{font-family:Fraunces,Georgia,serif;font-weight:700;letter-spacing:-.02em}
 h1{font-size:2.5rem;line-height:1.05;margin:1.4rem 0}h2{font-size:1.65rem;line-height:1.15;margin:2.6rem 0 .6rem}

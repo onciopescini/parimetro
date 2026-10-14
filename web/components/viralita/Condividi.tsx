@@ -5,8 +5,21 @@ import { useState } from "react";
 const CLASSE_LINK =
   "inline-flex min-h-12 items-center justify-center rounded-full border border-[#E8DEC8] bg-carta px-5 text-sm font-semibold text-inchiostro transition hover:bg-sabbia/30";
 
+const CLASSE_LINK_COMPATTO =
+  "inline-flex min-h-11 items-center justify-center rounded-full border border-[#E8DEC8] bg-carta px-3 text-sm font-semibold text-inchiostro transition hover:bg-sabbia/30";
+
 /** Condivisione: il foglio nativo del telefono quando c'e', altrimenti copia negli appunti. Accanto, WhatsApp e Telegram. */
-export default function Condividi({ testo, url, etichetta = "Condividi" }: { testo: string; url: string; etichetta?: string }) {
+export default function Condividi({
+  testo,
+  url,
+  etichetta = "Condividi",
+  compatto = false,
+}: {
+  testo: string;
+  url: string;
+  etichetta?: string;
+  compatto?: boolean;
+}) {
   const [copiato, setCopiato] = useState(false);
   const messaggio = encodeURIComponent(`${testo} ${url}`);
 
@@ -33,21 +46,32 @@ export default function Condividi({ testo, url, etichetta = "Condividi" }: { tes
       <button
         type="button"
         onClick={condividi}
-        className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-mirtillo px-7 text-lg font-semibold text-white shadow-[0_4px_0_#1B1A2E] transition active:translate-y-0.5 active:shadow-none"
+        className={
+          compatto
+            ? "inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-mirtillo px-5 text-sm font-semibold text-white shadow-[0_4px_0_#1B1A2E] transition active:translate-y-0.5 active:shadow-none"
+            : "inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-mirtillo px-7 text-lg font-semibold text-white shadow-[0_4px_0_#1B1A2E] transition active:translate-y-0.5 active:shadow-none"
+        }
       >
         {copiato ? "Copiato negli appunti" : etichetta}
       </button>
-      <a href={`https://wa.me/?text=${messaggio}`} target="_blank" rel="noopener noreferrer" className={CLASSE_LINK}>
-        WhatsApp
-      </a>
-      <a
-        href={`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(testo)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={CLASSE_LINK}
-      >
-        Telegram
-      </a>
+      <span className="inline-flex gap-2">
+        <a
+          href={`https://wa.me/?text=${messaggio}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={compatto ? CLASSE_LINK_COMPATTO : CLASSE_LINK}
+        >
+          WhatsApp
+        </a>
+        <a
+          href={`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(testo)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={compatto ? CLASSE_LINK_COMPATTO : CLASSE_LINK}
+        >
+          Telegram
+        </a>
+      </span>
     </span>
   );
 }
