@@ -108,6 +108,11 @@ export default function Metodo() {
             <li>Un affidamento in adesione a una convenzione o a un accordo quadro riporta l&apos;importo massimo dell&apos;accordo, non una spesa del comune: non lo sommiamo.</li>
             <li>Gli importi che superano di oltre dieci volte la spesa annua del comune sono considerati anomali e non entrano nei valori.</li>
             <li>Dal 2024 ANAC ha cambiato il modo di rilevare i lotti: i dati degli anni precedenti non sono del tutto confrontabili con quelli successivi.</li>
+            <li>La quota di affidamenti diretti conta insieme gli affidamenti diretti e gli affidamenti in house; le adesioni a convenzioni e accordi quadro sono contate a parte e restano fuori dalla quota.</li>
+            <li>
+              &laquo;A cosa servono le gare&raquo; e &laquo;Che cosa si compra&raquo; sono classificazioni automatiche dell&apos;oggetto del lotto, fatte con il modello Jev di
+              TypeSafe (2024 e 2025): non sono un dato ANAC e possono sbagliare. Se il modello non è sicuro, il lotto resta tra i non classificabili.
+            </li>
           </ul>
         </div>
 
