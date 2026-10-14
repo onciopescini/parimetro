@@ -30,7 +30,9 @@ export const metadata: Metadata = {
     description: "In cosa spende il tuo comune, e come si colloca rispetto ai comuni simili.",
     type: "website",
     locale: "it_IT",
+    images: [{ url: "https://parimetro.it/og/parimetro.png", width: 1200, height: 630, alt: "Parimetro, i bilanci dei comuni italiani" }],
   },
+  twitter: { card: "summary_large_image", images: ["https://parimetro.it/og/parimetro.png"] },
 };
 
 export default function RootLayout({
