@@ -61,6 +61,7 @@ export default function Home() {
             <Link href="/comuni" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Comuni</Link>
             <Link href="/gioco" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Gioco</Link>
             <Link href="/metodo" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Metodo</Link>
+            <Link href="/stampa" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Stampa</Link>
             <Link href="/privacy" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">Privacy</Link>
           </nav>
         </header>

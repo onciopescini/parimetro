@@ -74,6 +74,12 @@ describe("pagina di un comune", () => {
     expect(p.html).toContain(`<link rel="canonical" href="${O}/comune/campobasso-070006">`);
     expect(p.html).toContain('<html lang="it">');
   });
+  it("ha l'anteprima propria del comune e il link per segnalare un errore", () => {
+    expect(p.html).toContain(`<meta property="og:image" content="${O}/og/070006.png">`);
+    expect(p.html).toContain('<meta name="twitter:card" content="summary_large_image">');
+    expect(p.html).toContain(`${O}/segnala?comune=Campobasso`);
+  });
+
   it("dice i numeri con il contesto dei comuni simili", () => {
     expect(p.html).toContain("47.418 abitanti");
     expect(p.html).toContain("è più alta della mediana dei comuni simili (1123 €)");

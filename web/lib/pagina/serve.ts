@@ -83,7 +83,7 @@ export async function serviSitemap(request: Request, assets: Assets): Promise<Re
     .fetch(new Request(`${origine}/viralita/confronti.json`))
     .then((r) => (r.ok ? (r.json() as Promise<{ slug: string }[]>) : []))
     .catch(() => []);
-  const extra = ["/gioco", "/scoperte", ...confronti.map((c) => `/confronto/${c.slug}`)];
+  const extra = ["/gioco", "/scoperte", "/stampa", "/segnala", ...confronti.map((c) => `/confronto/${c.slug}`)];
   return risposta(sitemap(await indice(assets, origine), origine, extra), "application/xml; charset=utf-8");
 }
 

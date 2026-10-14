@@ -100,8 +100,8 @@ export default function Privacy() {
         </p>
         <p className="mt-3">
           Il titolare del trattamento è <strong>Alfonso Pescini</strong>. Puoi scrivergli a{" "}
-          <a className="font-semibold text-mirtillo underline underline-offset-2" href="mailto:alfonso@pescini.org">
-            alfonso@pescini.org
+          <a className="font-semibold text-mirtillo underline underline-offset-2" href="mailto:privacy@parimetro.it">
+            privacy@parimetro.it
           </a>{" "}
           per esercitare i tuoi diritti (accesso, copia, cancellazione, rettifica).
         </p>

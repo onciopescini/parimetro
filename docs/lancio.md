@@ -22,7 +22,7 @@ Non scelgo io i nomi: li scegli tu, e l'invio resta a te.
 > Mi serve il parere di chi lavora con questi dati: cosa manca, cosa non torna, cosa usereste. Le pagine dei comuni si possono citare e le
 > card sono scaricabili. Bastano cinque minuti e una risposta a questa email.
 
-Allegare: il link al comune di chi legge (la persona vede subito "il suo"), e come citare: `Parimetro, dati SIOPE (cassa) <anno>, <link>, consultato il <data>`.
+Allegare: il link a **https://parimetro.it/stampa** (come citare, cautele, dati scaricabili, contatto), il link al comune di chi legge (la persona vede subito "il suo"), e come citare: `Parimetro, dati SIOPE (cassa) <anno>, <link>, consultato il <data>`.
 
 ## Cosa chiedere (tre domande, non di più)
 
@@ -75,4 +75,4 @@ Calcolati sui dati del 7 ottobre 2026. Sono domande da cui partire, non conclusi
 
 - Completare `/privacy` con titolare e contatto e far rivedere i testi (documento di revisione tenuto fuori dal repo).
 - Parole delle classifiche: "Valori più alti" / "Valori più bassi" (decisione presa).
-- Finire la classificazione 2024 se vuoi mostrare "Che cosa si compra" (richiede la ricarica di Jev).
+- Classificazione 2024 ("Che cosa si compra"): fatta e pubblicata.

@@ -502,7 +502,11 @@ export function paginaComune(v: VoceComune, d: DatiComune, origine: string, comu
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${esc(url)}">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="${esc(origine)}/og/${esc(v.istat)}.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${esc(origine)}/og/${esc(v.istat)}.png">
 <script type="application/ld+json">${jsonld}</script>
 <style>${STILE}</style>
 </head>
@@ -517,7 +521,7 @@ ${sezioni.length ? sezioni.join("\n") : `<p>Per questo comune non ci sono ancora
 <p>Fonti: ISTAT (confini e popolazione), SIOPE/BDAP (incassi e pagamenti), MEF (IRPEF), Italia Domani e OpenCoesione, ANAC (appalti, licenza CC BY-SA 4.0).
 I dati pubblicati da Parimetro sono offerti sotto licenza <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.it">CC BY-SA 4.0</a>;
 il codice è MIT. Contabilità di cassa: incassi e pagamenti, non accertamenti e impegni. I confronti sono con i comuni della stessa fascia di popolazione.</p>
-<p><a href="${esc(origine)}/dati/comune/${esc(v.istat)}.json" rel="nofollow">Scarica i dati di questo comune (JSON)</a></p>
+<p><a href="${esc(origine)}/dati/comune/${esc(v.istat)}.json" rel="nofollow">Scarica i dati di questo comune (JSON)</a> · <a href="${esc(origine)}/segnala?comune=${encodeURIComponent(v.name)}&amp;pagina=${encodeURIComponent(url)}" rel="nofollow">Segnala un errore</a></p>
 </footer>
 ${SCRIPT_MISURA}
 </body>
@@ -567,7 +571,7 @@ export function sitemap(indice: VoceComune[], origine: string, pagineExtra: stri
   const url = (p: string) => `<url><loc>${esc(origine)}${esc(p)}</loc></url>`;
   return (
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` +
-    url("/") + url("/mappa") + url("/comuni") + url("/privacy") + url("/metodo") + pagineExtra.map(url).join("") +
+    url("/") + url("/mappa") + url("/comuni") + url("/privacy") + url("/metodo")+pagineExtra.map(url).join("") +
     indice.map((v) => url(`/comune/${slugComune(v.name, v.istat)}`)).join("") +
     `</urlset>`
   );

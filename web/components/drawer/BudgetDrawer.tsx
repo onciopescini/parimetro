@@ -18,6 +18,7 @@ import AppaltiComune from "./AppaltiComune";
 import type { Appalti, Concorrenza } from "@/lib/appalti";
 import NotizieComune from "./NotizieComune";
 import CreaCard from "../card/CreaCard";
+import Condividi from "../viralita/Condividi";
 import type { DatiCard } from "@/lib/card/contenuto";
 import { slugComune } from "@/lib/pagina/comune";
 import { account, useAccount } from "@/lib/account/client";
@@ -377,6 +378,14 @@ export default function BudgetDrawer({
                 >
                   Pagina del comune
                 </a>
+                <a
+                  href={`/segnala?comune=${encodeURIComponent(data.name)}`}
+                  target="_blank"
+                  rel="noopener"
+                  className="ml-3 underline decoration-grigio underline-offset-2 hover:text-inchiostro"
+                >
+                  Segnala un errore
+                </a>
               </div>
               {acc.stato !== "assente" && acc.stato !== "attesa" && (
                 <button
@@ -403,6 +412,13 @@ export default function BudgetDrawer({
                   Crea la card da condividere
                 </button>
               )}
+              <div className="mt-3">
+                <Condividi
+                  testo={`${data.name}: come spende il comune, con i dati ufficiali.`}
+                  url={`https://parimetro.it/comune/${slugComune(data.name, data.istat)}`}
+                  etichetta="Condividi il comune"
+                />
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <div
