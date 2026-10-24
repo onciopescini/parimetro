@@ -32,7 +32,7 @@ const METRICHE_DESCR: Record<string, string> = {
   autonomia: "financial autonomy: the share of revenue a municipality raises by itself",
   expenditure_pc: "spending per resident",
   revenue_pc: "revenue per resident",
-  reddito_medio: "average taxable income of the residents: how much people living there earn",
+  reddito_medio: "average taxable income of the residents: how much people living there earn (richest or most well-off residents, incomes, salaries)",
   pnrr_pc: "PNRR (recovery plan) funds per resident",
   opere_pc: "public works funded by cohesion policy per resident",
 };

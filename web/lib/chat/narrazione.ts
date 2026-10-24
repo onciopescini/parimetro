@@ -29,6 +29,10 @@ REGOLE ASSOLUTE:
   };
 }
 
+const CONFRONTO =
+  /\b(rispetto (?:a|ai|alla|agli|alle)|in linea con|superiore|inferiore|sopra (?:la|il)|sotto (?:la|il)|più (?:alt|bass)[aeio] (?:di|del|della|dei|rispetto)|comuni simili|stessa fascia|media nazionale|comuni italiani)\b/i;
+const TERMINE_DI_CONFRONTO = /simil|median|nazional|fascia|rango|confront/i;
+
 export type EsitoNarrazione = { ok: true; testo: string } | { ok: false; motivo: string };
 
 /** Controlla il testo del modello e riempie i segnaposto. */
@@ -54,6 +58,12 @@ export function validaNarrazione(
 
   // Segnaposto non chiuso rimasto nel testo
   if (/\[\[|\]\]/.test(senza)) return { ok: false, motivo: "segnaposto malformato" };
+
+  // Un confronto ("più alta rispetto ai comuni simili", "in linea con...") si può scrivere solo se tra i fatti c'è un termine di confronto:
+  // senza, il modello lo inventa (e dire che un valore è sopra o sotto la mediana senza averlo calcolato è un dato falso).
+  if (CONFRONTO.test(senza) && !Object.entries(fatti).some(([k, f]) => TERMINE_DI_CONFRONTO.test(`${k} ${f.label}`))) {
+    return { ok: false, motivo: "confronto non supportato dai fatti" };
+  }
 
   return { ok: true, testo: ripulisci(t.replace(/\[\[([a-z0-9_]+)\]\]/g, (_, k: string) => fatti[k].valore)) };
 }

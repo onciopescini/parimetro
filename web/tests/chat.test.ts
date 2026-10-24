@@ -353,6 +353,12 @@ describe("validaNarrazione", () => {
     const r = validaNarrazione("Nel [[anno]] spende [[spesa_pc]] a persona.", fatti, [2024]);
     expect(r).toEqual({ ok: true, testo: "Nel 2024 spende 920 € a persona." });
   });
+  it("un confronto inventato (sopra la mediana, in linea con...) fa scartare il testo se i fatti non lo supportano", () => {
+    expect(validaNarrazione("La spesa è più alta rispetto ai comuni simili: [[spesa_pc]].", fatti).ok).toBe(false);
+    expect(validaNarrazione("La spesa più alta è a Provvidenti, in linea con [[spesa_pc]].", fatti).ok).toBe(false);
+    const conMediana = { ...fatti, mediana_simili: { label: "Mediana dei comuni simili", valore: "1.123 €" } };
+    expect(validaNarrazione("La spesa è più alta rispetto ai comuni simili: [[spesa_pc]] contro [[mediana_simili]].", conMediana).ok).toBe(true);
+  });
   it("una cifra scritta dal modello fa scartare tutto", () => {
     expect(validaNarrazione("Spende circa 900 euro a persona.", fatti).ok).toBe(false);
     expect(validaNarrazione("Spende [[spesa_pc]], il 12% in più.", fatti).ok).toBe(false);
