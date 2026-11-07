@@ -25,7 +25,7 @@ export default function SpesaPerCategoria({
 }) {
   if (!categorie) {
     return (
-      <p className="rounded-3xl border border-[#E8DEC8] bg-carta p-3 text-sm leading-relaxed text-grigio">
+      <p className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-3 text-sm leading-relaxed text-grigio">
         Il dettaglio per voce di spesa non è disponibile per il {year}.
       </p>
     );
@@ -55,7 +55,7 @@ export default function SpesaPerCategoria({
       {/* Indice di spesa non classificata: quanto di cio' che il comune ha pagato si
           riesce a ricondurre a un servizio e quanto no. Dice quanto fidarsi delle
           barre qui sotto, e vale per tutti i comuni, non solo per i casi estremi. */}
-      <section className="rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+      <section className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
         <div className="flex items-baseline justify-between text-xs">
           <span className="text-inchiostro">Spesa riconducibile a un servizio</span>
           <span className="font-semibold text-inchiostro">{(100 - quotaNa).toFixed(0)}%</span>
@@ -91,7 +91,7 @@ export default function SpesaPerCategoria({
                     className="h-full rounded-full"
                     style={{
                       width: `${(100 * a.importo) / massimo}%`,
-                      backgroundColor: a.area === "non_attribuibile" ? "#CFC6B3" : (COLORE_AREA[a.area] ?? "#3B3BD6"),
+                      backgroundColor: a.area === "non_attribuibile" ? "var(--color-sabbia)" : (COLORE_AREA[a.area] ?? "var(--color-mirtillo)"),
                     }}
                   />
                 </div>
@@ -167,3 +167,4 @@ export default function SpesaPerCategoria({
     </div>
   );
 }
+

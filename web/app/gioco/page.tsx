@@ -91,7 +91,7 @@ export default function Gioco() {
         )}
 
         {domande !== null && domande.length > 0 && !finita && q && (
-          <section className="mt-10 rounded-[32px] border border-[#E8DEC8] bg-carta p-5 sm:p-8" aria-live="polite">
+          <section className="mt-10 rounded-[32px] border border-[var(--color-bordo)] bg-carta p-5 sm:p-8" aria-live="polite">
             <p className="font-codice text-sm uppercase tracking-wide text-grigio">
               Domanda {i + 1} di {NUMERO}
             </p>
@@ -106,7 +106,7 @@ export default function Gioco() {
               {q.opzioni.map((o) => {
                 const giusta = o === q.vero;
                 const scelta_ = scelta === o;
-                let stile = "border-[#E8DEC8] bg-crema hover:bg-sabbia/30";
+                let stile = "border-[var(--color-bordo)] bg-crema hover:bg-sabbia/30";
                 if (scelta !== null && giusta) stile = "border-menta bg-menta text-inchiostro";
                 else if (scelta_) stile = "border-pomodoro bg-pesca/40 text-inchiostro";
                 return (
@@ -142,11 +142,11 @@ export default function Gioco() {
                       setScelta(null);
                       setI((x) => x + 1);
                     }}
-                    className="inline-flex min-h-12 items-center rounded-full bg-limone px-6 font-semibold text-inchiostro shadow-[0_4px_0_#1B1A2E] active:translate-y-0.5 active:shadow-none"
+                    className="inline-flex min-h-12 items-center rounded-full bg-limone px-6 font-semibold text-inchiostro shadow-[0_4px_0_var(--color-inchiostro)] active:translate-y-0.5 active:shadow-none"
                   >
                     {i + 1 < NUMERO ? "Domanda successiva" : "Vedi il risultato"}
                   </button>
-                  <Link href={`/mappa?comune=${q.istat}`} className="inline-flex min-h-12 items-center rounded-full border border-[#E8DEC8] bg-carta px-6 font-semibold">
+                  <Link href={`/mappa?comune=${q.istat}`} className="inline-flex min-h-12 items-center rounded-full border border-[var(--color-bordo)] bg-carta px-6 font-semibold">
                     Scheda di {q.nome}
                   </Link>
                 </div>
@@ -156,7 +156,7 @@ export default function Gioco() {
         )}
 
         {finita && (
-          <section className="esce mt-10 rounded-[32px] border border-[#E8DEC8] bg-carta p-5 text-center sm:p-8">
+          <section className="esce mt-10 rounded-[32px] border border-[var(--color-bordo)] bg-carta p-5 text-center sm:p-8">
             <p className="font-codice text-sm uppercase tracking-wide text-grigio">Risultato</p>
             <p className="sale mt-3 font-display text-5xl font-semibold">
               {punti} su {NUMERO}
@@ -169,7 +169,7 @@ export default function Gioco() {
               <button
                 type="button"
                 onClick={() => domande && avvia(domande)}
-                className="inline-flex min-h-14 items-center rounded-full border border-[#E8DEC8] bg-crema px-7 text-lg font-semibold"
+                className="inline-flex min-h-14 items-center rounded-full border border-[var(--color-bordo)] bg-crema px-7 text-lg font-semibold"
               >
                 Gioca ancora
               </button>
@@ -185,3 +185,4 @@ export default function Gioco() {
     </main>
   );
 }
+

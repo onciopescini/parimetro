@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const H2 = "mt-12 font-display text-3xl font-semibold leading-tight";
-const CARD = "mt-4 rounded-[28px] border border-[#E8DEC8] bg-carta p-5 sm:p-6";
+const CARD = "mt-4 rounded-[28px] border border-[var(--color-bordo)] bg-carta p-5 sm:p-6";
 
 export default function Metodo() {
   const aree = Object.values(AREE);
@@ -153,3 +153,4 @@ export default function Metodo() {
     </main>
   );
 }
+

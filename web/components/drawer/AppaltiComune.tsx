@@ -40,7 +40,7 @@ export default function AppaltiComune({
   const [scelto, setScelto] = useState<number | null>(null);
   if (!appalti) {
     return (
-      <p className="rounded-3xl border border-[#E8DEC8] bg-carta p-3 text-sm text-grigio">
+      <p className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-3 text-sm text-grigio">
         Nessun appalto bandito direttamente da questo comune risulta nella banca dati ANAC.
       </p>
     );
@@ -56,18 +56,18 @@ export default function AppaltiComune({
   const vociInt = interventi ? vociInterventi(interventi) : [];
   // Cinque sfumature dello stesso colore: il colore delle AREE resta delle aree, qui conta solo l'ordine
   const SFUMATURE: Record<string, string> = {
-    nuova_opera: "#3B3BD6",
+    nuova_opera: "var(--color-mirtillo)",
     manutenzione: "#6E6EE0",
     fornitura: "#9A9AEA",
     servizio: "#BEBEF2",
     incarico_tecnico: "#DCDCF8",
-    non_classificabile: "#CFC6B3",
+    non_classificabile: "var(--color-sabbia)",
   };
   const confrontabile = a.mediana_quota_diretti != null && a.quota_diretti != null && a.rango_diretti != null;
 
   return (
     <div className="space-y-4">
-      <section className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+      <section className="space-y-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
         <h3 className="text-xs uppercase tracking-wider text-grigio">
           Appalti banditi dal comune · {a_}
         </h3>
@@ -144,17 +144,17 @@ export default function AppaltiComune({
       </section>
 
       {aree && voci.length > 0 && (
-        <section className="space-y-3 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+        <section className="space-y-3 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
           <h3 className="text-xs uppercase tracking-wider text-grigio">A cosa servono le gare · {a_}</h3>
           <div className="flex h-4 overflow-hidden rounded-full bg-sabbia/50" role="img" aria-label={`Lotti per area: ${voci.map((v) => `${v.area === "non_classificabile" ? "non classificabili" : nomeArea(v.area)} ${v.quota}%`).join(", ")}.`}>
             {voci.map((v) => (
-              <div key={v.area} style={{ width: `${v.quota}%`, backgroundColor: v.area === "non_classificabile" ? "#CFC6B3" : (COLORE_AREA[v.area] ?? "#E8DEC8") }} />
+              <div key={v.area} style={{ width: `${v.quota}%`, backgroundColor: v.area === "non_classificabile" ? "var(--color-sabbia)" : (COLORE_AREA[v.area] ?? "var(--color-bordo)") }} />
             ))}
           </div>
           <ul className="space-y-1.5">
             {voci.map((v) => (
               <li key={v.area} className="flex items-center gap-2 text-sm">
-                <i className="size-3 shrink-0 rounded-full" style={{ backgroundColor: v.area === "non_classificabile" ? "#CFC6B3" : (COLORE_AREA[v.area] ?? "#E8DEC8") }} aria-hidden />
+                <i className="size-3 shrink-0 rounded-full" style={{ backgroundColor: v.area === "non_classificabile" ? "var(--color-sabbia)" : (COLORE_AREA[v.area] ?? "var(--color-bordo)") }} aria-hidden />
                 <span className="min-w-0 flex-1 truncate text-inchiostro">{v.area === "non_classificabile" ? "Non classificabili" : nomeArea(v.area)}</span>
                 <span className="shrink-0 text-grigio">{num(v.n)} {v.n === 1 ? "lotto" : "lotti"} · {v.quota.toLocaleString("it-IT")}%</span>
                 <span className="w-16 shrink-0 text-right text-grigio">{v.area === "non_classificabile" ? "" : eurBreve(v.importo)}</span>
@@ -170,17 +170,17 @@ export default function AppaltiComune({
       )}
 
       {interventi && vociInt.length > 0 && (
-        <section className="space-y-3 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+        <section className="space-y-3 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
           <h3 className="text-xs uppercase tracking-wider text-grigio">Che cosa si compra · {a_}</h3>
           <div className="flex h-4 overflow-hidden rounded-full bg-sabbia/50" role="img" aria-label={`Lotti per tipo di intervento: ${vociInt.map((v) => `${NOME_INTERVENTO[v.area]} ${v.quota}%`).join(", ")}.`}>
             {vociInt.map((v) => (
-              <div key={v.area} style={{ width: `${v.quota}%`, backgroundColor: SFUMATURE[v.area] ?? "#E8DEC8" }} />
+              <div key={v.area} style={{ width: `${v.quota}%`, backgroundColor: SFUMATURE[v.area] ?? "var(--color-bordo)" }} />
             ))}
           </div>
           <ul className="space-y-1.5">
             {vociInt.map((v) => (
               <li key={v.area} className="flex items-center gap-2 text-sm">
-                <i className="size-3 shrink-0 rounded-full border border-[#E8DEC8]" style={{ backgroundColor: SFUMATURE[v.area] ?? "#E8DEC8" }} aria-hidden />
+                <i className="size-3 shrink-0 rounded-full border border-[var(--color-bordo)]" style={{ backgroundColor: SFUMATURE[v.area] ?? "var(--color-bordo)" }} aria-hidden />
                 <span className="min-w-0 flex-1 truncate text-inchiostro">{NOME_INTERVENTO[v.area]}</span>
                 <span className="shrink-0 text-grigio">{num(v.n)} {v.n === 1 ? "lotto" : "lotti"} · {v.quota.toLocaleString("it-IT")}%</span>
                 <span className="w-16 shrink-0 text-right text-grigio">{v.area === "non_classificabile" ? "" : eurBreve(v.importo)}</span>
@@ -195,7 +195,7 @@ export default function AppaltiComune({
       )}
 
       {conc && (
-        <section className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+        <section className="space-y-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
           <h3 className="text-xs uppercase tracking-wider text-grigio">Concorrenza nelle gare · {a_}</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -241,7 +241,7 @@ export default function AppaltiComune({
       )}
 
       {serie.length > 1 && (
-        <section className="space-y-1 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+        <section className="space-y-1 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
           <h3 className="text-xs uppercase tracking-wider text-grigio">Anno per anno · clicca per vedere un anno</h3>
           <table className="w-full text-xs">
             <thead>
@@ -256,7 +256,7 @@ export default function AppaltiComune({
               {serie.map(([y, v]) => (
                 <tr
                   key={y}
-                  className={`cursor-pointer border-t border-[#E8DEC8] hover:bg-sabbia/30 ${
+                  className={`cursor-pointer border-t border-[var(--color-bordo)] hover:bg-sabbia/30 ${
                     Number(y) === a_ ? "text-inchiostro" : "text-inchiostro"
                   }`}
                   onClick={() => setScelto(Number(y))}
@@ -276,7 +276,7 @@ export default function AppaltiComune({
         </section>
       )}
 
-      <section className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+      <section className="space-y-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
         <h3 className="text-xs uppercase tracking-wider text-grigio">Come sono stati affidati ({serie[0][0]}-{serie[serie.length - 1][0]})</h3>
         <ul className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs text-inchiostro">
           {Object.entries(appalti.famiglie)
@@ -290,7 +290,7 @@ export default function AppaltiComune({
         </ul>
         <div className="flex flex-wrap gap-1.5">
           {Object.entries(appalti.tipi).map(([t, n]) => (
-            <span key={t} className="rounded-full border border-[#E8DEC8] bg-carta px-2 py-0.5 text-xs text-inchiostro">
+            <span key={t} className="rounded-full border border-[var(--color-bordo)] bg-carta px-2 py-0.5 text-xs text-inchiostro">
               {t.toLowerCase()} · {num(n)}
             </span>
           ))}
@@ -298,7 +298,7 @@ export default function AppaltiComune({
       </section>
 
       {appalti.maggiori.length > 0 && (
-        <section className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+        <section className="space-y-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
           <h3 className="text-xs uppercase tracking-wider text-grigio">I lotti più grandi</h3>
           <ol className="space-y-1.5">
             {appalti.maggiori.slice(0, 5).map((m) => (
@@ -324,3 +324,4 @@ export default function AppaltiComune({
     </div>
   );
 }
+

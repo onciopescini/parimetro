@@ -3,10 +3,10 @@
 import { useState } from "react";
 
 const CLASSE_LINK =
-  "inline-flex min-h-12 items-center justify-center rounded-full border border-[#E8DEC8] bg-carta px-5 text-sm font-semibold text-inchiostro transition hover:bg-sabbia/30";
+  "inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--color-bordo)] bg-carta px-5 text-sm font-semibold text-inchiostro transition hover:bg-sabbia/30";
 
 const CLASSE_LINK_COMPATTO =
-  "inline-flex min-h-11 items-center justify-center rounded-full border border-[#E8DEC8] bg-carta px-3 text-sm font-semibold text-inchiostro transition hover:bg-sabbia/30";
+  "inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--color-bordo)] bg-carta px-3 text-sm font-semibold text-inchiostro transition hover:bg-sabbia/30";
 
 /** Condivisione: il foglio nativo del telefono quando c'e', altrimenti copia negli appunti. Accanto, WhatsApp e Telegram. */
 export default function Condividi({
@@ -48,8 +48,8 @@ export default function Condividi({
         onClick={condividi}
         className={
           compatto
-            ? "inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-mirtillo px-5 text-sm font-semibold text-white shadow-[0_4px_0_#1B1A2E] transition active:translate-y-0.5 active:shadow-none"
-            : "inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-mirtillo px-7 text-lg font-semibold text-white shadow-[0_4px_0_#1B1A2E] transition active:translate-y-0.5 active:shadow-none"
+            ? "inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-mirtillo px-5 text-sm font-semibold text-white shadow-[0_4px_0_var(--color-inchiostro)] transition active:translate-y-0.5 active:shadow-none"
+            : "inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-mirtillo px-7 text-lg font-semibold text-white shadow-[0_4px_0_var(--color-inchiostro)] transition active:translate-y-0.5 active:shadow-none"
         }
       >
         {copiato ? "Copiato negli appunti" : etichetta}
@@ -75,3 +75,4 @@ export default function Condividi({
     </span>
   );
 }
+

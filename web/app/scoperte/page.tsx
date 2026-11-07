@@ -49,7 +49,7 @@ export default function Scoperte() {
             const nome = f.istat ? nomePer.get(f.istat) : undefined;
             const url = `https://parimetro.it/${f.istat ? `comune/${slugComune(nomePer.get(f.istat) ?? "", f.istat)}` : "mappa"}`;
             return (
-              <li key={f.id} className="sale rounded-[28px] border border-[#E8DEC8] bg-carta p-6" style={{ animationDelay: `${n * 0.08}s` }}>
+              <li key={f.id} className="sale rounded-[28px] border border-[var(--color-bordo)] bg-carta p-6" style={{ animationDelay: `${n * 0.08}s` }}>
                 <h2 className="font-display text-2xl font-semibold">{f.titolo}</h2>
                 <p className="mt-2 text-lg">{f.testo}</p>
                 <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -70,7 +70,7 @@ export default function Scoperte() {
           <ul className="mt-4 grid gap-2 sm:grid-cols-2">
             {coppie.map((c) => (
               <li key={c.slug}>
-                <Link href={`/confronto/${c.slug}`} className="block rounded-2xl border border-[#E8DEC8] bg-carta px-4 py-3 font-semibold hover:bg-sabbia/30">
+                <Link href={`/confronto/${c.slug}`} className="block rounded-2xl border border-[var(--color-bordo)] bg-carta px-4 py-3 font-semibold hover:bg-sabbia/30">
                   {nomePer.get(c.a)} e {nomePer.get(c.b)}
                 </Link>
               </li>
@@ -86,3 +86,4 @@ export default function Scoperte() {
     </main>
   );
 }
+

@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-const CAMPO = "mt-1 w-full rounded-2xl border border-[#E8DEC8] bg-white px-4 py-3 text-lg text-inchiostro";
+const CAMPO = "mt-1 w-full rounded-2xl border border-[var(--color-bordo)] bg-white px-4 py-3 text-lg text-inchiostro";
 
 /** Il modulo non invia niente da solo: prepara una email nel programma di posta di chi scrive. Nessun dato passa da noi. */
 export default function ModuloSegnala() {
@@ -46,7 +46,7 @@ export default function ModuloSegnala() {
       </label>
       <a
         href={href}
-        className="inline-flex min-h-14 items-center rounded-full bg-mirtillo px-7 text-lg font-semibold text-white shadow-[0_4px_0_#1B1A2E] transition active:translate-y-0.5 active:shadow-none"
+        className="inline-flex min-h-14 items-center rounded-full bg-mirtillo px-7 text-lg font-semibold text-white shadow-[0_4px_0_var(--color-inchiostro)] transition active:translate-y-0.5 active:shadow-none"
       >
         Prepara la email
       </a>
@@ -56,3 +56,4 @@ export default function ModuloSegnala() {
     </form>
   );
 }
+

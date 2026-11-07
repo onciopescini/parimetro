@@ -356,7 +356,7 @@ function Mappa() {
       )}
 
       <div
-        className={`pointer-events-auto absolute left-4 top-4 max-h-[calc(100dvh-9rem)] w-64 overflow-y-auto rounded-3xl border border-[#E8DEC8] bg-crema p-3 text-inchiostro ${
+        className={`pointer-events-auto absolute left-4 top-4 max-h-[calc(100dvh-9rem)] w-64 overflow-y-auto rounded-3xl border border-[var(--color-bordo)] bg-crema p-3 text-inchiostro ${
           classifiche
             ? "hidden" // le classifiche occupano lo stesso posto
             : open
@@ -391,7 +391,7 @@ function Mappa() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Cerca un comune…"
             aria-label="Cerca un comune per nome o codice ISTAT"
-            className="w-full rounded-xl border border-[#E8DEC8] bg-carta py-1.5 pl-7 pr-7 text-xs text-inchiostro placeholder:text-grigio focus:border-mirtillo focus:outline-none"
+            className="w-full rounded-xl border border-[var(--color-bordo)] bg-carta py-1.5 pl-7 pr-7 text-xs text-inchiostro placeholder:text-grigio focus:border-mirtillo focus:outline-none"
           />
           {query && (
             <button
@@ -404,7 +404,7 @@ function Mappa() {
           )}
 
           {risultati.length > 0 && (
-            <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-[#E8DEC8] bg-crema py-1 shadow-[0_12px_40px_rgba(27,26,46,0.2)]">
+            <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-[var(--color-bordo)] bg-crema py-1 shadow-[0_12px_40px_rgba(27,26,46,0.2)]">
               {risultati.map((r) => (
                 <li key={r.istat}>
                   <button
@@ -452,7 +452,7 @@ function Mappa() {
           id="height-metric"
           value={heightMetric}
           onChange={(e) => setHeightMetric(e.target.value as MetricKey)}
-          className="mt-1 w-full rounded-xl border border-[#E8DEC8] bg-carta px-2 py-1 text-xs text-inchiostro"
+          className="mt-1 w-full rounded-xl border border-[var(--color-bordo)] bg-carta px-2 py-1 text-xs text-inchiostro"
         >
           {METRICS.map((m) => (
             <option key={m} value={m}>
@@ -471,7 +471,7 @@ function Mappa() {
           id="color-metric"
           value={colorMetric}
           onChange={(e) => setColorMetric(e.target.value as MetricKey)}
-          className="mt-1 w-full rounded-xl border border-[#E8DEC8] bg-carta px-2 py-1 text-xs text-inchiostro"
+          className="mt-1 w-full rounded-xl border border-[var(--color-bordo)] bg-carta px-2 py-1 text-xs text-inchiostro"
         >
           {METRICS.map((m) => (
             <option key={m} value={m}>
@@ -487,7 +487,7 @@ function Mappa() {
           className={`mt-3 w-full rounded-xl border px-2 py-1.5 text-xs transition-colors ${
             perCapita
               ? "border-mirtillo bg-mirtillo text-white"
-              : "border-[#E8DEC8] bg-carta text-inchiostro hover:bg-sabbia/30"
+              : "border-[var(--color-bordo)] bg-carta text-inchiostro hover:bg-sabbia/30"
           }`}
         >
           {perCapita ? "Valori pro capite" : "Valori assoluti"}
@@ -504,7 +504,7 @@ function Mappa() {
           className={`mt-1.5 w-full rounded-xl border px-2 py-1.5 text-xs transition-colors ${
             comuniOvunque
               ? "border-mirtillo bg-mirtillo text-white"
-              : "border-[#E8DEC8] bg-carta text-inchiostro hover:bg-sabbia/30"
+              : "border-[var(--color-bordo)] bg-carta text-inchiostro hover:bg-sabbia/30"
           }`}
         >
           {/* Niente conteggio cablato: cambia a ogni import dell'ETL
@@ -515,7 +515,7 @@ function Mappa() {
         <button
           data-guida="classifiche"
           onClick={() => setClassifiche(true)}
-          className="mt-1.5 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#E8DEC8] bg-carta px-2 py-1.5 text-xs text-inchiostro transition-colors hover:bg-sabbia/30"
+          className="mt-1.5 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--color-bordo)] bg-carta px-2 py-1.5 text-xs text-inchiostro transition-colors hover:bg-sabbia/30"
         >
           <Trophy size={12} /> Classifiche
         </button>
@@ -523,7 +523,7 @@ function Mappa() {
         {acc.stato !== "assente" && acc.stato !== "attesa" && (
           <button
             onClick={() => (acc.stato === "dentro" ? setSpazio(true) : setAccesso("Puoi usare tutto senza entrare."))}
-            className="mt-1.5 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#E8DEC8] bg-carta px-2 py-2 text-sm font-semibold text-inchiostro transition-colors hover:bg-sabbia/30"
+            className="mt-1.5 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--color-bordo)] bg-carta px-2 py-2 text-sm font-semibold text-inchiostro transition-colors hover:bg-sabbia/30"
           >
             <UserRound size={14} /> {acc.stato === "dentro" ? "Il mio spazio" : "Accedi (facoltativo)"}
           </button>
@@ -576,3 +576,4 @@ function Mappa() {
     </main>
   );
 }
+

@@ -22,7 +22,7 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
   return (
     <div className="fixed inset-0 z-[55] flex items-end justify-center bg-inchiostro/50 p-0 sm:items-center sm:p-6" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="spazio-titolo">
       <div
-        className="flex max-h-[94dvh] w-full max-w-xl flex-col rounded-t-[32px] border border-[#E8DEC8] bg-crema text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.3)] sm:rounded-[32px]"
+        className="flex max-h-[94dvh] w-full max-w-xl flex-col rounded-t-[32px] border border-[var(--color-bordo)] bg-crema text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.3)] sm:rounded-[32px]"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex items-start justify-between gap-3 p-6 pb-3">
@@ -60,7 +60,7 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
           {tab === "comuni" && (
             <>
               {a.comuni.length === 0 ? (
-                <p className="rounded-3xl border border-[#E8DEC8] bg-carta p-4 text-base leading-relaxed">
+                <p className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-4 text-base leading-relaxed">
                   Non hai ancora salvato nessun comune. Aprine uno dalla mappa e tocca la stella <Star size={14} className="inline -translate-y-px" aria-hidden /> nella scheda.
                 </p>
               ) : (
@@ -70,7 +70,7 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
                       const r = await account.avviso(null, !tuttiAvvisi);
                       if (!r.ok) setErrore(r.errore);
                     }}
-                    className="flex min-h-12 w-full items-center justify-between gap-3 rounded-full border border-[#E8DEC8] bg-carta px-5 text-left text-base font-semibold hover:bg-sabbia/30"
+                    className="flex min-h-12 w-full items-center justify-between gap-3 rounded-full border border-[var(--color-bordo)] bg-carta px-5 text-left text-base font-semibold hover:bg-sabbia/30"
                   >
                     <span>{tuttiAvvisi ? "Avvisi attivi per tutti i comuni" : "Attiva gli avvisi per tutti"}</span>
                     {tuttiAvvisi ? <Bell size={18} /> : <BellOff size={18} />}
@@ -78,7 +78,7 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
                   <p className="px-1 text-sm text-grigio">Ti scriviamo solo quando esce un nuovo anno di dati per un comune che hai salvato.</p>
                   <ul className="space-y-2">
                     {a.comuni.map((c) => (
-                      <li key={c.istat} className="flex items-center gap-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3 pl-5">
+                      <li key={c.istat} className="flex items-center gap-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3 pl-5">
                         <button
                           onClick={() => {
                             onApri(c.istat);
@@ -111,12 +111,12 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
           {tab === "card" && (
             <>
               {a.card.length === 0 ? (
-                <p className="rounded-3xl border border-[#E8DEC8] bg-carta p-4 text-base leading-relaxed">Qui compaiono le card che crei da una scheda. Serve l&apos;elenco, non l&apos;immagine: puoi rifarla quando vuoi.</p>
+                <p className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-4 text-base leading-relaxed">Qui compaiono le card che crei da una scheda. Serve l&apos;elenco, non l&apos;immagine: puoi rifarla quando vuoi.</p>
               ) : (
                 <>
                   <ul className="space-y-2">
                     {a.card.map((c) => (
-                      <li key={c.id} className="flex items-center gap-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3 pl-5">
+                      <li key={c.id} className="flex items-center gap-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3 pl-5">
                         <button onClick={() => { onApri(c.istat); onClose(); }} className="min-h-12 min-w-0 flex-1 text-left">
                           <span className="block truncate font-display text-xl font-semibold">{c.nome}</span>
                           <span className="block text-sm text-grigio">{NOME_CARD[c.tipo] ?? c.tipo} · dati {c.anno} · {data(c.creata_il)}</span>
@@ -127,7 +127,7 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
                       </li>
                     ))}
                   </ul>
-                  <button onClick={() => account.eliminaCard(null)} className="min-h-12 rounded-full border border-[#E8DEC8] bg-carta px-5 text-sm font-semibold hover:bg-sabbia/30">Svuota l&apos;elenco</button>
+                  <button onClick={() => account.eliminaCard(null)} className="min-h-12 rounded-full border border-[var(--color-bordo)] bg-carta px-5 text-sm font-semibold hover:bg-sabbia/30">Svuota l&apos;elenco</button>
                 </>
               )}
             </>
@@ -136,12 +136,12 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
           {tab === "domande" && (
             <>
               {a.domande.length === 0 ? (
-                <p className="rounded-3xl border border-[#E8DEC8] bg-carta p-4 text-base leading-relaxed">Le domande che fai alla chat, mentre sei dentro, restano qui. Solo tu le vedi.</p>
+                <p className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-4 text-base leading-relaxed">Le domande che fai alla chat, mentre sei dentro, restano qui. Solo tu le vedi.</p>
               ) : (
                 <>
                   <ul className="space-y-2">
                     {a.domande.map((d) => (
-                      <li key={d.id} className="flex items-center gap-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3 pl-5">
+                      <li key={d.id} className="flex items-center gap-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3 pl-5">
                         <div className="min-w-0 flex-1 py-1">
                           <span className="block text-base">{d.testo}</span>
                           <span className="block text-sm text-grigio">{data(d.fatta_il)}</span>
@@ -152,7 +152,7 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
                       </li>
                     ))}
                   </ul>
-                  <button onClick={() => account.eliminaDomande(null)} className="min-h-12 rounded-full border border-[#E8DEC8] bg-carta px-5 text-sm font-semibold hover:bg-sabbia/30">Cancella tutte le domande</button>
+                  <button onClick={() => account.eliminaDomande(null)} className="min-h-12 rounded-full border border-[var(--color-bordo)] bg-carta px-5 text-sm font-semibold hover:bg-sabbia/30">Cancella tutte le domande</button>
                 </>
               )}
             </>
@@ -160,11 +160,11 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
 
           {tab === "dati" && (
             <>
-              <p className="rounded-3xl border border-[#E8DEC8] bg-carta p-4 text-base leading-relaxed">
+              <p className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-4 text-base leading-relaxed">
                 Conserviamo la tua email, i comuni che salvi, l&apos;elenco delle card che crei e le domande che fai alla chat mentre sei dentro. Niente altro, e non li condividiamo con nessuno.{" "}
                 <a href="/privacy" className="font-semibold text-mirtillo underline underline-offset-2">Leggi come funziona</a>.
               </p>
-              <a href="/api/me/esporta" className="flex min-h-12 items-center justify-center rounded-full border border-[#E8DEC8] bg-carta px-5 text-base font-semibold hover:bg-sabbia/30">
+              <a href="/api/me/esporta" className="flex min-h-12 items-center justify-center rounded-full border border-[var(--color-bordo)] bg-carta px-5 text-base font-semibold hover:bg-sabbia/30">
                 Scarica i miei dati
               </a>
               <button
@@ -172,7 +172,7 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
                   await account.esci();
                   onClose();
                 }}
-                className="min-h-12 w-full rounded-full border border-[#E8DEC8] bg-carta px-5 text-base font-semibold hover:bg-sabbia/30"
+                className="min-h-12 w-full rounded-full border border-[var(--color-bordo)] bg-carta px-5 text-base font-semibold hover:bg-sabbia/30"
               >
                 Esci
               </button>
@@ -194,7 +194,7 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
                     >
                       Sì, cancella tutto
                     </button>
-                    <button onClick={() => setConferma(false)} className="min-h-12 rounded-full border border-[#E8DEC8] bg-carta px-6 text-base font-semibold">
+                    <button onClick={() => setConferma(false)} className="min-h-12 rounded-full border border-[var(--color-bordo)] bg-carta px-6 text-base font-semibold">
                       No, tieni tutto
                     </button>
                   </div>
@@ -207,3 +207,4 @@ export default function SpazioPersonale({ onClose, onApri }: { onClose: () => vo
     </div>
   );
 }
+

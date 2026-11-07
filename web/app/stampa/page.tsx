@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const H2 = "mt-12 font-display text-3xl font-semibold leading-tight";
-const CARD = "mt-4 rounded-[28px] border border-[#E8DEC8] bg-carta p-5 sm:p-6";
+const CARD = "mt-4 rounded-[28px] border border-[var(--color-bordo)] bg-carta p-5 sm:p-6";
 const LINK = "font-semibold text-mirtillo underline underline-offset-2";
 
 export default function Stampa() {
@@ -121,3 +121,4 @@ export default function Stampa() {
     </main>
   );
 }
+

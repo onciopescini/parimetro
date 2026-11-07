@@ -115,7 +115,7 @@ export default function ChatPanel({
         <button
           data-guida="chat"
           onClick={() => setAperta(true)}
-          className={`absolute bottom-8 z-30 flex items-center gap-2 rounded-full border border-[#E8DEC8] bg-mirtillo px-4 py-2.5 text-sm font-medium text-white shadow-[0_8px_24px_rgba(27,26,46,0.16)] transition hover:brightness-95 ${
+          className={`absolute bottom-8 z-30 flex items-center gap-2 rounded-full border border-[var(--color-bordo)] bg-mirtillo px-4 py-2.5 text-sm font-medium text-white shadow-[0_8px_24px_rgba(27,26,46,0.16)] transition hover:brightness-95 ${
             spostaDaDestra ? "right-4 hidden md:flex md:right-[436px]" : "right-4"
           }`}
         >
@@ -126,11 +126,11 @@ export default function ChatPanel({
       {aperta && (
         <section
           aria-label="Chat"
-          className={`absolute bottom-8 z-40 flex max-h-[75vh] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-[28px] border border-[#E8DEC8] bg-crema text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.16)] ${
+          className={`absolute bottom-8 z-40 flex max-h-[75vh] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-[28px] border border-[var(--color-bordo)] bg-crema text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.16)] ${
             spostaDaDestra ? "right-4 md:right-[436px]" : "right-4"
           }`}
         >
-          <header className="flex items-center justify-between border-b border-[#E8DEC8] px-3 py-2">
+          <header className="flex items-center justify-between border-b border-[var(--color-bordo)] px-3 py-2">
             <div>
               <h2 className="text-sm font-semibold">Chiedi a Parimetro</h2>
               <p className="text-xs text-grigio">
@@ -157,7 +157,7 @@ export default function ChatPanel({
                   <button
                     key={s}
                     onClick={() => chiedi(s)}
-                    className="block w-full rounded-2xl border border-[#E8DEC8] bg-carta px-2.5 py-1.5 text-left text-inchiostro hover:bg-sabbia/30"
+                    className="block w-full rounded-2xl border border-[var(--color-bordo)] bg-carta px-2.5 py-1.5 text-left text-inchiostro hover:bg-sabbia/30"
                   >
                     {s}
                   </button>
@@ -192,7 +192,7 @@ export default function ChatPanel({
               e.preventDefault();
               chiedi(testo);
             }}
-            className="flex items-center gap-2 border-t border-[#E8DEC8] p-2"
+            className="flex items-center gap-2 border-t border-[var(--color-bordo)] p-2"
           >
             <input
               value={testo}
@@ -200,7 +200,7 @@ export default function ChatPanel({
               maxLength={400}
               placeholder="Scrivi una domanda…"
               aria-label="Domanda"
-              className="min-w-0 flex-1 rounded-2xl border border-[#E8DEC8] bg-carta px-3 py-2 text-sm text-inchiostro placeholder:text-grigio focus:border-mirtillo focus:outline-none"
+              className="min-w-0 flex-1 rounded-2xl border border-[var(--color-bordo)] bg-carta px-3 py-2 text-sm text-inchiostro placeholder:text-grigio focus:border-mirtillo focus:outline-none"
             />
             <button
               type="submit"
@@ -211,7 +211,7 @@ export default function ChatPanel({
               <Send size={14} />
             </button>
           </form>
-          <p className="border-t border-[#E8DEC8] px-3 py-1.5 text-xs leading-snug text-grigio">
+          <p className="border-t border-[var(--color-bordo)] px-3 py-1.5 text-xs leading-snug text-grigio">
             Risposte generate da un modello AI sui dati del sito (cassa, non competenza): controlla sempre la tabella. La domanda viene inviata a fornitori esterni di modelli AI (OpenRouter e TypeSafe): non scrivere dati personali.
           </p>
         </section>
@@ -231,7 +231,7 @@ function Risposta({
 }) {
   const conTabella = r.righe.length > 0;
   return (
-    <div className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+    <div className="space-y-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
       <p className="text-inchiostro">{r.testo}</p>
 
       {r.candidati && (
@@ -240,7 +240,7 @@ function Risposta({
             <button
               key={c.istat}
               onClick={() => onScegli(`Scheda del comune ${c.nome} codice ISTAT ${c.istat}`)}
-              className="rounded-full border border-[#E8DEC8] bg-carta px-2.5 py-1 text-xs hover:bg-sabbia/30"
+              className="rounded-full border border-[var(--color-bordo)] bg-carta px-2.5 py-1 text-xs hover:bg-sabbia/30"
             >
               {c.nome} ({c.provincia}) · {num(c.abitanti)} ab
             </button>
@@ -249,8 +249,8 @@ function Risposta({
       )}
 
       {conTabella && (
-        <div className="overflow-x-auto rounded-2xl border border-[#E8DEC8]">
-          <p className="border-b border-[#E8DEC8] bg-carta px-2 py-1 text-xs font-medium uppercase tracking-wide text-grigio">
+        <div className="overflow-x-auto rounded-2xl border border-[var(--color-bordo)]">
+          <p className="border-b border-[var(--color-bordo)] bg-carta px-2 py-1 text-xs font-medium uppercase tracking-wide text-grigio">
             {r.titolo}
           </p>
           <table className="w-full text-xs">
@@ -270,7 +270,7 @@ function Risposta({
                   <tr
                     key={i}
                     onClick={typeof istat === "string" ? () => onApri(istat) : undefined}
-                    className={`border-t border-[#E8DEC8] ${typeof istat === "string" ? "cursor-pointer hover:bg-sabbia/30" : ""}`}
+                    className={`border-t border-[var(--color-bordo)] ${typeof istat === "string" ? "cursor-pointer hover:bg-sabbia/30" : ""}`}
                   >
                     {r.colonne.map((c) => (
                       <td
@@ -301,7 +301,7 @@ function Risposta({
           {r.apri && (
             <button
               onClick={() => onApri(r.apri!)}
-              className="inline-flex items-center gap-1 rounded-2xl border border-[#E8DEC8] px-2 py-1 text-xs text-inchiostro hover:bg-sabbia/30"
+              className="inline-flex items-center gap-1 rounded-2xl border border-[var(--color-bordo)] px-2 py-1 text-xs text-inchiostro hover:bg-sabbia/30"
             >
               <MapPin size={11} /> Apri sulla mappa
             </button>
@@ -309,7 +309,7 @@ function Risposta({
           {conTabella && (
             <button
               onClick={() => scaricaCsv(r.titolo, r.colonne, r.grezze)}
-              className="inline-flex items-center gap-1 rounded-2xl border border-[#E8DEC8] px-2 py-1 text-xs text-inchiostro hover:bg-sabbia/30"
+              className="inline-flex items-center gap-1 rounded-2xl border border-[var(--color-bordo)] px-2 py-1 text-xs text-inchiostro hover:bg-sabbia/30"
             >
               <Download size={11} /> Esporta CSV
             </button>
@@ -322,3 +322,4 @@ function Risposta({
     </div>
   );
 }
+

@@ -538,16 +538,16 @@ export default function Map3D({
       return {
         html: `
           <div style="font-family:Figtree,ui-sans-serif,system-ui;min-width:190px;padding:12px 14px;border-radius:20px;
-                      background:#FFF6E5;border:1px solid #E8DEC8;color:#1B1A2E;
+                      background:var(--color-crema);border:1px solid var(--color-bordo);color:var(--color-inchiostro);
                       box-shadow:0 8px 24px rgba(27,26,46,.25)">
             <div style="font-weight:700;font-size:15px;margin-bottom:2px">${name}</div>
-            <div style="font-size:11px;color:#5A5873;margin-bottom:8px">${regola} · ${fmt(p.population)} ab.</div>
+            <div style="font-size:11px;color:var(--color-grigio);margin-bottom:8px">${regola} · ${fmt(p.population)} ab.</div>
             <div style="display:flex;justify-content:space-between;font-size:12px;gap:12px">
-              <span style="color:#5A5873">${METRIC_LABELS[heightMetric]}</span>
+              <span style="color:var(--color-grigio)">${METRIC_LABELS[heightMetric]}</span>
               <span>${fmt(hVal)}${unitaDi(heightMetric)}</span>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:12px;gap:12px">
-              <span style="color:#5A5873">${METRIC_LABELS[colorMetric]}</span>
+              <span style="color:var(--color-grigio)">${METRIC_LABELS[colorMetric]}</span>
               <span>${fmt(cVal)}${unitaDi(colorMetric)}</span>
             </div>
             ${p.fhi != null ? `<div style="margin-top:8px;font-size:11px">FHI ${fmt(p.fhi)}/100</div>` : ""}
@@ -601,7 +601,7 @@ export default function Map3D({
       </DeckGL>
 
       {/* Legenda cromatica */}
-      <div className="pointer-events-none absolute bottom-4 left-4 rounded-3xl border border-[#E8DEC8] bg-crema px-3 py-2">
+      <div className="pointer-events-none absolute bottom-4 left-4 rounded-3xl border border-[var(--color-bordo)] bg-crema px-3 py-2">
         <div className="mb-1 text-xs uppercase tracking-wider text-grigio">
           {METRIC_LABELS[colorMetric]}
         </div>
@@ -622,10 +622,11 @@ export default function Map3D({
       </div>
 
       {loading && (
-        <div className="absolute right-4 top-4 rounded-full border border-[#E8DEC8] bg-crema px-3 py-1.5 text-xs text-inchiostro">
+        <div className="absolute right-4 top-4 rounded-full border border-[var(--color-bordo)] bg-crema px-3 py-1.5 text-xs text-inchiostro">
           Caricamento bilanci {year}…
         </div>
       )}
     </div>
   );
 }
+

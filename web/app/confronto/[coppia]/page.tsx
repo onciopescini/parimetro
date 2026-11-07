@@ -82,10 +82,10 @@ export default async function Confronto({ params }: { params: Promise<{ coppia: 
           Dati di cassa 2024: quanto incassano e pagano i due comuni, e come si confrontano con i comuni della loro fascia.
         </p>
 
-        <div className="sale mt-8 overflow-hidden rounded-[28px] border border-[#E8DEC8] bg-carta">
+        <div className="sale mt-8 overflow-hidden rounded-[28px] border border-[var(--color-bordo)] bg-carta">
           <table className="w-full text-base">
             <thead>
-              <tr className="border-b border-[#E8DEC8] text-left text-sm uppercase tracking-wide text-grigio">
+              <tr className="border-b border-[var(--color-bordo)] text-left text-sm uppercase tracking-wide text-grigio">
                 <th scope="col" className="p-3"> </th>
                 <th scope="col" className="p-3 text-right">{a.name}</th>
                 <th scope="col" className="p-3 text-right">{b.name}</th>
@@ -93,7 +93,7 @@ export default async function Confronto({ params }: { params: Promise<{ coppia: 
             </thead>
             <tbody>
               {righe.map((r) => (
-                <tr key={r.etichetta} className="border-b border-[#E8DEC8] last:border-0">
+                <tr key={r.etichetta} className="border-b border-[var(--color-bordo)] last:border-0">
                   <th scope="row" className="p-3 text-left font-semibold">{r.etichetta}</th>
                   <td className="p-3 text-right font-codice">{r.a}</td>
                   <td className="p-3 text-right font-codice">{r.b}</td>
@@ -111,10 +111,10 @@ export default async function Confronto({ params }: { params: Promise<{ coppia: 
         )}
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href={`/comune/${sa}`} className="inline-flex min-h-12 items-center rounded-full border border-[#E8DEC8] bg-carta px-6 font-semibold">
+          <Link href={`/comune/${sa}`} className="inline-flex min-h-12 items-center rounded-full border border-[var(--color-bordo)] bg-carta px-6 font-semibold">
             Scheda di {a.name}
           </Link>
-          <Link href={`/comune/${sb}`} className="inline-flex min-h-12 items-center rounded-full border border-[#E8DEC8] bg-carta px-6 font-semibold">
+          <Link href={`/comune/${sb}`} className="inline-flex min-h-12 items-center rounded-full border border-[var(--color-bordo)] bg-carta px-6 font-semibold">
             Scheda di {b.name}
           </Link>
         </div>

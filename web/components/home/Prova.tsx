@@ -22,7 +22,7 @@ export default function Prova({ dati }: { dati: ProvaDati }) {
   const piu = dati.spesa >= dati.mediana;
 
   return (
-    <div ref={ref} className="rounded-[32px] border border-[#E8DEC8] bg-carta p-6 sm:p-8">
+    <div ref={ref} className="rounded-[32px] border border-[var(--color-bordo)] bg-carta p-6 sm:p-8">
       <p className="font-codice text-sm uppercase tracking-wide text-grigio">Un esempio reale · {dati.anno}</p>
       <h3 className="mt-3 font-display text-3xl font-semibold leading-tight">
         {dati.nome}: {euro(dati.spesa)} per abitante
@@ -73,3 +73,4 @@ export default function Prova({ dati }: { dati: ProvaDati }) {
     </div>
   );
 }
+

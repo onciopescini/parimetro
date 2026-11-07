@@ -19,6 +19,8 @@
   --color-crema: #fff6e5;
   --color-carta: #fffdf8;
   --color-grigio: #5a5873;
+  /* Il bordo caldo su carta/crema: e' quasi ovunque, da qui il token (era scritto a mano in 111 punti) */
+  --color-bordo: #e8dec8;
   --font-display: var(--f-display), Georgia, serif;
   --font-testo: var(--f-testo), system-ui, sans-serif;
   --font-codice: var(--f-codice), ui-monospace, monospace;

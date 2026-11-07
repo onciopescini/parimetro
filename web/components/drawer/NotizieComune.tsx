@@ -9,7 +9,7 @@ export default function NotizieComune({ notizie }: { notizie: NotizieComune | nu
   if (!notizie) return null;
   return (
     <div className="space-y-3">
-      <section className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+      <section className="space-y-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
         <h3 className="text-xs uppercase tracking-wider text-grigio">Notizie sui conti del comune</h3>
         {notizie.notizie.length === 0 ? (
           <p className="text-sm text-grigio">
@@ -50,3 +50,4 @@ export default function NotizieComune({ notizie }: { notizie: NotizieComune | nu
     </div>
   );
 }
+

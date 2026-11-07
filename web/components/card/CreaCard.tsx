@@ -179,7 +179,7 @@ export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: (
             ref={chiudiRef}
             onClick={onClose}
             aria-label="Chiudi"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-[#E8DEC8] bg-white hover:bg-[#F4EEDF]"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-bordo)] bg-white hover:bg-[#F4EEDF]"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />
@@ -216,7 +216,7 @@ export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: (
                       setModificato(null);
                     }}
                     className={`min-h-12 rounded-full border-2 px-5 text-[15px] font-semibold transition ${
-                      attivo ? "border-mirtillo bg-mirtillo text-white" : ok ? "border-[#E8DEC8] bg-white hover:border-[#CFC6B3]" : "cursor-not-allowed border-[#E8DEC8] bg-[#EFE7D6] text-grigio opacity-70"
+                      attivo ? "border-mirtillo bg-mirtillo text-white" : ok ? "border-[var(--color-bordo)] bg-white hover:border-[var(--color-sabbia)]" : "cursor-not-allowed border-[var(--color-bordo)] bg-[#EFE7D6] text-grigio opacity-70"
                     }`}
                   >
                     {s.nome}
@@ -246,7 +246,7 @@ export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: (
                       setModificato(null);
                     }}
                     className={`min-h-12 rounded-full border-2 px-5 text-[15px] font-semibold ${
-                      tono === t.tono ? "border-mirtillo bg-mirtillo text-white" : "border-[#E8DEC8] bg-white hover:border-[#CFC6B3]"
+                      tono === t.tono ? "border-mirtillo bg-mirtillo text-white" : "border-[var(--color-bordo)] bg-white hover:border-[var(--color-sabbia)]"
                     }`}
                   >
                     {t.nome}
@@ -264,7 +264,7 @@ export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: (
                 value={testo}
                 onChange={(e) => setModificato(e.target.value)}
                 rows={6}
-                className="mt-2 w-full resize-y rounded-[24px] border-2 border-[#E8DEC8] bg-white p-4 text-[16px] leading-relaxed focus:border-mirtillo focus:outline-none"
+                className="mt-2 w-full resize-y rounded-[24px] border-2 border-[var(--color-bordo)] bg-white p-4 text-[16px] leading-relaxed focus:border-mirtillo focus:outline-none"
               />
               {modificato != null && (
                 <button onClick={() => setModificato(null)} className="mt-1 min-h-11 text-sm font-semibold text-mirtillo underline underline-offset-2">
@@ -279,7 +279,7 @@ export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: (
                 {elencoFonti.map((f) => (
                   <li key={f.nome} className="flex items-start gap-3 rounded-[20px] bg-white px-4 py-3">
                     <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-menta" aria-hidden="true">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1B1A2E" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-inchiostro)" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12l5 5 9-10" />
                       </svg>
                     </span>
@@ -334,3 +334,4 @@ export default function CreaCard({ dati, onClose }: { dati: DatiCard; onClose: (
     </div>
   );
 }
+

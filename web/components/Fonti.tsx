@@ -38,7 +38,7 @@ export default function Fonti() {
           aria-label="Fonti e metodo"
         >
           <div
-            className="max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-[28px] border border-[#E8DEC8] bg-crema p-5 text-sm leading-relaxed text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.16)]"
+            className="max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-[28px] border border-[var(--color-bordo)] bg-crema p-5 text-sm leading-relaxed text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.16)]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-3">
@@ -149,3 +149,4 @@ export default function Fonti() {
     </>
   );
 }
+

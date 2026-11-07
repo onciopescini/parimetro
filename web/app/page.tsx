@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const H2 = "font-display text-3xl font-semibold leading-tight sm:text-4xl";
-const CARD = "rounded-[32px] border border-[#E8DEC8] bg-carta p-6";
+const CARD = "rounded-[32px] border border-[var(--color-bordo)] bg-carta p-6";
 const BOTTONE = "inline-flex min-h-14 items-center justify-center gap-2 rounded-full px-7 text-lg font-semibold transition active:translate-y-0.5";
 
 // Tre forme dell'identita' che si compongono una volta sola, poi restano ferme o appena in movimento
@@ -81,10 +81,10 @@ export default function Home() {
             accanto. Non ti diciamo se un&apos;amministrazione è brava o no: ti diamo i dati, e tu decidi che cosa pensarne.
           </p>
           <div className="sale ritardo-3 mt-8 flex flex-wrap gap-3">
-            <Link href="/mappa" className={`${BOTTONE} bg-limone text-inchiostro shadow-[0_4px_0_#1B1A2E] hover:brightness-95`}>
+            <Link href="/mappa" className={`${BOTTONE} bg-limone text-inchiostro shadow-[0_4px_0_var(--color-inchiostro)] hover:brightness-95`}>
               Apri la mappa
             </Link>
-            <Link href="/comuni" className={`${BOTTONE} border border-[#E8DEC8] bg-carta hover:bg-sabbia/30`}>
+            <Link href="/comuni" className={`${BOTTONE} border border-[var(--color-bordo)] bg-carta hover:bg-sabbia/30`}>
               Cerca un comune
             </Link>
           </div>
@@ -146,7 +146,7 @@ export default function Home() {
               ["Italia Domani · OpenCoesione", "Progetti PNRR e fondi di coesione"],
               ["ANAC", "Appalti e lotti pubblicati (CC BY-SA 4.0)"],
             ].map(([nome, descrizione]) => (
-              <li key={nome} className="rounded-3xl border border-[#E8DEC8] bg-carta p-4">
+              <li key={nome} className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-4">
                 <p className="font-codice text-sm uppercase tracking-wide text-grigio">{nome}</p>
                 <p className="mt-1">{descrizione}</p>
               </li>
@@ -176,13 +176,13 @@ export default function Home() {
           <h2 className={H2}>Provalo sul tuo comune</h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-grigio">Bastano pochi secondi. Non serve nessun account per guardare.</p>
           <div className="mt-8">
-            <Link href="/mappa" className={`${BOTTONE} bg-mirtillo text-white shadow-[0_4px_0_#1B1A2E] hover:brightness-110`}>
+            <Link href="/mappa" className={`${BOTTONE} bg-mirtillo text-white shadow-[0_4px_0_var(--color-inchiostro)] hover:brightness-110`}>
               Apri la mappa
             </Link>
           </div>
         </section>
 
-        <footer className="mt-20 border-t border-[#E8DEC8] pt-6 text-sm text-grigio">
+        <footer className="mt-20 border-t border-[var(--color-bordo)] pt-6 text-sm text-grigio">
           <p>
             Codice pubblicato con licenza MIT · dati pubblicati con licenza CC BY-SA 4.0 ·{" "}
             <a className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2" href="https://github.com/onciopescini/parimetro">GitHub</a> ·{" "}
@@ -193,3 +193,4 @@ export default function Home() {
     </main>
   );
 }
+

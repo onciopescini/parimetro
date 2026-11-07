@@ -19,7 +19,7 @@ export default function Passi() {
       {PASSI.map((p, i) => (
         <li
           key={p.n}
-          className="rounded-[32px] border border-[#E8DEC8] bg-carta p-6 transition duration-700 ease-out"
+          className="rounded-[32px] border border-[var(--color-bordo)] bg-carta p-6 transition duration-700 ease-out"
           style={{ opacity: visto ? 1 : 0, transform: visto ? "none" : "translateY(16px)", transitionDelay: `${i * 150}ms` }}
         >
           <span className={`grid size-12 place-items-center rounded-full font-display text-xl font-bold ${p.colore}`}>{p.n}</span>
@@ -30,3 +30,4 @@ export default function Passi() {
     </ol>
   );
 }
+

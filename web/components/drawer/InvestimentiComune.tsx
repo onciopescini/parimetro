@@ -39,7 +39,7 @@ function Barra({ valore, etichetta, dettaglio }: { valore: number; etichetta: st
 export default function InvestimentiComune({ inv }: { inv: Investimenti | null }) {
   if (!inv) {
     return (
-      <p className="rounded-3xl border border-[#E8DEC8] bg-carta p-3 text-sm text-grigio">
+      <p className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-3 text-sm text-grigio">
         Non ho i dati sugli investimenti di questo comune.
       </p>
     );
@@ -59,7 +59,7 @@ export default function InvestimentiComune({ inv }: { inv: Investimenti | null }
   return (
     <div className="space-y-4">
       {/* ---------------------------------------------------------------- PNRR */}
-      <section className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+      <section className="space-y-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
         <h3 className="text-xs uppercase tracking-wider text-grigio">PNRR · progetti gestiti dal comune</h3>
 
         {pnrr.n === 0 ? (
@@ -98,7 +98,7 @@ export default function InvestimentiComune({ inv }: { inv: Investimenti | null }
                   <span
                     key={m.missione}
                     title={m.descr ?? undefined}
-                    className="rounded-full border border-[#E8DEC8] bg-carta px-2 py-0.5 text-xs text-inchiostro"
+                    className="rounded-full border border-[var(--color-bordo)] bg-carta px-2 py-0.5 text-xs text-inchiostro"
                   >
                     {m.missione} · {eurBreve(m.fin_pnrr)}
                   </span>
@@ -137,7 +137,7 @@ export default function InvestimentiComune({ inv }: { inv: Investimenti | null }
       </section>
 
       {/* ------------------------------------------------------------ coesione */}
-      <section className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+      <section className="space-y-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
         <h3 className="text-xs uppercase tracking-wider text-grigio">Opere pubbliche · politiche di coesione</h3>
 
         {opere.n === 0 ? (
@@ -169,7 +169,7 @@ export default function InvestimentiComune({ inv }: { inv: Investimenti | null }
 
             <div className="flex flex-wrap gap-1.5">
               {ordinaCicli(opere.cicli).map((c) => (
-                <span key={c.ciclo} className="rounded-full border border-[#E8DEC8] bg-carta px-2 py-0.5 text-xs text-inchiostro">
+                <span key={c.ciclo} className="rounded-full border border-[var(--color-bordo)] bg-carta px-2 py-0.5 text-xs text-inchiostro">
                   {CICLI[c.ciclo] ?? `ciclo ${c.ciclo}`} · {num(c.n)} · {eurBreve(c.fin)}
                 </span>
               ))}
@@ -228,3 +228,4 @@ export default function InvestimentiComune({ inv }: { inv: Investimenti | null }
     </div>
   );
 }
+

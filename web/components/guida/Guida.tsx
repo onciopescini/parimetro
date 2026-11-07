@@ -125,7 +125,7 @@ export default function Guida({ aperta, onChiudi }: { aperta: boolean; onChiudi:
   if (fase === "benvenuto") {
     return (
       <div className="fixed inset-0 z-[60] grid place-items-center bg-inchiostro/50 p-4" role="dialog" aria-modal="true" aria-labelledby="guida-titolo">
-        <div className="max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-[32px] border border-[#E8DEC8] bg-crema p-6 text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.3)] md:p-8">
+        <div className="max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-[32px] border border-[var(--color-bordo)] bg-crema p-6 text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.3)] md:p-8">
           <div className="flex items-center gap-2" aria-hidden="true">
             <span className="h-3.5 w-12 rounded-full bg-mirtillo" />
             <span className="h-3.5 w-7 rounded-full bg-limone" />
@@ -146,11 +146,11 @@ export default function Guida({ aperta, onChiudi }: { aperta: boolean; onChiudi:
                 setI(0);
                 setFase("giro");
               }}
-              className="min-h-12 rounded-full bg-mirtillo px-6 text-base font-semibold text-white shadow-[0_4px_0_#1B1A2E] transition active:translate-y-0.5 active:shadow-none"
+              className="min-h-12 rounded-full bg-mirtillo px-6 text-base font-semibold text-white shadow-[0_4px_0_var(--color-inchiostro)] transition active:translate-y-0.5 active:shadow-none"
             >
               Facciamo un giro (1 minuto)
             </button>
-            <button onClick={chiudi} className="min-h-12 rounded-full border border-[#E8DEC8] bg-carta px-6 text-base font-semibold hover:bg-sabbia/30">
+            <button onClick={chiudi} className="min-h-12 rounded-full border border-[var(--color-bordo)] bg-carta px-6 text-base font-semibold hover:bg-sabbia/30">
               Esploro da solo
             </button>
           </div>
@@ -182,7 +182,7 @@ export default function Guida({ aperta, onChiudi }: { aperta: boolean; onChiudi:
       ) : (
         <div className="absolute inset-0 bg-inchiostro/55" />
       )}
-      <div className={`fixed inset-x-3 ${inAlto ? "top-3 md:top-8" : "bottom-3 md:bottom-8"} mx-auto w-auto max-w-md rounded-[28px] border border-[#E8DEC8] bg-crema p-5 text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.3)] md:inset-x-auto md:left-1/2 md:-translate-x-1/2`}>
+      <div className={`fixed inset-x-3 ${inAlto ? "top-3 md:top-8" : "bottom-3 md:bottom-8"} mx-auto w-auto max-w-md rounded-[28px] border border-[var(--color-bordo)] bg-crema p-5 text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.3)] md:inset-x-auto md:left-1/2 md:-translate-x-1/2`}>
         <div className="text-sm font-semibold text-grigio">
           {i + 1} di {passi.length}
         </div>
@@ -194,7 +194,7 @@ export default function Guida({ aperta, onChiudi }: { aperta: boolean; onChiudi:
           </button>
           <div className="flex gap-2">
             {i > 0 && (
-              <button onClick={() => setI(i - 1)} className="min-h-12 rounded-full border border-[#E8DEC8] bg-carta px-5 text-sm font-semibold hover:bg-sabbia/30">
+              <button onClick={() => setI(i - 1)} className="min-h-12 rounded-full border border-[var(--color-bordo)] bg-carta px-5 text-sm font-semibold hover:bg-sabbia/30">
                 Indietro
               </button>
             )}
@@ -210,3 +210,4 @@ export default function Guida({ aperta, onChiudi }: { aperta: boolean; onChiudi:
     </div>
   );
 }
+

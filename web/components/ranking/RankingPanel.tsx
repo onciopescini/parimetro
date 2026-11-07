@@ -123,11 +123,11 @@ export default function RankingPanel({
   }, [q, caricaClassifica, chiave]);
 
   const sel =
-    "mt-1 w-full rounded-xl border border-[#E8DEC8] bg-crema px-2 py-1 text-xs text-inchiostro";
+    "mt-1 w-full rounded-xl border border-[var(--color-bordo)] bg-crema px-2 py-1 text-xs text-inchiostro";
   const etichetta = "mt-2 block text-xs uppercase tracking-wider text-grigio";
 
   return (
-    <div className="pointer-events-auto absolute left-4 top-4 flex max-h-[calc(100dvh-2rem)] w-72 flex-col rounded-3xl border border-[#E8DEC8] bg-crema p-3 text-inchiostro">
+    <div className="pointer-events-auto absolute left-4 top-4 flex max-h-[calc(100dvh-2rem)] w-72 flex-col rounded-3xl border border-[var(--color-bordo)] bg-crema p-3 text-inchiostro">
       <div className="flex items-center gap-2">
         <button
           onClick={onClose}
@@ -284,3 +284,4 @@ export default function RankingPanel({
     </div>
   );
 }
+

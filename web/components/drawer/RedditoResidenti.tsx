@@ -31,7 +31,7 @@ export default function RedditoResidenti({
   const quota = spesaOgniCentoDiReddito(spesaPc, reddito.pc);
 
   return (
-    <section className="space-y-2 rounded-3xl border border-[#E8DEC8] bg-carta p-3">
+    <section className="space-y-2 rounded-3xl border border-[var(--color-bordo)] bg-carta p-3">
       <h3 className="text-xs uppercase tracking-wider text-grigio">
         Il reddito di chi vive qui · anno d&apos;imposta {anno}
       </h3>
@@ -89,3 +89,4 @@ export default function RedditoResidenti({
     </section>
   );
 }
+

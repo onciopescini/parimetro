@@ -25,7 +25,7 @@ export default function AccessoModal({ onClose, motivo }: { onClose: () => void;
   return (
     <div className="fixed inset-0 z-[55] flex items-end justify-center bg-inchiostro/50 p-0 sm:items-center sm:p-6" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="accesso-titolo">
       <div
-        className="max-h-[94dvh] w-full max-w-lg overflow-y-auto rounded-t-[32px] border border-[#E8DEC8] bg-crema p-6 text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.3)] sm:rounded-[32px] sm:p-8"
+        className="max-h-[94dvh] w-full max-w-lg overflow-y-auto rounded-t-[32px] border border-[var(--color-bordo)] bg-crema p-6 text-inchiostro shadow-[0_12px_40px_rgba(27,26,46,0.3)] sm:rounded-[32px] sm:p-8"
         onClick={(e) => e.stopPropagation()}
       >
         {fase === "inviato" ? (
@@ -35,7 +35,7 @@ export default function AccessoModal({ onClose, motivo }: { onClose: () => void;
               Abbiamo mandato un link a <strong className="break-all">{email.trim().toLowerCase()}</strong>. Toccalo e sei dentro: vale 15 minuti.
             </p>
             <p className="mt-3 text-base leading-relaxed text-grigio">Non lo vedi? Guarda anche nella posta indesiderata.</p>
-            <button onClick={onClose} className="mt-6 min-h-12 rounded-full border border-[#E8DEC8] bg-carta px-6 text-base font-semibold hover:bg-sabbia/30">
+            <button onClick={onClose} className="mt-6 min-h-12 rounded-full border border-[var(--color-bordo)] bg-carta px-6 text-base font-semibold hover:bg-sabbia/30">
               Ho capito
             </button>
           </>
@@ -47,7 +47,7 @@ export default function AccessoModal({ onClose, motivo }: { onClose: () => void;
             </p>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-3xl border border-[#E8DEC8] bg-carta p-4">
+              <div className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-4">
                 <div className="text-sm font-semibold uppercase tracking-wide text-grigio">Senza entrare</div>
                 <ul className="mt-2 space-y-1 text-base">
                   <li>cerchi qualsiasi comune</li>
@@ -79,7 +79,7 @@ export default function AccessoModal({ onClose, motivo }: { onClose: () => void;
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nome@esempio.it"
-                className="mt-3 min-h-12 w-full rounded-full border border-[#E8DEC8] bg-carta px-5 text-lg text-inchiostro placeholder:text-grigio focus:border-mirtillo focus:outline-none"
+                className="mt-3 min-h-12 w-full rounded-full border border-[var(--color-bordo)] bg-carta px-5 text-lg text-inchiostro placeholder:text-grigio focus:border-mirtillo focus:outline-none"
               />
               {errore && (
                 <p role="alert" className="mt-3 rounded-2xl border border-pomodoro bg-pomodoro/15 px-4 py-2 text-base">
@@ -90,11 +90,11 @@ export default function AccessoModal({ onClose, motivo }: { onClose: () => void;
                 <button
                   type="submit"
                   disabled={fase === "invio"}
-                  className="min-h-12 rounded-full bg-mirtillo px-6 text-base font-semibold text-white shadow-[0_4px_0_#1B1A2E] transition active:translate-y-0.5 active:shadow-none disabled:opacity-60"
+                  className="min-h-12 rounded-full bg-mirtillo px-6 text-base font-semibold text-white shadow-[0_4px_0_var(--color-inchiostro)] transition active:translate-y-0.5 active:shadow-none disabled:opacity-60"
                 >
                   {fase === "invio" ? "Un attimo…" : "Mandami il link"}
                 </button>
-                <button type="button" onClick={onClose} className="min-h-12 rounded-full border border-[#E8DEC8] bg-carta px-6 text-base font-semibold hover:bg-sabbia/30">
+                <button type="button" onClick={onClose} className="min-h-12 rounded-full border border-[var(--color-bordo)] bg-carta px-6 text-base font-semibold hover:bg-sabbia/30">
                   Continua senza entrare
                 </button>
               </div>
@@ -110,3 +110,4 @@ export default function AccessoModal({ onClose, motivo }: { onClose: () => void;
     </div>
   );
 }
+
