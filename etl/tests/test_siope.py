@@ -9,13 +9,19 @@ import pytest
 
 INTESTAZIONE = (
     "Codice istat provincia;Codice istat comune;Codice Tipologia Ente BDAP;"
-    "Anno/Mese calendario;Codice Titolo CG;Importo cumulato"
+    "Descrizione Ente BDAP;Anno/Mese calendario;Codice Titolo CG;Importo cumulato"
 )
 
 
 def csv_siope(tmp_path, righe, nome="entrate_X.csv"):
-    """Scrive un CSV SIOPE minimo, in latin-1 e con ';' come i file veri."""
-    testo = "\n".join([INTESTAZIONE] + [";".join(map(str, r)) for r in righe]) + "\n"
+    """Scrive un CSV SIOPE minimo, in latin-1 e con ';' come i file veri.
+
+    La colonna "Descrizione Ente BDAP" e' obbligatoria dal codice (serve a
+    distinguere enti con lo stesso codice): nelle fixture e' fissa.
+    """
+    testo = "\n".join(
+        [INTESTAZIONE] + [";".join(map(str, (*r[:3], "COMUNE DI TEST", *r[3:]))) for r in righe]
+    ) + "\n"
     p = tmp_path / nome
     p.write_text(testo, encoding="latin-1")
     return str(p)
@@ -187,13 +193,17 @@ class TestTotaliComune:
 
 INTESTAZIONE_VOCI = (
     "Codice istat provincia;Codice istat comune;Codice Tipologia Ente BDAP;"
-    "Anno/Mese calendario;Codice Titolo CG;Codice Gestionale Enti Locali;"
+    "Descrizione Ente BDAP;Anno/Mese calendario;Codice Titolo CG;Codice Gestionale Enti Locali;"
     "Descrizione CG;Importo cumulato"
 )
 
 
 def csv_voci(tmp_path, righe, nome="spese_X.csv"):
-    testo = "\n".join([INTESTAZIONE_VOCI] + [";".join(map(str, r)) for r in righe]) + "\n"
+    """Scrive un CSV SIOPE per voci: la colonna "Descrizione Ente BDAP" e'
+    obbligatoria dal codice, nelle fixture e' fissa."""
+    testo = "\n".join(
+        [INTESTAZIONE_VOCI] + [";".join(map(str, (*r[:3], "COMUNE DI TEST", *r[3:]))) for r in righe]
+    ) + "\n"
     p = tmp_path / nome
     p.write_text(testo, encoding="latin-1")
     return str(p)
@@ -234,7 +244,7 @@ class TestVociPerComune:
         f2 = tmp_path / "spese_totali.csv"
         f2.write_text(
             INTESTAZIONE + "\n" + "\n".join(
-                ";".join(map(str, (p, c, t, m, ti, i))) for p, c, t, m, ti, _g, _d, i in [
+                ";".join(map(str, (p, c, t, "COMUNE DI TEST", m, ti, i))) for p, c, t, m, ti, _g, _d, i in [
                     ("070", "001", "CO", "2024/12", *RIF, 500),
                     ("070", "001", "CO", "2024/12", *STIP, 700),
                     ("070", "001", "CO", "2024/12", "U0000000000", "x", "x", 90),
