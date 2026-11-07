@@ -29,7 +29,10 @@ function ComposizioneHero() {
 // La prova in home: un comune reale, letto a tempo di build dai file pubblicati (il sito resta statico)
 function provaReale(): ProvaDati {
   const leggi = <T,>(p: string) => JSON.parse(readFileSync(join(process.cwd(), "public", p), "utf8")) as T;
-  const voce = leggi<{ istat: string; name: string; province: string }[]>("dati/indice.json").find((v) => v.istat === "015146")!;
+  const indice = leggi<{ istat: string; name: string; province: string }[]>("dati/indice.json");
+  // In produzione c'e' sempre Milano (015146): la prima voce dell'indice serve
+  // solo alle fixture di sviluppo, per cui la build in CI non resta senza prova.
+  const voce = indice.find((v) => v.istat === "015146") ?? indice[0];
   const d = leggi<{ history: { year: number; expenditure_pc: number; autonomia: number | null }[]; peers: Record<string, { expenditure_pc: number | null }> }>(
     `dati/comune/${voce.istat}.json`,
   );
