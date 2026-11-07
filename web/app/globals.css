@@ -1,10 +1,5 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   /* L'identita' di Parimetro: colori chiave piatti, tondi, senza sfumature (vedi la tela di design) */
   --color-mirtillo: #3b3bd6;
@@ -24,23 +19,23 @@
   --font-display: var(--f-display), Georgia, serif;
   --font-testo: var(--f-testo), system-ui, sans-serif;
   --font-codice: var(--f-codice), ui-monospace, monospace;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Il sito e' light-first (crema/carta): la dark mode "a meta'" dello
+   scaffolding e' stata tolta. Se un giorno si disegna, si fa per bene,
+   con i token qui. Giu' anche i font Geist dello scaffolding: non erano
+   usati da nessuno e si scaricavano per niente. */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-carta);
+  color: var(--color-inchiostro);
+  font-family: var(--font-testo);
+}
+
+/* Chi naviga da tastiera deve vedere sempre dov'e': un solo anello per tutto il sito.
+   L'outline segue il raggio del bordo dell'elemento, quindi funziona anche con le pillole. */
+:focus-visible {
+  outline: 3px solid var(--color-mirtillo);
+  outline-offset: 2px;
 }
 
 /* ---- Movimento: sottile, una volta sola, e spento per chi chiede di ridurlo ---- */
