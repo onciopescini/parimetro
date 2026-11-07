@@ -7,14 +7,7 @@
 
 import { AREE, NATURE, type CategorieComune } from "@/lib/categorie";
 import { COLORE_AREA } from "@/lib/card/contenuto";
-
-const eur = (v: number, compact = false) =>
-  new Intl.NumberFormat("it-IT", {
-    style: "currency",
-    currency: "EUR",
-    notation: compact ? "compact" : "standard",
-    maximumFractionDigits: 0,
-  }).format(v);
+import { eur } from "./formato";
 
 export default function SpesaPerCategoria({
   categorie,

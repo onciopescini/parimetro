@@ -5,12 +5,7 @@
 // o 28.000 euro. E' un dato di contesto, non un giudizio.
 
 import { pochiContribuenti, spesaOgniCentoDiReddito, type RedditoAnno } from "@/lib/reddito";
-
-const eur = (v: number | null | undefined) =>
-  v == null
-    ? "—"
-    : new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
-const num = (v: number) => new Intl.NumberFormat("it-IT").format(v);
+import { eur, num } from "./formato";
 
 export default function RedditoResidenti({
   reddito,

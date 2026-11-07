@@ -18,14 +18,7 @@ import {
   type Concorrenza,
 } from "@/lib/appalti";
 import { COLORE_AREA, nomeArea } from "@/lib/card/contenuto";
-
-const eurBreve = (v: number | null | undefined) =>
-  v == null
-    ? "—"
-    : new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", notation: "compact", maximumFractionDigits: 1 }).format(v);
-const eur = (v: number | null | undefined) =>
-  v == null ? "—" : new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
-const num = (v: number) => new Intl.NumberFormat("it-IT").format(v);
+import { eur, eurBreve, num } from "./formato";
 
 export default function AppaltiComune({
   appalti,

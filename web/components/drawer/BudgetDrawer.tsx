@@ -12,6 +12,9 @@
 
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import KpiCard from "./KpiCard";
+import { eur, num } from "./formato";
+import { GRID, TICK, TOOLTIP_STYLE } from "./temaGrafici";
 import RedditoResidenti from "./RedditoResidenti";
 import type { Appalti, Concorrenza } from "@/lib/appalti";
 
@@ -37,8 +40,6 @@ import {
   MapPin,
   Star,
   ShieldCheck,
-  TrendingDown,
-  TrendingUp,
   Users,
   X,
 } from "lucide-react";
@@ -131,73 +132,9 @@ interface BudgetDrawerProps {
 
 type Tab = "quadro" | "spese" | "opere" | "appalti" | "notizie" | "grafici" | "debito";
 
-// ---------------------------------------------------------- //
-// Utilità di formattazione (locale it-IT)
-// ---------------------------------------------------------- //
-const eur = (v: number | null | undefined, compact = false) =>
-  v == null
-    ? "—"
-    : new Intl.NumberFormat("it-IT", {
-        style: "currency",
-        currency: "EUR",
-        notation: compact ? "compact" : "standard",
-        maximumFractionDigits: 0,
-      }).format(v);
-
-const num = (v: number | null | undefined) =>
-  v == null ? "—" : new Intl.NumberFormat("it-IT").format(v);
-
 // Il rango e' una pillola piena (testo scuro su colore chiaro: sempre leggibile)
 const fhiPill = (v: number | null | undefined) =>
   v == null ? "bg-sabbia" : v >= 70 ? "bg-menta" : v >= 40 ? "bg-limone" : "bg-pesca";
-
-// Tema carta per Recharts
-const GRID = "var(--color-bordo)";
-const TICK = { fill: "var(--color-grigio)", fontSize: 12 };
-const TOOLTIP_STYLE = {
-  backgroundColor: "var(--color-carta)",
-  border: "1px solid var(--color-bordo)",
-  borderRadius: 16,
-  color: "var(--color-inchiostro)",
-  fontSize: 13,
-};
-
-// ---------------------------------------------------------- //
-// KPI Card con comparativo % vs media nazionale
-// invert=true → un valore SOTTO la media è positivo (spesa, debito)
-// ---------------------------------------------------------- //
-function KpiCard({
-  label,
-  value,
-  diff,
-  baseline = "vs media nazionale",
-  invert = false,
-}: {
-  label: string;
-  value: string;
-  diff: number | null;
-  /** Contro cosa è calcolato il diff: cambia con la base di confronto scelta */
-  baseline?: string;
-  invert?: boolean;
-}) {
-  const good = diff != null && (invert ? diff < 0 : diff > 0);
-  return (
-    <div className="rounded-3xl border border-[var(--color-bordo)] bg-carta p-4">
-      <div className="text-xs uppercase tracking-wide text-grigio">{label}</div>
-      <div className="mt-1 font-display text-2xl font-semibold text-inchiostro">{value}</div>
-      {diff != null && (
-        <div
-          className={`mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium text-inchiostro ${
-            good ? "bg-menta/40" : "bg-pesca/60"
-          }`}
-        >
-          {diff >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-          {Math.abs(diff).toFixed(1)}% {baseline}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ---------------------------------------------------------- //
 // Componente principale

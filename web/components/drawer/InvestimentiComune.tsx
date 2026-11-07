@@ -9,18 +9,7 @@
 //  · Coesione: opere localizzate su quel comune, chiunque le realizzi.
 
 import { CICLI, GENERI_ALTRI, ordinaCicli, quotaDelPrimo, type Investimenti } from "@/lib/investimenti";
-
-const eur = (v: number | null | undefined) =>
-  v == null
-    ? "—"
-    : new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
-
-const eurBreve = (v: number | null | undefined) =>
-  v == null
-    ? "—"
-    : new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", notation: "compact", maximumFractionDigits: 1 }).format(v);
-
-const num = (v: number) => new Intl.NumberFormat("it-IT").format(v);
+import { eur, eurBreve, num } from "./formato";
 
 function Barra({ valore, etichetta, dettaglio }: { valore: number; etichetta: string; dettaglio: string }) {
   return (
