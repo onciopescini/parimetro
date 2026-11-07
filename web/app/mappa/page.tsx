@@ -14,11 +14,9 @@ import Link from "next/link";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, Trophy, UserRound, X } from "lucide-react";
-import Map3D, {
-  METRIC_LABELS,
-  type MetricKey,
-  type MunicipalityProps,
-} from "@/components/map/Map3D";
+import dynamic from "next/dynamic";
+import type { MetricKey, MunicipalityProps } from "@/components/map/Map3D";
+import { METRIC_LABELS } from "@/components/map/metriche";
 import type { CategorieComune } from "@/lib/categorie";
 import type { RedditoAnno } from "@/lib/reddito";
 import type { Investimenti } from "@/lib/investimenti";
@@ -29,6 +27,10 @@ import Fonti from "@/components/Fonti";
 import Guida from "@/components/guida/Guida";
 import AccessoModal from "@/components/account/AccessoModal";
 import SpazioPersonale from "@/components/account/SpazioPersonale";
+
+// La mappa (deck.gl + maplibre: centinaia di KB) entra solo quando serve:
+// il resto della pagina e la prima stampa restano leggere.
+const Map3D = dynamic(() => import("@/components/map/Map3D"), { ssr: false });
 import { useAccount } from "@/lib/account/client";
 import BudgetDrawer, {
   type MunicipalityDetail,

@@ -23,6 +23,12 @@ import {
 } from "@deck.gl/core";
 import { Map as BaseMap } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { METRIC_LABELS, type MetricKey } from "./metriche";
+
+// Ri-pubblicate per chi le importava da qui (le pagine leggerne la versione
+// leggera, senza deck.gl)
+export { METRIC_LABELS };
+export type { MetricKey };
 
 /**
  * maplibre-gl 6 cerca il worker accanto a se' stesso, ma Turbopack sposta il
@@ -45,7 +51,7 @@ function caricaMaplibre() {
 // ---------------------------------------------------------- //
 // Tipi
 // ---------------------------------------------------------- //
-export type MetricKey = "debt" | "expenditure" | "revenue" | "surplus" | "fhi" | "income";
+// MetricKey e METRIC_LABELS vivono in ./metriche (modulo leggero)
 
 export interface MunicipalityProps {
   istat: string;
@@ -131,18 +137,9 @@ interface Map3DProps {
 
 // ---------------------------------------------------------- //
 // Metriche: etichette, direzione e accessor unificato
-// (comuni e province condividono le stesse chiavi JSON)
+// (comuni e province condividono le stesse chiavi JSON;
+// le etichette stanno in ./metriche)
 // ---------------------------------------------------------- //
-export const METRIC_LABELS: Record<MetricKey, string> = {
-  debt: "Debito",
-  expenditure: "Spesa",
-  revenue: "Entrate",
-  surplus: "Avanzo/Disavanzo",
-  // Non più "salute finanziaria": il punteggio è la posizione del comune fra
-  // quelli della sua fascia demografica, quindi è relativo per costruzione.
-  fhi: "Posizione nella fascia",
-  income: "Reddito medio dei residenti",
-};
 
 const HIGHER_IS_WORSE: Record<MetricKey, boolean> = {
   debt: true,
@@ -298,8 +295,18 @@ export default function Map3D({
   // Quale combinazione anno/cartella ha gia' finito di caricare. "Sta
   // caricando" si deriva da qui, senza impostarlo all'inizio dell'effetto.
   const [caricatoPer, setCaricatoPer] = useState<string | null>(null);
+  // L'elenco degli anni (anni.json, scritto dall'ETL): serve al prefetch
+  const [anniTutti, setAnniTutti] = useState<number[] | null>(null);
   const chiaveDati = `${dataUrl}|${year}`;
   const loading = caricatoPer !== chiaveDati;
+
+  /**
+   * Gli anni gia' caricati (o gia' in arrivo in prefetch): tornare su un anno
+   * gia' visto e' istantaneo, senza rifare le fetch da ~5 MB.
+   */
+  const cacheAnni = useRef(new Map<string, { fc: MuniFC; prov: ProvinceAgg[] }>());
+  /** Prefetch partiti ma non ancora in cache: gli evita e proteffha il main fetch */
+  const prefetchInCorso = useRef(new Set<string>());
 
   // ---- Volo comandato dall'esterno (ricerca, deep link) ----
   const ultimoVolo = useRef<number | null>(null);
@@ -319,22 +326,79 @@ export default function Map3D({
 
   // ---- Fetch dei due livelli LOD: file statici generati dall'ETL ----
   useEffect(() => {
+    const inCache = cacheAnni.current.get(chiaveDati);
+    if (inCache) {
+      setMunis(inCache.fc);
+      setProvinces(inCache.prov);
+      setCaricatoPer(chiaveDati);
+      return;
+    }
+
     let alive = true;
+    const ctrl = new AbortController();
     Promise.all([
-      fetch(`${dataUrl}/comuni-${year}.json`).then((r) => r.json()),
-      fetch(`${dataUrl}/province-${year}.json`).then((r) => r.json()),
+      fetch(`${dataUrl}/comuni-${year}.json`, { signal: ctrl.signal }).then((r) => r.json()),
+      fetch(`${dataUrl}/province-${year}.json`, { signal: ctrl.signal }).then((r) => r.json()),
     ])
       .then(([fc, prov]) => {
+        const val = { fc: (fc ?? EMPTY_FC) as MuniFC, prov: (Array.isArray(prov) ? prov : []) as ProvinceAgg[] };
+        cacheAnni.current.set(chiaveDati, val);
         if (!alive) return;
-        setMunis(fc ?? EMPTY_FC);
-        setProvinces(Array.isArray(prov) ? prov : []);
+        setMunis(val.fc);
+        setProvinces(val.prov);
       })
-      .catch(console.error)
+      // L'abort di un cambio anno non e' un errore: e' la corsa vinta da un'altra
+      .catch((e: unknown) => {
+        if (alive && e instanceof Error && e.name !== "AbortError") console.error(e);
+      })
       .finally(() => alive && setCaricatoPer(chiaveDati));
     return () => {
       alive = false;
+      ctrl.abort();
     };
   }, [year, dataUrl, chiaveDati]);
+
+  // ---- L'elenco degli anni, per il prefetch dei vicini ----
+  useEffect(() => {
+    let alive = true;
+    fetch(`${dataUrl}/anni.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((a) => {
+        if (alive && Array.isArray(a) && a.length) setAnniTutti(a.map(Number));
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [dataUrl]);
+
+  // ---- Prefetch dell'anno vicino: il click su "2023" parte gia' a metà ----
+  useEffect(() => {
+    if (!anniTutti) return;
+    const i = anniTutti.indexOf(year);
+    for (const vicino of [anniTutti[i - 1], anniTutti[i + 1]]) {
+      if (vicino == null) continue;
+      const k = `${dataUrl}|${vicino}`;
+      if (cacheAnni.current.has(k) || prefetchInCorso.current.has(k)) continue;
+      prefetchInCorso.current.add(k);
+      (async () => {
+        try {
+          const [r1, r2] = await Promise.all([
+            fetch(`${dataUrl}/comuni-${vicino}.json`),
+            fetch(`${dataUrl}/province-${vicino}.json`),
+          ]);
+          if (!r1.ok || !r2.ok) return;
+          const [fc, prov] = await Promise.all([r1.json(), r2.json()]);
+          const val = { fc: (fc ?? EMPTY_FC) as MuniFC, prov: (Array.isArray(prov) ? prov : []) as ProvinceAgg[] };
+          if (!cacheAnni.current.has(k)) cacheAnni.current.set(k, val);
+        } catch {
+          // in prefetch gli errori non toccano l'utente: la fetch vera li mostrera'
+        } finally {
+          prefetchInCorso.current.delete(k);
+        }
+      })();
+    }
+  }, [anniTutti, year, dataUrl]);
 
   const showPolygons = viewState.zoom >= lodThreshold;
 
@@ -456,26 +520,28 @@ export default function Map3D({
   );
 
   // ---- Tooltip contestuale glassmorphism ----
+  const escapeHtml = (v: unknown) =>
+    String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c);
   const getTooltip = useCallback(
     ({ object }: PickingInfo) => {
       if (!object) return null;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const p: any = (object as any).properties ?? object;
-      const name = p.name ?? p.province;
+      const name = escapeHtml(p.name ?? p.province);
+      const regola = escapeHtml(p.name ? p.province : p.region);
       const unit = perCapita ? " €/ab" : " €";
       const unitaDi = (m: MetricKey) => (m === "fhi" ? "" : m === "income" ? " €/contribuente" : unit);
       const fmt = (v: number | null | undefined) =>
         v == null || !Number.isFinite(v) ? "—" : new Intl.NumberFormat("it-IT", { maximumFractionDigits: 0 }).format(v);
       const hVal = metricValue(p, heightMetric, perCapita);
       const cVal = metricValue(p, colorMetric, perCapita);
-      const fhiCol = p.fhi >= 70 ? "#1B1A2E" : p.fhi >= 40 ? "#1B1A2E" : "#1B1A2E";
       return {
         html: `
           <div style="font-family:Figtree,ui-sans-serif,system-ui;min-width:190px;padding:12px 14px;border-radius:20px;
                       background:#FFF6E5;border:1px solid #E8DEC8;color:#1B1A2E;
                       box-shadow:0 8px 24px rgba(27,26,46,.25)">
             <div style="font-weight:700;font-size:15px;margin-bottom:2px">${name}</div>
-            <div style="font-size:11px;color:#5A5873;margin-bottom:8px">${p.name ? p.province : p.region} · ${fmt(p.population)} ab.</div>
+            <div style="font-size:11px;color:#5A5873;margin-bottom:8px">${regola} · ${fmt(p.population)} ab.</div>
             <div style="display:flex;justify-content:space-between;font-size:12px;gap:12px">
               <span style="color:#5A5873">${METRIC_LABELS[heightMetric]}</span>
               <span>${fmt(hVal)}${unitaDi(heightMetric)}</span>
@@ -484,7 +550,7 @@ export default function Map3D({
               <span style="color:#5A5873">${METRIC_LABELS[colorMetric]}</span>
               <span>${fmt(cVal)}${unitaDi(colorMetric)}</span>
             </div>
-            ${p.fhi != null ? `<div style="margin-top:8px;font-size:11px;color:${fhiCol}">FHI ${p.fhi}/100</div>` : ""}
+            ${p.fhi != null ? `<div style="margin-top:8px;font-size:11px">FHI ${fmt(p.fhi)}/100</div>` : ""}
           </div>`,
         style: { background: "transparent" },
       };
