@@ -300,7 +300,9 @@ describe("le funzioni", () => {
 });
 
 // Con i dati veri (solo dove l'export e' presente): ogni pagina deve reggere i casi sporchi
-describe.skipIf(!existsSync("public/dati/indice.json"))("sui dati veri", () => {
+// Attenzione: le fixture di sviluppo hanno indice.json ma i comuni finti 99xxxx;
+// il test resta legato a Campobasso, che esiste solo nell'export vero.
+describe.skipIf(!existsSync("public/dati/comune/070006.json"))("sui dati veri", () => {
   it("Campobasso, un paese minuscolo e un comune senza dati accessori producono pagine complete", () => {
     const indice = JSON.parse(readFileSync("public/dati/indice.json", "utf8")) as VoceComune[];
     const prova = [indice.find((v) => v.istat === "070006")!, indice.find((v) => v.population < 120)!, indice[0]];
