@@ -22,21 +22,23 @@ import type { RedditoAnno } from "@/lib/reddito";
 import type { Investimenti } from "@/lib/investimenti";
 import type { Appalti, Concorrenza } from "@/lib/appalti";
 import type { NotizieComune } from "@/lib/notizie";
-import ChatPanel from "@/components/chat/ChatPanel";
 import Fonti from "@/components/Fonti";
 import Guida from "@/components/guida/Guida";
 import AccessoModal from "@/components/account/AccessoModal";
 import SpazioPersonale from "@/components/account/SpazioPersonale";
-
-// La mappa (deck.gl + maplibre: centinaia di KB) entra solo quando serve:
-// il resto della pagina e la prima stampa restano leggere.
-const Map3D = dynamic(() => import("@/components/map/Map3D"), { ssr: false });
-import { useAccount } from "@/lib/account/client";
-import BudgetDrawer, {
-  type MunicipalityDetail,
-  type NationalAverages,
-  type PeerComparison,
+import type {
+  MunicipalityDetail,
+  NationalAverages,
+  PeerComparison,
 } from "@/components/drawer/BudgetDrawer";
+
+// Le tre cose pesanti (deck.gl, Recharts/framer-motion del drawer, la chat
+// con le sue librerie) entrano solo quando servono: cambisco comune/anno e
+// la prima stampa della mappa restano leggere.
+const Map3D = dynamic(() => import("@/components/map/Map3D"), { ssr: false });
+const BudgetDrawer = dynamic(() => import("@/components/drawer/BudgetDrawer"), { ssr: false });
+const ChatPanel = dynamic(() => import("@/components/chat/ChatPanel"), { ssr: false });
+import { useAccount } from "@/lib/account/client";
 import RankingPanel, {
   type RankingFilters,
   type RankingQuery,

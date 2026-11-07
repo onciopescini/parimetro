@@ -11,13 +11,17 @@
 // ============================================================
 
 import { useMemo, useState } from "react";
-import SpesaPerCategoria from "./SpesaPerCategoria";
+import dynamic from "next/dynamic";
 import RedditoResidenti from "./RedditoResidenti";
-import InvestimentiComune from "./InvestimentiComune";
-import AppaltiComune from "./AppaltiComune";
 import type { Appalti, Concorrenza } from "@/lib/appalti";
-import NotizieComune from "./NotizieComune";
-import CreaCard from "../card/CreaCard";
+
+// Le sezioni che l'utente apre con un tab (e la camera) arrivano quando servono:
+// chi guarda la panoramica non scarica appalti, PNRR, notizie e canvas.
+const SpesaPerCategoria = dynamic(() => import("./SpesaPerCategoria"));
+const InvestimentiComune = dynamic(() => import("./InvestimentiComune"));
+const AppaltiComune = dynamic(() => import("./AppaltiComune"));
+const NotizieComune = dynamic(() => import("./NotizieComune"));
+const CreaCard = dynamic(() => import("../card/CreaCard"));
 import Condividi from "../viralita/Condividi";
 import type { DatiCard } from "@/lib/card/contenuto";
 import { slugComune } from "@/lib/pagina/comune";
