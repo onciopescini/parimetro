@@ -14,8 +14,8 @@ function CountUp({ valore }: { valore: number }) {
   useEffect(() => {
     const ridotto = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (ridotto) {
-      setV(valore);
-      return;
+      const id = requestAnimationFrame(() => setV(valore));
+      return () => cancelAnimationFrame(id);
     }
     const inizio = performance.now();
     const durata = 900;

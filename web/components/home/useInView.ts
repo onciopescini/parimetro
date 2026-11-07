@@ -12,13 +12,13 @@ export function useInView<T extends HTMLElement>(soglia = 0.25) {
 
   useEffect(() => {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
-      setVisto(true);
-      return;
+      const id = requestAnimationFrame(() => setVisto(true));
+      return () => cancelAnimationFrame(id);
     }
     const el = ref.current;
     if (!el || !("IntersectionObserver" in window)) {
-      setVisto(true);
-      return;
+      const id = requestAnimationFrame(() => setVisto(true));
+      return () => cancelAnimationFrame(id);
     }
     const osservatore = new IntersectionObserver(
       (voci) => {

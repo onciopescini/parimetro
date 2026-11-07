@@ -38,8 +38,24 @@ export interface ScopertaFatto {
   istat?: string;
 }
 
+/**
+ * La parte del file del comune (come lo pubblica l'ETL) che le scoperte leggono:
+ * il resto esiste e non serve, quindi niente `any`.
+ */
+export interface FileComune {
+  history?: Array<{
+    year: number;
+    expenditure_pc?: number | null;
+    revenue_pc?: number | null;
+    autonomia?: number | null;
+    fhi?: number | null;
+  }>;
+  categorie?: Record<string, { totale?: number; voci?: Array<{ importo: number }> }>;
+  reddito?: Record<string, { medio?: number | null }>;
+}
+
 /** Dal voce dell'indice e dal file del comune (come lo pubblica l'ETL) al dato che usano le funzioni qui sopra */
-export function datoComune(voce: { istat: string; name: string; province: string; region: string; population: number }, d: any): DatoComune {
+export function datoComune(voce: { istat: string; name: string; province: string; region: string; population: number }, d: FileComune | null): DatoComune {
   const riga = d?.history?.find((r: { year: number }) => r.year === 2024) ?? null;
   const cat = d?.categorie?.["2024"] ?? null;
   return {
