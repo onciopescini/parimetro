@@ -37,21 +37,20 @@ const METRICHE_DESCR: Record<string, string> = {
   opere_pc: "public works funded by cohesion policy per resident",
 };
 
+const NESSUNA = "nessuna";
+
+/** Di un superset di chiavi (con descrizioni), tiene solo quelle richieste. */
+const solo = <T extends string>(chiavi: readonly T[], descr: Record<string, string>) =>
+  Object.fromEntries(chiavi.map((k) => [k, descr[k] ?? k]));
+
+// Le figure che valgono sia per la classifica sia per lo storico si descrivono
+// una volta sola: due liste che vanno a mano non restano mai sincronizzate.
 const STORICO_DESCR: Record<string, string> = {
-  revenue_pc: "revenue per resident",
-  expenditure_pc: "spending per resident",
-  fhi: "financial health rank",
-  autonomia: "financial autonomy",
+  ...solo(["fhi", "autonomia", "expenditure_pc", "revenue_pc", "reddito_medio"], METRICHE_DESCR),
   surplus_deficit: "surplus or deficit (cash balance)",
   revenue_total: "total revenue",
   expenditure_total: "total spending",
-  reddito_medio: "average taxable income of residents",
 };
-
-const NESSUNA = "nessuna";
-
-const solo = <T extends string>(chiavi: readonly T[], descr: Record<string, string>) =>
-  Object.fromEntries(chiavi.map((k) => [k, descr[k] ?? k]));
 
 function domande(): Record<string, DomandaJev> {
   return {
@@ -76,10 +75,7 @@ function domande(): Record<string, DomandaJev> {
     area: {
       type: "choice",
       instructions: "If the user asks about spending of one municipality on a specific area, which area?",
-      criteria: {
-        ...Object.fromEntries(Object.entries(AREE).map(([k, v]) => [k, v])),
-        [NESSUNA]: "no specific spending area is mentioned",
-      },
+      criteria: { ...AREE, [NESSUNA]: "no specific spending area is mentioned" },
     },
     metrica_storico: {
       type: "choice",
@@ -114,9 +110,9 @@ function scelta(r: RisposteJev, k: string, soglia = SOGLIA_PARAMETRO): string | 
 }
 
 /** Il comune (o i comuni) di cui parla la domanda: chi e' nominato; altrimenti quello aperto sul sito. */
-function riferimenti(menzioni: MenzioneComune[], corrente: boolean, contesto?: Contesto): { comune: string; provincia?: string }[] {
+function riferimenti(menzioni: MenzioneComune[], contesto?: Contesto): { comune: string; provincia?: string }[] {
   const uso = menzioni.map(({ comune, provincia }) => ({ comune, provincia }));
-  if (corrente && contesto?.istat && uso.length === 0) return [{ comune: "@corrente" }];
+  // Nessuno nominato, ma una pagina aperta: la domanda parla di quello.
   if (uso.length === 0 && contesto?.istat) return [{ comune: "@corrente" }];
   return uso;
 }
@@ -136,7 +132,7 @@ export async function intentoConJev(
   if (!tipo || !(tipo in TIPI) || p < SOGLIA_TIPO) return { ok: false, motivo: "dubbio", probabilita: p };
   if (tipo === "fuori_ambito") return { ok: true, intento: { tipo: "fuori_ambito" }, probabilita: p };
 
-  const comuni = riferimenti(m.comuni, m.corrente, contesto);
+  const comuni = riferimenti(m.comuni, contesto);
   // Piu' comuni nominati dove ne serve uno solo: vale il piu' "forte" (maiuscola, piu' parole, introdotto da "di"...); a parita' il primo
   const uno = (): { comune: string; provincia?: string }[] => {
     if (m.comuni.length <= 1) return comuni.slice(0, 1);
