@@ -1,6 +1,38 @@
-# Intestazioni di sicurezza per i file statici (le Pages Functions mettono le loro).
-# Niente Content-Security-Policy per ora: la mappa usa worker e tile esterni, e una regola sbagliata la romperebbe.
+# ============================================================
+# _headers · parimetro.it (Cloudflare Pages legge questo file
+# dall'output della build di next export: sta in public/ e Next
+# lo copia in out/ com'e').
+#
+# Cache: gli asset versionati sono immutabili; i dati cambiano
+# solo quando rilancia l'ETL, quindi breve e gia' valida mentre
+# si riscarica (stale-while-revalidate). L'HTML resta com'e':
+# eTag di default, sempre consentito.
+#
+# Sicurezza: solo le tre pipa niente (il sito antere potra'
+# non ha frame embeddabili). La CSP completa richiede calibrazione
+# con lo script del beacon e gli stili inline: un dopo, sepilimetro.
+# ============================================================
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/dati/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+
+/viralita/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+
+/fonts/*
+  Cache-Control: public, max-age=2592000
+
+/maplibre/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/og/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
 /*
-  X-Frame-Options: DENY
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-  Strict-Transport-Security: max-age=15552000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
