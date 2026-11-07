@@ -61,6 +61,13 @@ function main() {
   }
   writeFileSync(join(USCITA, "confronti.json"), JSON.stringify(coppie));
 
+  if (coppie.length === 0 && dati.length >= 2) {
+    // Con le fixture di sviluppo i capoluoghi veri mancano: una coppia di
+    // comuni presenti serve perche' /confronto/[coppia] non resti senza
+    // percorsiStatici (la build con output: export non ammette l'array vuoto).
+    coppie.push({ slug: slugCoppia(dati[0], dati[1]), a: dati[0].istat, b: dati[1].istat });
+  }
+
   console.log(`gioco: ${gioco.length} domande · scoperte: ${scoperte(dati).length} · confronti: ${coppie.length}`);
   console.log(`fasce usate: ${[...new Set(dati.map((d) => fasciaDi(d.population)))].sort().join(", ")}`);
 }
