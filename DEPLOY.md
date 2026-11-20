@@ -1,32 +1,17 @@
 # Deploy · parimetro su Cloudflare Pages
 
-## Stato (7 novembre 2026)
+## Come si pubblica
 
-Il progetto Pages `parimetro` attuale è a **caricamento diretto** (non collegato
-a GitHub), quindi i push su `main` non pubblicano nulla da soli. La CI ora
-implementa un job `deploy` che, dopo web + ETL verdi, ricostruisce l'output
-statico e lo pubblica con `wrangler pages deploy`. **Serve un segreto una sola
-volta.**
+Il progetto Pages `parimetro` è a **caricamento diretto**: non è collegato a
+GitHub, quindi un push su `main` non pubblica niente. Si pubblica a mano, da
+una macchina che ha il database:
 
-## Configurazione una sola volta (5 minuti, da fare solo tu)
+```bash
+./selfhost/pubblica.sh               # export dei dati veri + build + deploy
+./selfhost/pubblica.sh --solo-build  # se web/public/dati è già aggiornato
+```
 
-1. **Token API Cloudflare**
-   Vai su <https://dash.cloudflare.com/profile/api-tokens> → *Crea token* →
-   modello **"Modifica Cloudflare Workers"**, poi aggiungi il permesso
-   **Account → Cloudflare Pages → Edit** (il modello Workers da solo non
-   copre Pages). Account = *Alfonso@pescini.org's Account*. Copia il token.
-2. **Segreti GitHub** (nel repo `onciopescini/parimetro`):
-   ```bash
-   gh secret set CLOUDFLARE_API_TOKEN    # incolla il token
-   gh secret set CLOUDFLARE_ACCOUNT_ID   # 9f40d273cb3661c6bc666381b292ad94
-   ```
-   (o da web GitHub → Settings → Secrets and variables → Actions.)
-
-Dalla spinta successiva la CI esegue anche il deploy, che appare come job
-"Deploy on Cloudflare Pages". Finché i segreti mancano, quel job gira a vuoto
-con un avviso, senza rossore.
-
-## CLI a mano (uguale a quello che fa la CI)
+Oppure, con `web/public/dati` già esportato:
 
 ```bash
 cd web
@@ -34,12 +19,29 @@ npm run build          # out/ è la cartella di pubblicazione
 npx wrangler pages deploy out --project-name parimetro --branch main
 ```
 
+## Perché la CI non pubblica
+
+I dati del sito (`web/public/dati`, migliaia di JSON) non sono nel repository:
+li produce `etl/05_esporta_statico.py` dal database. In CI il database non c'è,
+quindi la build della CI usa le fixture di `npm run fixture` (7 comuni
+inventati). Quella build serve a controllare che il sito compili: **se
+venisse pubblicata, sostituirebbe il sito vero con i comuni finti.** Per
+questo la CI non ha un job di deploy e non servono segreti Cloudflare su
+GitHub.
+
+Prima di pubblicare a mano, controllare che `web/public/dati` contenga i dati
+veri e non le fixture: `npm run fixture` cancella la cartella e ci scrive i
+comuni finti (codici 99000x).
+
 ## Note
 
-- Il token OAuth wrangler del computer locale **non** va copiato in giro:
-  in CI si usa un Token API con le autorizzazioni minime.
-- `web/public/_headers` viene copiato in `out/` dalla build ed è ciò che
-  Cloudflare applica (cache + header di sicurezza): lo hai visto attivo
-  in produzione dopo il deploy manuale del 7/11/2026.
-- Se un giorno il progetto si sposta sul collegamento GitHub nativo, questo
-  job Deploy va tolto (farebbe un doppio deploy).
+- Il token OAuth di wrangler del computer locale **non** va copiato altrove.
+- `web/public/_headers` viene copiato in `out/` dalla build: sono gli header
+  (cache e sicurezza) che Cloudflare applica ai file statici.
+- `web/public/_routes.json` dice a Cloudflare quali richieste passano dalle
+  Functions. Gli asset (`/_next/*`, `/dati/*`, font, immagini) sono esclusi:
+  così non consumano la quota giornaliera delle Functions (100.000 sul piano
+  gratuito). Una nuova cartella di file statici in `public/` va aggiunta lì
+  agli `exclude`.
+- Il database dell'officina si salva con `selfhost/backup.sh` (dump locale +
+  copia su Cloudflare R2): vedi `selfhost/README.md`, sezione Backup.

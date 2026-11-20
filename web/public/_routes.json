@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "description": "Gli asset statici non passano dalle Functions (il middleware li girerebbe tutti, consumando la quota giornaliera). Nuove cartelle di file statici in public/ vanno aggiunte a exclude. Vedi DEPLOY.md.",
+  "include": ["/*"],
+  "exclude": [
+    "/_next/*",
+    "/dati/*",
+    "/viralita/*",
+    "/fonts/*",
+    "/maplibre/*",
+    "/favicon.ico",
+    "/file.svg",
+    "/globe.svg",
+    "/next.svg",
+    "/vercel.svg",
+    "/window.svg"
+  ]
+}
