@@ -85,8 +85,20 @@ Da li' in avanti, dopo ogni import:
 Il sito e' su `parimetro.pages.dev`. Un dominio proprio si aggiunge dal
 pannello Pages in un minuto, quando vorrai.
 
-## Backup?
+## 7 · Backup
 
-Non serve: i dati si rigenerano dall'ETL e i JSON pubblicati restano sulla
-CDN anche se il portatile muore. Se vuoi evitare le ore di re-import,
-`docker compose exec db pg_dump -U postgres -Fc mappabilanci > dump.bak`.
+Il sito sopravvive anche se il portatile muore: i JSON pubblicati restano
+sulla CDN. Il database no, e rifarlo dall'ETL vuol dire giorni di download
+(SIOPE, OpenCoesione, ANAC). Un dump compresso pesa circa 200 MB e si
+ripristina in pochi minuti. Dopo ogni import:
+
+```bash
+PG_DUMP_CMD="docker compose exec -T db pg_dump -Fc -U postgres mappabilanci"   ~/parimetro/selfhost/backup.sh
+```
+
+Lo script tiene gli ultimi 3 dump in `../backup` (accanto al repo) e ne
+carica una copia su Cloudflare R2, nel bucket `parimetro-backup`: 10 GB
+gratis al mese, cioe' una cinquantina di dump. Prima volta: attivare R2 dal
+pannello Cloudflare (R2 Object Storage) e creare il bucket con
+`npx wrangler r2 bucket create parimetro-backup`. Le istruzioni per
+ripristinare sono in testa a `backup.sh`.

@@ -17,3 +17,6 @@ __pycache__/
 build/
 *.egg-info/
 _siope_tmp/
+
+# cache di wrangler (selfhost/backup.sh lo lancia dalla radice)
+.wrangler/
