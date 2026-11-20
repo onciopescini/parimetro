@@ -157,18 +157,26 @@ const METRIC_KEYS: Record<"debt" | "revenue" | "expenditure", [string, string]> 
   expenditure: ["expenditure_total", "expenditure_pc"],
 };
 
+// Un dato mancante e' NaN, mai zero: zero lo colorerebbe come il valore peggiore (o il migliore) della scala,
+// mentre NaN finisce in grigio ("dato mancante") e il tooltip mostra un trattino.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function metricValue(p: any, metric: MetricKey, perCapita: boolean): number {
-  if (!p) return 0;
-  if (metric === "fhi") return p.fhi ?? 0;
+  if (!p) return NaN;
+  if (metric === "fhi") return p.fhi ?? NaN;
   // Il reddito manca dove e' oscurato: NaN, non zero, cosi' non finisce nella scala come "il piu' povero"
   if (metric === "income") return p.reddito_medio ?? NaN;
   if (metric === "surplus") {
-    const v = p.surplus_deficit ?? 0;
+    const v = p.surplus_deficit ?? NaN;
     return perCapita ? v / Math.max(p.population ?? 1, 1) : v;
   }
   const [abs, pc] = METRIC_KEYS[metric];
-  return (perCapita ? p[pc] : p[abs]) ?? 0;
+  return (perCapita ? p[pc] : p[abs]) ?? NaN;
+}
+
+/** Una risposta HTTP non riuscita (per esempio la pagina 404 di Pages, in HTML) e' un errore, non JSON da leggere. */
+function jsonOErrore(r: Response) {
+  if (!r.ok) throw new Error(`${r.url}: HTTP ${r.status}`);
+  return r.json();
 }
 
 // ---------------------------------------------------------- //
@@ -299,6 +307,9 @@ export default function Map3D({
   const [anniTutti, setAnniTutti] = useState<number[] | null>(null);
   const chiaveDati = `${dataUrl}|${year}`;
   const loading = caricatoPer !== chiaveDati;
+  // L'anno il cui caricamento e' fallito (per mostrarlo e riprovare) e il contatore dei tentativi
+  const [errorePer, setErrorePer] = useState<string | null>(null);
+  const [tentativo, setTentativo] = useState(0);
 
   /**
    * Gli anni gia' caricati (o gia' in arrivo in prefetch): tornare su un anno
@@ -337,8 +348,8 @@ export default function Map3D({
     let alive = true;
     const ctrl = new AbortController();
     Promise.all([
-      fetch(`${dataUrl}/comuni-${year}.json`, { signal: ctrl.signal }).then((r) => r.json()),
-      fetch(`${dataUrl}/province-${year}.json`, { signal: ctrl.signal }).then((r) => r.json()),
+      fetch(`${dataUrl}/comuni-${year}.json`, { signal: ctrl.signal }).then(jsonOErrore),
+      fetch(`${dataUrl}/province-${year}.json`, { signal: ctrl.signal }).then(jsonOErrore),
     ])
       .then(([fc, prov]) => {
         const val = { fc: (fc ?? EMPTY_FC) as MuniFC, prov: (Array.isArray(prov) ? prov : []) as ProvinceAgg[] };
@@ -346,17 +357,21 @@ export default function Map3D({
         if (!alive) return;
         setMunis(val.fc);
         setProvinces(val.prov);
+        setErrorePer(null);
       })
       // L'abort di un cambio anno non e' un errore: e' la corsa vinta da un'altra
       .catch((e: unknown) => {
-        if (alive && e instanceof Error && e.name !== "AbortError") console.error(e);
+        if (alive && e instanceof Error && e.name !== "AbortError") {
+          console.error(e);
+          setErrorePer(chiaveDati);
+        }
       })
       .finally(() => alive && setCaricatoPer(chiaveDati));
     return () => {
       alive = false;
       ctrl.abort();
     };
-  }, [year, dataUrl, chiaveDati]);
+  }, [year, dataUrl, chiaveDati, tentativo]);
 
   // ---- L'elenco degli anni, per il prefetch dei vicini ----
   useEffect(() => {
@@ -624,6 +639,21 @@ export default function Map3D({
       {loading && (
         <div className="absolute right-4 top-4 rounded-full border border-[var(--color-bordo)] bg-crema px-3 py-1.5 text-xs text-inchiostro">
           Caricamento bilanci {year}…
+        </div>
+      )}
+      {!loading && errorePer === chiaveDati && (
+        <div role="alert" className="absolute right-4 top-4 flex items-center gap-3 rounded-full border border-[var(--color-bordo)] bg-crema px-4 py-2 text-xs text-inchiostro">
+          Non riesco a caricare i bilanci {year}: la mappa mostra ancora l&apos;anno precedente.
+          <button
+            type="button"
+            onClick={() => {
+              setCaricatoPer(null);
+              setTentativo((t) => t + 1);
+            }}
+            className="rounded-full bg-inchiostro px-3 py-1 font-semibold text-crema"
+          >
+            Riprova
+          </button>
         </div>
       )}
     </div>

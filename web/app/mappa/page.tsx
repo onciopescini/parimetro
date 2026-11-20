@@ -11,7 +11,7 @@
 // ============================================================
 
 import Link from "next/link";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, Trophy, UserRound, X } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -58,6 +58,18 @@ type Anagrafica = Pick<MunicipalityProps, "istat" | "name" | "region" | "provinc
 /** Riga della ricerca: anagrafica piu' il punto su cui volare. */
 type Risultato = Anagrafica & { lon: number; lat: number };
 
+/** Il file di un comune (public/dati/comune/ISTAT.json): storico e dati per anno. */
+type SchedaComune = {
+  history: MunicipalityDetail["history"];
+  peers: Record<string, PeerComparison | null>;
+  categorie?: Record<string, CategorieComune | null>;
+  reddito?: Record<string, RedditoAnno> | null;
+  investimenti?: Investimenti | null;
+  appalti?: Appalti | null;
+  notizie?: NotizieComune | null;
+  concorrenza?: Concorrenza | null;
+};
+
 /** Una metrica letta dalla URL vale solo se esiste: un link vecchio o storpiato non deve rompere la mappa. */
 function metricaDa(v: string | null, predefinita: MetricKey): MetricKey {
   return v && (METRICS as string[]).includes(v) ? (v as MetricKey) : predefinita;
@@ -88,15 +100,11 @@ function Mappa() {
   // true = i ~7.900 comuni estrusi già dalla vista nazionale
   const [comuniOvunque, setComuniOvunque] = useState(() => params.get("lod") !== "province");
 
-  const [detail, setDetail] = useState<MunicipalityDetail | null>(null);
-  const [avg, setAvg] = useState<NationalAverages | null>(null);
-  const [peers, setPeers] = useState<PeerComparison | null>(null);
-  const [categorie, setCategorie] = useState<CategorieComune | null>(null);
-  const [reddito, setReddito] = useState<RedditoAnno | null>(null);
-  const [investimenti, setInvestimenti] = useState<Investimenti | null>(null);
-  const [appalti, setAppalti] = useState<Appalti | null>(null);
-  const [concorrenza, setConcorrenza] = useState<Concorrenza | null>(null);
-  const [notizie, setNotizie] = useState<NotizieComune | null>(null);
+  // La scheda intera del comune scelto (tutti gli anni) e le medie nazionali: i dati dell'anno si ricavano
+  // piu' sotto dall'anno della mappa, cosi' cambiando anno a scheda aperta testata e confronti restano allineati.
+  const [scheda, setScheda] = useState<{ anagrafica: Anagrafica; dati: SchedaComune; nazionale: Record<string, NationalAverages> } | null>(null);
+  const [erroreScheda, setErroreScheda] = useState<string | null>(null);
+  const ultimaRichiesta = useRef(0);
   const [open, setOpen] = useState(false);
   const [flyTo, setFlyTo] = useState<{ lon: number; lat: number; nonce: number } | null>(null);
 
@@ -136,48 +144,37 @@ function Mappa() {
   if (years.includes(year) && annoMappa !== year) setAnnoMappa(year);
 
   // ---- Selezione di un comune (dalla mappa o dalla ricerca) ------------- //
-  const handleSelect = useCallback(
-    async (p: Anagrafica) => {
-      const anno = annoMappa ?? year;
+  const handleSelect = useCallback(async (p: Anagrafica) => {
+    // Clic rapidi su due comuni: vale solo l'ultimo, anche se la sua risposta arriva prima dell'altra
+    const richiesta = ++ultimaRichiesta.current;
+    try {
       // Un file per comune (storico + confronto per ogni anno) e uno per le
       // medie nazionali di tutti gli anni: due richieste invece di tre.
-      const [scheda, nazionale] = await Promise.all([
-        leggi<{
-          history: MunicipalityDetail["history"];
-          peers: Record<string, PeerComparison | null>;
-          categorie?: Record<string, CategorieComune | null>;
-          reddito?: Record<string, RedditoAnno> | null;
-          investimenti?: Investimenti | null;
-          appalti?: Appalti | null;
-          notizie?: NotizieComune | null;
-          concorrenza?: Concorrenza | null;
-        }>(`${URL_DATI}/comune/${p.istat}.json`),
+      const [dati, nazionale] = await Promise.all([
+        leggi<SchedaComune>(`${URL_DATI}/comune/${p.istat}.json`),
         leggi<Record<string, NationalAverages>>(`${URL_DATI}/nazionale.json`),
       ]);
-      const history = scheda.history;
-      const nat = nazionale[String(anno)] ?? null;
-      const pari = scheda.peers[String(anno)] ?? null;
-
-      setDetail({
-        istat: p.istat,
-        name: p.name,
-        region: p.region,
-        province: p.province,
-        population: p.population,
-        history: history ?? [],
-      });
-      setAvg(nat);
-      setPeers(pari ?? null);
-      setCategorie(scheda.categorie?.[String(anno)] ?? null);
-      setReddito(scheda.reddito?.[String(anno)] ?? null);
-      setInvestimenti(scheda.investimenti ?? null);
-      setAppalti(scheda.appalti ?? null);
-      setNotizie(scheda.notizie ?? null);
-      setConcorrenza(scheda.concorrenza ?? null);
+      if (richiesta !== ultimaRichiesta.current) return;
+      setScheda({ anagrafica: p, dati, nazionale });
+      setErroreScheda(null);
       setOpen(true);
-    },
-    [year, annoMappa],
+    } catch (e) {
+      if (richiesta !== ultimaRichiesta.current) return;
+      console.error(`Scheda di ${p.name} non caricata:`, e);
+      setErroreScheda(`Non riesco a caricare i dati di ${p.name}. Controlla la connessione e riprova.`);
+    }
+  }, []);
+
+  // I dati dell'anno mostrato sulla mappa, ricavati dalla scheda intera
+  const annoScheda = String(annoMappa ?? year);
+  const detail = useMemo<MunicipalityDetail | null>(
+    () => (scheda ? { ...scheda.anagrafica, history: scheda.dati.history ?? [] } : null),
+    [scheda],
   );
+  const avg = scheda?.nazionale[annoScheda] ?? null;
+  const peers = scheda?.dati.peers[annoScheda] ?? null;
+  const categorie = scheda?.dati.categorie?.[annoScheda] ?? null;
+  const reddito = scheda?.dati.reddito?.[annoScheda] ?? null;
 
   // ---- Ricerca --------------------------------------------------------- //
   const [query, setQuery] = useState("");
@@ -554,6 +551,15 @@ function Mappa() {
       <Guida aperta={guida} onChiudi={() => setGuida(false)} />
       {accesso !== null && <AccessoModal motivo={accesso} onClose={() => setAccesso(null)} />}
       {spazio && <SpazioPersonale onClose={() => setSpazio(false)} onApri={apriDaChat} />}
+      {erroreScheda && (
+        <div role="alert" className="fixed left-1/2 top-4 z-[70] flex -translate-x-1/2 items-center gap-3 rounded-full border border-bordo bg-white px-5 py-3 text-sm font-semibold text-inchiostro shadow-[0_8px_24px_rgba(27,26,46,0.16)]">
+          {erroreScheda}
+          <button type="button" onClick={() => setErroreScheda(null)} aria-label="Chiudi l'avviso" className="rounded-full p-1 hover:bg-slate-100">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
       {benvenuto && (
         <div role="status" className="pointer-events-none fixed left-1/2 top-4 z-[70] -translate-x-1/2 rounded-full border border-menta bg-menta px-6 py-3 text-base font-semibold text-inchiostro shadow-[0_8px_24px_rgba(27,26,46,0.16)]">
           Sei dentro. Bentornato!
@@ -567,10 +573,10 @@ function Mappa() {
         peerAvg={peers}
         categorie={categorie}
         reddito={reddito}
-        investimenti={investimenti}
-        appalti={appalti}
-        notizie={notizie}
-        concorrenza={concorrenza}
+        investimenti={scheda?.dati.investimenti ?? null}
+        appalti={scheda?.dati.appalti ?? null}
+        notizie={scheda?.dati.notizie ?? null}
+        concorrenza={scheda?.dati.concorrenza ?? null}
         open={open}
         onClose={() => setOpen(false)}
         onChiediAccesso={(m) => setAccesso(m)}
