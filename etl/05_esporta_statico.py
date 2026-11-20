@@ -27,6 +27,24 @@ METRICHE = ("fhi", "autonomia", "expenditure_pc", "revenue_pc", "reddito_medio",
 # Se ne esportano piu' di quelle mostrate (20): chi nasconde i comuni con spesa
 # concentrata deve comunque trovarne venti, e il filtro lo applica il sito
 LIMITE_CLASSIFICA = 50
+# Cloudflare Pages accetta al massimo 20.000 file per deploy, e il resto del sito (pagine, JS, font) ne ha
+# circa 450. Oltre questo numero l'export si ferma: il deploy fallirebbe o, peggio, resterebbe a meta'.
+MAX_FILE_DATI = 19_000
+
+
+def conta_file(cartella: str) -> int:
+    return sum(len(fs) for _, _, fs in os.walk(cartella))
+
+
+def sostituisci_cartella(nuova: str, dest: str) -> None:
+    """Mette `nuova` al posto di `dest` con due rinomine: chi legge `dest` vede o tutti i dati vecchi o tutti
+    i nuovi, mai un export a meta'. La cartella vecchia si cancella solo alla fine."""
+    vecchia = nuova + "-vecchia"
+    shutil.rmtree(vecchia, ignore_errors=True)
+    if os.path.exists(dest):
+        os.rename(dest, vecchia)
+    os.rename(nuova, dest)
+    shutil.rmtree(vecchia, ignore_errors=True)
 
 
 def senza_accenti(s: str) -> str:
@@ -82,11 +100,14 @@ def main() -> None:
     if not url:
         sys.exit("DATABASE_URL mancante: copia .env.example in .env e compilalo.")
 
-    dest = os.path.abspath(a.dest)
+    finale = os.path.abspath(a.dest)
     # Si rigenera tutto: un file vecchio che sopravvive (un comune soppresso,
     # una classifica di un anno rimosso) sarebbe un dato falso servito online.
-    if os.path.basename(dest) != "dati":
-        sys.exit(f"Per sicurezza la destinazione deve chiamarsi 'dati', non {dest}")
+    if os.path.basename(finale) != "dati":
+        sys.exit(f"Per sicurezza la destinazione deve chiamarsi 'dati', non {finale}")
+    # Si scrive in una cartella a parte, FUORI da public/ (la build la pubblicherebbe), e la si mette al
+    # posto di quella vera solo alla fine: un errore a meta' lascia intatti i dati di prima.
+    dest = os.path.join(os.path.dirname(os.path.dirname(finale)), ".dati-in-corso")
     shutil.rmtree(dest, ignore_errors=True)
     os.makedirs(dest)
 
@@ -162,10 +183,13 @@ def main() -> None:
                 print(f"→ comuni: {i}/{len(codici)}")
 
     tot = sum(os.path.getsize(os.path.join(d, f)) for d, _, fs in os.walk(dest) for f in fs)
-    n = sum(len(fs) for _, _, fs in os.walk(dest))
-    print(f"✔ {n} file, {tot/1e6:.0f} MB in {dest}")
-    if n > 19000:
-        print("⚠ Cloudflare Pages accetta al massimo 20.000 file per deploy: siamo vicini.")
+    n = conta_file(dest)
+    if n > MAX_FILE_DATI:
+        sys.exit(f"✗ {n} file: troppi per Cloudflare Pages (al massimo {MAX_FILE_DATI} per i dati, 20.000 in tutto). "
+                 f"I dati di prima sono rimasti in {finale}; l'export incompleto e' in {dest}. "
+                 "Servono meno file (per esempio meno combinazioni di classifiche), non un deploy a meta'.")
+    sostituisci_cartella(dest, finale)
+    print(f"✔ {n} file, {tot/1e6:.0f} MB in {finale}")
 
 
 if __name__ == "__main__":

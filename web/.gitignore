@@ -55,3 +55,6 @@ next-env.d.ts
 # wrangler (cache locale e file temporanei)
 .wrangler/
 .dev.vars
+
+# export in corso di etl/05_esporta_statico.py (fuori da public/ apposta)
+/.dati-in-corso*
