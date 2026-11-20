@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { gestisci } from "../lib/mcp/protocollo";
+import { gestisci, MAX_LOTTO } from "../lib/mcp/protocollo";
 import { STRUMENTI } from "../lib/mcp/strumenti";
 import { INDICE, FILE, leggi } from "./fixtures/mondo_chat";
 
@@ -22,6 +22,11 @@ describe("protocollo MCP", () => {
   });
 
   it("un lotto di sole notifiche non ha risposta, un lotto misto risponde solo alle richieste", async () => {
+    // Un lotto troppo lungo si rifiuta tutto: altrimenti un solo POST varrebbe migliaia di richieste
+    const lungo = Array.from({ length: MAX_LOTTO + 1 }, (_, i) => ({ jsonrpc: "2.0", id: i, method: "ping" }));
+    expect(await gestisci(lungo, leggi)).toMatchObject({ error: { code: -32600 } });
+    const giusto = (await gestisci(lungo.slice(0, MAX_LOTTO), leggi)) as unknown[];
+    expect(giusto).toHaveLength(MAX_LOTTO);
     expect(await gestisci([{ jsonrpc: "2.0", method: "notifications/initialized" }], leggi)).toBeNull();
     const r = (await gestisci([{ jsonrpc: "2.0", id: 7, method: "ping" }, { jsonrpc: "2.0", method: "notifications/x" }], leggi)) as { id: number }[];
     expect(r.map((x) => x.id)).toEqual([7]);

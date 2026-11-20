@@ -363,6 +363,31 @@ describe("validaNarrazione", () => {
     expect(validaNarrazione("Spende circa 900 euro a persona.", fatti).ok).toBe(false);
     expect(validaNarrazione("Spende [[spesa_pc]], il 12% in più.", fatti).ok).toBe(false);
   });
+  it("anche un numero scritto in lettere fa scartare tutto", () => {
+    for (const t of [
+      "Spende circa tremila euro a persona: [[spesa_pc]].",
+      "Nel [[anno]] la spesa è il doppio di prima: [[spesa_pc]].",
+      "Quasi metà della spesa va ai rifiuti: [[spesa_pc]].",
+      "Un terzo della spesa va al personale: [[spesa_pc]].",
+      "Nel duemilaventiquattro spende [[spesa_pc]].",
+      "Spende [[spesa_pc]], ventitré euro in più.",
+    ]) {
+      expect(validaNarrazione(t, fatti, [2024]).ok, t).toBe(false);
+    }
+  });
+  it("ma non scambia per numeri parole normali, articoli o nomi scritti dal codice", () => {
+    for (const t of [
+      "Nel [[anno]] un comune come questo spende [[spesa_pc]] a persona.",
+      "Il centro storico e il trentino non c'entrano: la spesa è [[spesa_pc]] nel mese di settembre e ottobre.",
+      "Uno dei dati più chiari è la spesa, [[spesa_pc]].",
+    ]) {
+      expect(validaNarrazione(t, fatti, [2024]).ok, t).toBe(true);
+    }
+    // Cento e Nove sono comuni: se il nome viene dal codice, il modello puo' scriverlo
+    expect(validaNarrazione("A Cento la spesa è [[spesa_pc]].", fatti, [2024], "Cento · 2024").ok).toBe(true);
+    expect(validaNarrazione("A Cento la spesa è [[spesa_pc]].", fatti, [2024]).ok).toBe(false);
+    expect(validaNarrazione("Tra i due comuni spende di più [[spesa_pc]].", fatti, [2024], "Confronto fra i due comuni").ok).toBe(true);
+  });
   it("un anno scritto a mano e' ammesso solo se e' un anno dei dati", () => {
     expect(validaNarrazione("Nel 2024 spende [[spesa_pc]].", fatti, [2023, 2024]).ok).toBe(true);
     expect(validaNarrazione("Nel 1999 spendeva [[spesa_pc]].", fatti, [2023, 2024]).ok).toBe(false);

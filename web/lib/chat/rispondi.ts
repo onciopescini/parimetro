@@ -105,8 +105,10 @@ export async function rispondi(
   }
   // Un giro, pochi modelli, poca attesa
   const opzioni = { ...llm, giri: 1, timeoutMs: 9000, maxToken: 350 };
+  // Le parole che il codice stesso ha scritto (nomi dei comuni, avvertenze): il modello puo' ripeterle
+  const testoDelCodice = [risultato.titolo, ...risultato.note, JSON.stringify(risultato.righe ?? [])].join(" ");
   const accetta = (testo: string) => {
-    const v = validaNarrazione(testo, risultato.fatti, anni);
+    const v = validaNarrazione(testo, risultato.fatti, anni, testoDelCodice);
     return v.ok ? v.testo : null;
   };
   let narrato = await chiediModello(base, { ...opzioni, modelli: llm.modelli.slice(0, 3) }, accetta);

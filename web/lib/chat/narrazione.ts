@@ -13,7 +13,7 @@ export function promptNarrazione(r: Risultato): { system: string; user: string }
   return {
     system: `Sei l'assistente di Parimetro, un sito sui bilanci dei comuni italiani. Scrivi in italiano, tono sobrio, 2-4 frasi.
 REGOLE ASSOLUTE:
-- Non scrivere MAI cifre (0-9). Ogni numero, importo, percentuale o anno va citato con il suo segnaposto, ad esempio [[spesa_pc]] oppure [[anno]].
+- Non scrivere MAI cifre (0-9) e MAI numeri in lettere («tremila», «il doppio», «metà», «un terzo»). Ogni numero, importo, percentuale o anno va citato con il suo segnaposto, ad esempio [[spesa_pc]] oppure [[anno]].
 - I segnaposto contengono già l'unità di misura (€, %, mln €): non aggiungerla dopo.
 - Il «rango» è un punteggio da 0 a 100 rispetto ai comuni della stessa fascia di popolazione: NON è una posizione in classifica, non chiamarlo «posto» o «posizione».
 - Dopo il segnaposto non ripetere la descrizione né il valore: scrivi solo il segnaposto.
@@ -33,6 +33,31 @@ const CONFRONTO =
   /\b(rispetto (?:a|ai|alla|agli|alle)|in linea con|superiore|inferiore|sopra (?:la|il)|sotto (?:la|il)|più (?:alt|bass)[aeio] (?:di|del|della|dei|rispetto)|comuni simili|stessa fascia|media nazionale|comuni italiani)\b/i;
 const TERMINE_DI_CONFRONTO = /simil|median|nazional|fascia|rango|confront/i;
 
+// Numeri scritti in lettere: la regola "nessuna cifra" non basta, perche' "tremila euro" o "il doppio" passerebbero.
+// Una parola e' un numero se si scompone tutta in queste radici (duemilaventiquattro = due+mila+venti+quattro).
+const RADICI =
+  "diciassette|diciannove|diciotto|quattordici|quindici|tredici|undici|dodici|sedici|dieci|" +
+  "venti|vent|trenta|trent|quaranta|quarant|cinquanta|cinquant|sessanta|sessant|settanta|settant|ottanta|ottant|novanta|novant|" +
+  "cento|cent|mille|mila|milioni|milione|miliardi|miliardo|uno|un|due|tre|tré|quattro|cinque|sei|sette|otto|nove";
+const NUMERO_IN_LETTERE = new RegExp(`^(?:${RADICI})+$`);
+// Grandezze dette a parole: anche "il doppio" o "la metà" sono un numero che il codice non ha calcolato
+const GRANDEZZA = /^(?:doppi[oa]|tripl[oa]|quadrupl[oa]|metà|decin[ae]|dozzin[ae]|centinai[oa]|migliai[oa])$/;
+const FRAZIONE = /\bun (?:terzo|quarto|quinto|decimo)\b/i;
+
+/**
+ * Le parole-numero del testo. "un" e "uno" sono articoli; le parole che il codice stesso ha scritto (il nome del comune
+ * Cento o Nove, "i due comuni" in un'avvertenza) sono ammesse: vengono da `ammesse`, non dal modello.
+ */
+export function numeriInLettere(testo: string, ammesse: string = ""): string[] {
+  const parole = (t: string) => t.toLowerCase().match(/[a-zàèéìíòóù]+/g) ?? [];
+  const note = new Set(parole(ammesse));
+  const trovate = parole(testo).filter(
+    (p) => p !== "un" && p !== "uno" && !note.has(p) && (NUMERO_IN_LETTERE.test(p) || GRANDEZZA.test(p)),
+  );
+  const frazione = testo.match(FRAZIONE);
+  return frazione ? [...trovate, frazione[0]] : trovate;
+}
+
 export type EsitoNarrazione = { ok: true; testo: string } | { ok: false; motivo: string };
 
 /** Controlla il testo del modello e riempie i segnaposto. */
@@ -40,6 +65,8 @@ export function validaNarrazione(
   testo: string,
   fatti: Record<string, Fatto>,
   anniAmmessi: number[] = [],
+  /** Testo scritto dal codice (titolo, avvertenze, righe): le parole-numero che contiene il modello puo' ripeterle */
+  testoDelCodice: string = "",
 ): EsitoNarrazione {
   const t = testo.trim();
   if (!t) return { ok: false, motivo: "vuoto" };
@@ -55,6 +82,10 @@ export function validaNarrazione(
   const cifre = [...senza.matchAll(/\d[\d.,]*/g)].map((m) => m[0]);
   const abusive = cifre.filter((c) => !anniAmmessi.includes(Number(c)));
   if (abusive.length) return { ok: false, motivo: `cifre scritte dal modello: ${abusive.join(" ")}` };
+
+  // Nemmeno in lettere: "tremila euro" o "il doppio" sono numeri che nessuno ha controllato
+  const inLettere = numeriInLettere(senza, `${testoDelCodice} ${Object.values(fatti).map((f) => f.label).join(" ")}`);
+  if (inLettere.length) return { ok: false, motivo: `numeri in lettere scritti dal modello: ${inLettere.join(" ")}` };
 
   // Segnaposto non chiuso rimasto nel testo
   if (/\[\[|\]\]/.test(senza)) return { ok: false, motivo: "segnaposto malformato" };

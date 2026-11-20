@@ -7,7 +7,14 @@ import { MODELLI_PREDEFINITI } from "../../lib/chat/llm";
 import { MAX_DOMANDA } from "../../lib/chat/intento";
 import { rispondi } from "../../lib/chat/rispondi";
 import type { Contesto } from "../../lib/chat/tipi";
-import { dentroIlTetto, leggiTetto, memoriaCloudflare, type DbTetto } from "../../lib/chat/tetto";
+import {
+  dentroIlTetto,
+  leggiTetto,
+  memoriaCloudflare,
+  modelliConsentiti,
+  TETTO_MODELLI_PREDEFINITO,
+  type DbTetto,
+} from "../../lib/chat/tetto";
 import { superaLimite } from "../../lib/limite";
 
 // Tipi minimi: non servono @cloudflare/workers-types solo per questo file
@@ -21,6 +28,8 @@ interface Env {
   JEV_MAX_GIORNO?: string;
   /** Il database (D1): serve al contatore giornaliero. Senza, Jev resta spento: nel dubbio non si spende */
   DB?: DbTetto;
+  /** Domande al giorno che possono usare OpenRouter (predefinito 2000). Oltre, risponde il riassunto del codice. 0 = modelli spenti */
+  CHAT_MAX_GIORNO?: string;
   /** Elenco di modelli separati da virgola, per cambiarli senza ripubblicare il codice */
   CHAT_MODELLI?: string;
   /** Solo prove in locale: un server finto al posto di OpenRouter */
@@ -41,6 +50,14 @@ const json = (corpo: unknown, status = 200) =>
     headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
   });
 
+function hostDi(origin: string): string | null {
+  try {
+    return new URL(origin).host;
+  } catch {
+    return null;
+  }
+}
+
 /** Jev con le sue protezioni: cache di 24 ore e tetto giornaliero. Senza il contatore (nessun database) resta spento. */
 function jevOpzioni(env: Env) {
   if (!env.JEV_API_KEY) return undefined;
@@ -60,8 +77,9 @@ function jevOpzioni(env: Env) {
 
 export async function onRequestPost({ request, env }: Ctx): Promise<Response> {
   // Solo dal nostro stesso sito: la chiave non deve servire a pagine altrui
+  // (Un Origin malformato, compreso "null", non deve far cadere la funzione: e' un'origine non consentita.)
   const origin = request.headers.get("Origin");
-  if (origin && new URL(origin).host !== new URL(request.url).host) {
+  if (origin && hostDi(origin) !== new URL(request.url).host) {
     return json({ errore: "Origine non consentita." }, 403);
   }
   if (!env.OPENROUTER_API_KEY && !env.JEV_API_KEY) {
@@ -80,6 +98,7 @@ export async function onRequestPost({ request, env }: Ctx): Promise<Response> {
   if (typeof corpo.domanda !== "string" || corpo.domanda.length > MAX_DOMANDA * 2) {
     return json({ errore: `La domanda deve stare in ${MAX_DOMANDA} caratteri.` }, 400);
   }
+  if (corpo.domanda.trim().length < 2) return json({ errore: "Scrivi una domanda." }, 400);
   const c = (corpo.contesto ?? {}) as Record<string, unknown>;
   const contesto: Contesto = {
     istat: typeof c.istat === "string" && /^\d{6}$/.test(c.istat) ? c.istat : undefined,
@@ -102,16 +121,25 @@ export async function onRequestPost({ request, env }: Ctx): Promise<Response> {
   };
 
   // Senza chiave OpenRouter non ci sono modelli: la risposta e' il riassunto scritto dal codice, la domanda la capisce Jev
-  const modelli = env.OPENROUTER_API_KEY
+  // Oltre il tetto giornaliero i modelli si spengono: la spesa ha un massimo anche se qualcuno aggira il limite per indirizzo
+  const configurati = env.OPENROUTER_API_KEY
     ? (env.CHAT_MODELLI?.split(",").map((m) => m.trim()).filter(Boolean) ?? MODELLI_PREDEFINITI)
     : [];
-  const esito = await rispondi(
-    corpo.domanda,
-    contesto,
-    leggi,
-    { chiave: env.OPENROUTER_API_KEY ?? "", modelli, referer: base, url: env.OPENROUTER_URL },
-    jevOpzioni(env),
-  );
+  const modelli = await modelliConsentiti(configurati, env.DB, leggiTetto(env.CHAT_MAX_GIORNO, TETTO_MODELLI_PREDEFINITO));
+  let esito: Awaited<ReturnType<typeof rispondi>>;
+  try {
+    esito = await rispondi(
+      corpo.domanda,
+      contesto,
+      leggi,
+      { chiave: env.OPENROUTER_API_KEY ?? "", modelli, referer: base, url: env.OPENROUTER_URL },
+      jevOpzioni(env),
+    );
+  } catch (e) {
+    // Per esempio un file di dati che manca: una risposta JSON leggibile dal sito, non la pagina d'errore di Cloudflare
+    console.error("chat", e instanceof Error ? e.message : "errore");
+    return json({ errore: "Qualcosa non ha funzionato. Riprova tra poco." }, 500);
+  }
   if ("errore" in esito) return json({ errore: esito.errore }, 502);
   return json({
     testo: esito.testo,

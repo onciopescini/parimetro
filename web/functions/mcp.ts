@@ -35,10 +35,18 @@ export async function onRequestPost({ request, env }: Ctx): Promise<Response> {
   }
 
   const base = new URL(request.url).origin;
-  const leggi: Leggi = async (percorso) => {
-    const r = await env.ASSETS.fetch(new Request(base + percorso));
-    if (!r.ok) throw new Error(`${percorso}: HTTP ${r.status}`);
-    return r.json();
+  // Ogni file si legge una volta sola per richiesta, anche se piu' messaggi del lotto lo chiedono
+  const letture = new Map<string, Promise<unknown>>();
+  const leggi: Leggi = (percorso) => {
+    let p = letture.get(percorso);
+    if (!p) {
+      p = env.ASSETS.fetch(new Request(base + percorso)).then((r) => {
+        if (!r.ok) throw new Error(`${percorso}: HTTP ${r.status}`);
+        return r.json();
+      });
+      letture.set(percorso, p);
+    }
+    return p;
   };
 
   const risposta = await gestisci(corpo, leggi);

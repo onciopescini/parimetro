@@ -60,6 +60,7 @@ the `ASSETS` binding, so it needs no database. Configure with Pages secrets:
 cd web
 npx wrangler pages secret put OPENROUTER_API_KEY --project-name <your-project>   # required
 npx wrangler pages secret put CHAT_MODELLI --project-name <your-project>         # optional, comma list
+npx wrangler pages secret put CHAT_MAX_GIORNO --project-name <your-project>      # optional, questions/day that may use OpenRouter (default 2000)
 ```
 
 Without the key, `GET /api/chat` answers `{"attiva":false}` and the site hides the chat button.

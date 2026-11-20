@@ -14,6 +14,9 @@ const ISTRUZIONI =
 
 type Id = string | number | null;
 
+/** Messaggi in un lotto (JSON-RPC batch, ammesso dalla versione 2025-03-26; la 2025-06-18 lo ha tolto). */
+export const MAX_LOTTO = 10;
+
 class ErroreRpc extends Error {
   constructor(readonly codice: number, messaggio: string) {
     super(messaggio);
@@ -26,6 +29,8 @@ const errore = (id: Id, codice: number, messaggio: string) => ({ jsonrpc: "2.0",
 export async function gestisci(corpo: unknown, leggi: Leggi): Promise<unknown | null> {
   if (Array.isArray(corpo)) {
     if (corpo.length === 0) return errore(null, -32600, "Richiesta vuota.");
+    // Un lotto conta una richiesta sola nel limite per indirizzo: senza un massimo, un POST ne varrebbe migliaia
+    if (corpo.length > MAX_LOTTO) return errore(null, -32600, `Al massimo ${MAX_LOTTO} messaggi per lotto.`);
     const risposte = (await Promise.all(corpo.map((m) => gestisciUno(m, leggi)))).filter((r) => r !== null);
     return risposte.length ? risposte : null;
   }

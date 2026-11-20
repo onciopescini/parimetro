@@ -3,7 +3,17 @@ import { createRequire } from "node:module";
 import { beforeEach, describe, expect, it } from "vitest";
 import { chiediJev, riattivaJev, type DomandaJev, type RisposteJev } from "../lib/chat/jev";
 import { intentoConJev, preparaRiferimenti } from "../lib/chat/intentoJev";
-import { chiaveCache, dentroIlTetto, giornoUtc, leggiTetto, TETTO_PREDEFINITO, type DbTetto, type MemoriaJev } from "../lib/chat/tetto";
+import {
+  chiaveCache,
+  dentroIlTetto,
+  giornoUtc,
+  leggiTetto,
+  modelliConsentiti,
+  TETTO_MODELLI_PREDEFINITO,
+  TETTO_PREDEFINITO,
+  type DbTetto,
+  type MemoriaJev,
+} from "../lib/chat/tetto";
 import type { VoceIndice } from "../lib/dati";
 
 const { DatabaseSync } = createRequire(import.meta.url)("node:sqlite") as typeof import("node:sqlite");
@@ -70,6 +80,37 @@ describe("il tetto giornaliero", () => {
     expect(leggiTetto("500")).toBe(500);
     expect(leggiTetto("0")).toBe(0);
     for (const x of [undefined, "", "abc", "-5", "1.5"]) expect(leggiTetto(x)).toBe(TETTO_PREDEFINITO);
+  });
+});
+
+describe("il tetto dei modelli (OpenRouter)", () => {
+  const MODELLI = ["a/uno", "b/due"];
+  it("lascia i modelli fino al tetto, poi la chat va avanti senza", async () => {
+    const db = nuovoDb();
+    const t = 1_800_000_000_000;
+    expect(await modelliConsentiti(MODELLI, db, 2, t)).toEqual(MODELLI);
+    expect(await modelliConsentiti(MODELLI, db, 2, t)).toEqual(MODELLI);
+    expect(await modelliConsentiti(MODELLI, db, 2, t)).toEqual([]);
+    expect(await modelliConsentiti(MODELLI, db, 2, t + 86_400_000)).toEqual(MODELLI);
+  });
+  it("il contatore e' separato da quello di Jev", async () => {
+    const db = nuovoDb();
+    for (let i = 0; i < 3; i++) await dentroIlTetto(db, "jev", 10);
+    expect(await modelliConsentiti(MODELLI, db, 1)).toEqual(MODELLI);
+  });
+  it("senza database o con database rotto, nel dubbio niente modelli", async () => {
+    const rotto: DbTetto = { prepare: () => { throw new Error("giu'"); } };
+    expect(await modelliConsentiti(MODELLI, undefined, 100)).toEqual([]);
+    expect(await modelliConsentiti(MODELLI, rotto, 100)).toEqual([]);
+  });
+  it("senza modelli configurati non tocca il contatore", async () => {
+    const db = nuovoDb();
+    expect(await modelliConsentiti([], db, 1)).toEqual([]);
+    expect(await modelliConsentiti(MODELLI, db, 1)).toEqual(MODELLI);
+  });
+  it("il tetto dei modelli ha il suo valore predefinito", () => {
+    expect(leggiTetto(undefined, TETTO_MODELLI_PREDEFINITO)).toBe(TETTO_MODELLI_PREDEFINITO);
+    expect(leggiTetto("50", TETTO_MODELLI_PREDEFINITO)).toBe(50);
   });
 });
 

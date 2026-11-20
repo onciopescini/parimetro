@@ -20,7 +20,11 @@ spese una tantum per ogni nuovo anno di dati. Cifre in dollari, **stime** da cal
 - **Tetto giornaliero:** `JEV_MAX_GIORNO` chiamate a Jev al giorno (predefinito 3.000, circa 0,15 $). Poi la chat torna al modo di prima,
   senza Jev. Il contatore e' nel database (tabella `tetto_giornaliero`); se non risponde, Jev resta spento.
 - **Crediti finiti o chiave non valida** (402, 401, 403): Jev si sospende per 10 minuti e la chat usa il modo di prima.
-- **Limite per indirizzo:** 15 domande all'ora, gia' presente.
+- **Tetto dei modelli:** `CHAT_MAX_GIORNO` domande al giorno possono usare OpenRouter (predefinito 2.000, al massimo una ventina
+  di centesimi). Poi la chat risponde col riassunto scritto dal codice; contatore nella stessa tabella, e senza database i modelli restano spenti.
+- **Limite per indirizzo:** 15 domande all'ora, gia' presente. E' approssimativo (vale per datacenter): il tetto qui sopra e' quello che
+  conta per la spesa. Una regola di Rate Limiting di Cloudflare su `/api/*` e `/mcp` (gratis, dal pannello) lo rende piu' solido.
+- **Limite di credito su OpenRouter:** dal pannello di OpenRouter, sulla chiave usata dal sito.
 - **Pagamento prepagato:** si ricarica una cifra piccola con la ricarica automatica spenta, cosi' la spesa massima e' decisa in anticipo.
 
 ## Come si copre

@@ -78,8 +78,26 @@ export async function dentroIlTetto(db: DbTetto, chiave: string, massimo: number
   }
 }
 
-export function leggiTetto(v: string | undefined): number {
-  if (v == null || v.trim() === "") return TETTO_PREDEFINITO; // variabile vuota = non impostata (non zero!)
+export function leggiTetto(v: string | undefined, predefinito: number = TETTO_PREDEFINITO): number {
+  if (v == null || v.trim() === "") return predefinito; // variabile vuota = non impostata (non zero!)
   const n = Number(v);
-  return Number.isInteger(n) && n >= 0 ? n : TETTO_PREDEFINITO;
+  return Number.isInteger(n) && n >= 0 ? n : predefinito;
+}
+
+// ------------------------------------------------------------------ il tetto dei modelli (OpenRouter)
+/**
+ * Domande al giorno che possono usare i modelli di OpenRouter. Ogni domanda fa al piu' una decina di chiamate a
+ * modelli economici (circa 1 centesimo ogni 100 domande): 2.000 domande sono al massimo una ventina di centesimi al
+ * giorno, qualunque cosa faccia chi abusa della chat. Oltre il tetto la chat risponde lo stesso, col riassunto del codice.
+ */
+export const TETTO_MODELLI_PREDEFINITO = 2000;
+
+/** I modelli che questa domanda puo' usare: tutti se e' dentro il tetto, nessuno altrimenti. Senza database, nessuno. */
+export async function modelliConsentiti(modelli: string[], db: DbTetto | undefined, massimo: number, ms?: number): Promise<string[]> {
+  if (!modelli.length) return [];
+  if (!db) {
+    console.warn("modelli spenti: manca il database per il tetto giornaliero");
+    return [];
+  }
+  return (await dentroIlTetto(db, "openrouter", massimo, ms)) ? modelli : [];
 }
