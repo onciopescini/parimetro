@@ -8,9 +8,11 @@
 # si riscarica (stale-while-revalidate). L'HTML resta com'e':
 # eTag di default, sempre consentito.
 #
-# Sicurezza: solo le tre pipa niente (il sito antere potra'
-# non ha frame embeddabili). La CSP completa richiede calibrazione
-# con lo script del beacon e gli stili inline: un dopo, sepilimetro.
+# Sicurezza: gli header essenziali (nosniff, Referrer-Policy,
+# X-Frame-Options, Permissions-Policy, HSTS). Le risposte delle
+# Functions li ricevono da functions/_middleware.ts, che li mette
+# uguali. La CSP manca ancora: va calibrata sullo script del
+# beacon e sugli stili inline, prima in modalita' Report-Only.
 # ============================================================
 
 /_next/static/*
@@ -32,6 +34,7 @@
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
 /*
+  Strict-Transport-Security: max-age=31536000
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
